@@ -8,6 +8,10 @@ module Fx
           execute function(name)
         end
 
+        def drop_function(name)
+          execute "DROP FUNCTION #{name}();"
+        end
+
         private
 
         def function(name)
