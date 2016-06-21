@@ -4,8 +4,8 @@ module Fx
   module ActiveRecord
     module Schema
       module Statements
-        def create_function(name)
-          execute function(name)
+        def create_function(name, version = 1)
+          execute function(name, version)
         end
 
         def drop_function(name)
@@ -14,8 +14,12 @@ module Fx
 
         private
 
-        def function(name)
-          File.read ::Rails.root.join("db", "functions", "#{name}.sql")
+        def function(name, version)
+          File.read ::Rails.root.join(
+            "db",
+            "functions",
+            "#{name}_v#{version}.sql",
+          )
         end
       end
     end

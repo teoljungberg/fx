@@ -4,14 +4,14 @@ require "fx/active_record/schema/statements"
 describe Fx::ActiveRecord::Schema::Statements, :db do
   describe "#create_function" do
     it "creates a function from a file" do
-      function = <<~EOS
+      definition = <<~EOS
         CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
         BEGIN
             RETURN 'test';
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      with_function_definition("test", function) do
+      with_function_definition(name: "test", definition: definition) do
         connection.create_function(:test)
         result = connection.execute("SELECT test() as result")
 
@@ -19,18 +19,38 @@ describe Fx::ActiveRecord::Schema::Statements, :db do
         expect(functions).to include "test"
       end
     end
-  end
 
-  describe "#drop_function" do
-    it "drops the function" do
-      function = <<~EOS
+    it "allows creating a function with a specific version" do
+      definition = <<~EOS
         CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
         BEGIN
             RETURN 'test';
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      with_function_definition("test", function) do
+      with_function_definition(
+        name: "test",
+        version: 2,
+        definition: definition
+      ) do
+        connection.create_function(:test, 2)
+        result = connection.execute("SELECT test() as result")
+
+        expect(result).to include "result" => "test"
+      end
+    end
+  end
+
+  describe "#drop_function" do
+    it "drops the function" do
+      definition = <<~EOS
+        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+        BEGIN
+            RETURN 'test';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+      with_function_definition(name: "test", definition: definition) do
         connection.create_function(:test)
 
         connection.drop_function(:test)
@@ -42,11 +62,11 @@ describe Fx::ActiveRecord::Schema::Statements, :db do
     end
   end
 
-  def with_function_definition(name, definition)
+  def with_function_definition(name:, definition:, version: 1)
     filename = ::Rails.root.join(
       "db",
       "functions",
-      "#{name}.sql",
+      "#{name}_v#{version}.sql",
     )
     File.open(filename, "w") { |f| f.write(definition) }
     yield
