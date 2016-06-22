@@ -33,7 +33,7 @@ describe Fx::ActiveRecord::Schema::Statements, :db do
         version: 2,
         definition: definition
       ) do
-        connection.create_function(:test, 2)
+        connection.create_function(:test, version: 2)
         result = connection.execute("SELECT test() as result")
 
         expect(result).to include "result" => "test"
@@ -86,13 +86,18 @@ describe Fx::ActiveRecord::Schema::Statements, :db do
           version: 2,
           definition: definition_two,
         ) do
-          connection.update_function(:test, 2)
+          connection.update_function(:test, version: 2)
 
           result = connection.execute("SELECT test() as result")
 
           expect(result).to include "result" => "bar"
         end
       end
+    end
+
+    it "raises an error if not supplied a version" do
+      expect { connection.update_function(:test) }.
+        to raise_error(ArgumentError, /version is required/)
     end
   end
 
