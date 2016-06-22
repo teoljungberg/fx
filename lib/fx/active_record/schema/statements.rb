@@ -8,7 +8,7 @@ module Fx
           execute function(name, version)
         end
 
-        def drop_function(name)
+        def drop_function(name, revert_to_version: nil)
           execute "DROP FUNCTION #{name}();"
         end
 
