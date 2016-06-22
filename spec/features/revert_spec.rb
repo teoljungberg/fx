@@ -45,4 +45,25 @@ describe "Reverting migrations" do
         /`create_function` is reversible only if given a `revert_to_version`/,
       )
   end
+
+  it "can run reversible migrations for updating functions" do
+    connection.create_function(:test)
+
+    definition = <<~EOS
+      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      BEGIN
+        RETURN 'bar';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    with_function_definition(name: :test, version: 2, definition: definition) do
+      migration = Class.new(ActiveRecord::Migration) do
+        def change
+          update_function :test, version: 2, revert_to_version: 1
+        end
+      end
+
+      expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+    end
+  end
 end

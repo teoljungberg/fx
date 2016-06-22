@@ -12,7 +12,7 @@ module Fx
           execute "DROP FUNCTION #{name}();"
         end
 
-        def update_function(name, version: nil)
+        def update_function(name, version: nil, revert_to_version: nil)
           if version.nil?
             raise ArgumentError, "version is required"
           end
