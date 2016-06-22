@@ -6,8 +6,6 @@ namespace :dummy do
   Dummy::Application.load_tasks
 end
 
-RSpec::Core::RakeTask.new(:spec) do
-  `cd spec/dummy && rake db:drop db:create`
-end
+RSpec::Core::RakeTask.new(:spec)
 
 task default: :spec
