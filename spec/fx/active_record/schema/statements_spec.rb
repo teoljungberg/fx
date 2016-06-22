@@ -62,6 +62,40 @@ describe Fx::ActiveRecord::Schema::Statements, :db do
     end
   end
 
+  describe "#update_function" do
+    it "updates the function" do
+      definition_one = <<~EOS
+        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+        BEGIN
+            RETURN 'foo';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+      definition_two = <<~EOS
+        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+        BEGIN
+            RETURN 'bar';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+      with_function_definition(name: "test", definition: definition_one) do
+        connection.create_function(:test)
+
+        with_function_definition(
+          name: "test",
+          version: 2,
+          definition: definition_two,
+        ) do
+          connection.update_function(:test, 2)
+
+          result = connection.execute("SELECT test() as result")
+
+          expect(result).to include "result" => "bar"
+        end
+      end
+    end
+  end
+
   def with_function_definition(name:, definition:, version: 1)
     filename = ::Rails.root.join(
       "db",

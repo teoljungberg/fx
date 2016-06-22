@@ -12,6 +12,11 @@ module Fx
           execute "DROP FUNCTION #{name}();"
         end
 
+        def update_function(name, version)
+          drop_function(name)
+          create_function(name, version)
+        end
+
         private
 
         def function(name, version)
