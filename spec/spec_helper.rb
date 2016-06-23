@@ -14,7 +14,8 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
-  if defined? ActiveSupport::Testing::Stream
+  unless defined?(silence_stream)
+    require "active_support/testing/stream"
     config.include ActiveSupport::Testing::Stream
   end
 end
