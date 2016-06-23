@@ -39,6 +39,16 @@ describe Fx::Schema::Statements, :db do
         expect(result).to include "result" => "test"
       end
     end
+
+    it "raises an error if both arguments are nil" do
+      expect {
+        connection.create_function(
+          :whatever,
+          version: nil,
+          sql_definition: nil,
+        )
+      }.to raise_error ArgumentError
+    end
   end
 
   describe "#drop_function" do

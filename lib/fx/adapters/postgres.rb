@@ -15,8 +15,15 @@ module Fx
         EOS
       end
 
-      def self.create_function(name:, version: 1)
-        function(name: name, version: version)
+      def self.create_function(name:, version: 1, sql_definition: nil)
+        if version.nil? && sql_definition.nil?
+          raise(
+            ArgumentError,
+            "version or sql_definition must be specified",
+          )
+        end
+
+        sql_definition || function(name: name, version: version)
       end
 
       def self.drop_function(name)

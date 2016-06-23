@@ -3,8 +3,12 @@ require "rails"
 module Fx
   module Schema
     module Statements
-      def create_function(name, version: 1)
-        execute Fx.database.create_function(name: name, version: version)
+      def create_function(name, version: 1, sql_definition: nil)
+        execute Fx.database.create_function(
+          name: name,
+          version: version,
+          sql_definition: sql_definition,
+        )
       end
 
       def drop_function(name, revert_to_version: nil)
