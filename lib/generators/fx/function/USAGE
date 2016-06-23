@@ -1,0 +1,9 @@
+Description:
+  Create a new database function for your application. This will create a new
+  function definition file and the accompanying migration.
+
+Examples:
+    rails generate fx:function test
+
+      create: db/functions/test.sql
+      create: db/migrate/[TIMESTAMP]_create_test.rb
