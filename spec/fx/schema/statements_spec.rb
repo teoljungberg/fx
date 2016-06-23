@@ -1,7 +1,7 @@
 require "spec_helper"
-require "fx/active_record/schema/statements"
+require "fx/schema/statements"
 
-describe Fx::ActiveRecord::Schema::Statements, :db do
+describe Fx::Schema::Statements, :db do
   describe "#create_function" do
     it "creates a function from a file" do
       definition = <<~EOS
@@ -106,9 +106,5 @@ describe Fx::ActiveRecord::Schema::Statements, :db do
       execute("SELECT proname FROM pg_proc").
       values.
       flatten
-  end
-
-  def connection
-    @_connection ||= ActiveRecord::Base.connection
   end
 end

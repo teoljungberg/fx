@@ -1,8 +1,8 @@
 require "fx/version"
 require "fx/adapters/postgres"
-require "fx/active_record/schema/statements"
-require "fx/active_record/command_recorder"
-require "fx/active_record/schema_dumper"
+require "fx/schema/statements"
+require "fx/command_recorder"
+require "fx/schema_dumper"
 
 module Fx
   def self.database

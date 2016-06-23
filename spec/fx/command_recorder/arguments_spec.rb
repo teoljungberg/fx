@@ -1,6 +1,6 @@
 require "spec_helper"
 
-module Fx::ActiveRecord::CommandRecorder
+module Fx::CommandRecorder
   describe Arguments do
     describe "#function" do
       it "returns the function name" do
