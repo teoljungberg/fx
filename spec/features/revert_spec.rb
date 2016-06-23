@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe "Reverting migrations" do
   around do |example|
-    definition = <<~EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    with_function_definition(name: :test, definition: definition) do
+    with_function_definition(name: :test, sql_definition: sql_definition) do
       example.run
     end
   end
@@ -49,14 +49,18 @@ describe "Reverting migrations" do
   it "can run reversible migrations for updating functions" do
     connection.create_function(:test)
 
-    definition = <<~EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
       BEGIN
         RETURN 'bar';
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    with_function_definition(name: :test, version: 2, definition: definition) do
+    with_function_definition(
+      name: :test,
+      version: 2,
+      sql_definition: sql_definition,
+    ) do
       migration = Class.new(ActiveRecord::Migration) do
         def change
           update_function :test, version: 2, revert_to_version: 1

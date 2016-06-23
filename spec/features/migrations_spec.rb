@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe "Migrations" do
   around do |example|
-    definition = <<~EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    with_function_definition(name: :test, definition: definition) do
+    with_function_definition(name: :test, sql_definition: sql_definition) do
       example.run
     end
   end

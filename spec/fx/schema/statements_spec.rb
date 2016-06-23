@@ -4,14 +4,14 @@ require "fx/schema/statements"
 describe Fx::Schema::Statements, :db do
   describe "#create_function" do
     it "creates a function from a file" do
-      definition = <<~EOS
+      sql_definition = <<~EOS
         CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
         BEGIN
             RETURN 'test';
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      with_function_definition(name: "test", definition: definition) do
+      with_function_definition(name: "test", sql_definition: sql_definition) do
         connection.create_function(:test)
         result = connection.execute("SELECT test() as result")
 
@@ -21,7 +21,7 @@ describe Fx::Schema::Statements, :db do
     end
 
     it "allows creating a function with a specific version" do
-      definition = <<~EOS
+      sql_definition = <<~EOS
         CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
         BEGIN
             RETURN 'test';
@@ -31,7 +31,7 @@ describe Fx::Schema::Statements, :db do
       with_function_definition(
         name: "test",
         version: 2,
-        definition: definition
+        sql_definition: sql_definition,
       ) do
         connection.create_function(:test, version: 2)
         result = connection.execute("SELECT test() as result")
@@ -53,14 +53,14 @@ describe Fx::Schema::Statements, :db do
 
   describe "#drop_function" do
     it "drops the function" do
-      definition = <<~EOS
+      sql_definition = <<~EOS
         CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
         BEGIN
             RETURN 'test';
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      with_function_definition(name: "test", definition: definition) do
+      with_function_definition(name: "test", sql_definition: sql_definition) do
         connection.create_function(:test)
 
         connection.drop_function(:test)
@@ -88,13 +88,13 @@ describe Fx::Schema::Statements, :db do
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      with_function_definition(name: "test", definition: definition_one) do
+      with_function_definition(name: "test", sql_definition: definition_one) do
         connection.create_function(:test)
 
         with_function_definition(
           name: "test",
           version: 2,
-          definition: definition_two,
+          sql_definition: definition_two,
         ) do
           connection.update_function(:test, version: 2)
 

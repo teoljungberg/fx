@@ -33,11 +33,7 @@ module Fx
       private
 
       def self.function(name:, version:)
-        File.read ::Rails.root.join(
-          "db",
-          "functions",
-          "#{name}_v#{version}.sql",
-        )
+        Fx::Definition.new(name, version).to_sql
       end
       private_class_method :function
     end

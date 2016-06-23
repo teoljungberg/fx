@@ -1,0 +1,44 @@
+require "spec_helper"
+
+describe Fx::Definition do
+  describe "#to_sql" do
+    it "returns the content of a function definition" do
+      sql_definition = "SELECT text 'Hi' as greeting"
+      allow(File).to receive(:read).and_return(sql_definition)
+
+      definition = Fx::Definition.new("searches", 1)
+
+      expect(definition.to_sql).to eq sql_definition
+    end
+  end
+
+  describe "#path" do
+    it "returns a sql file with padded version and function name" do
+      definition = Fx::Definition.new("test", 1)
+
+      expect(definition.path).to eq "db/functions/test_v01.sql"
+    end
+  end
+
+  describe "#full_path" do
+    it "joins the path with Rails.root" do
+      definition = Fx::Definition.new("test", 15)
+
+      expect(definition.full_path).to eq Rails.root.join(definition.path)
+    end
+  end
+
+  describe "#version" do
+    it "pads the version number with 0" do
+      definition = Fx::Definition.new(:_, 1)
+
+      expect(definition.version).to eq "01"
+    end
+
+    it "does not pad more than 2 characters" do
+      definition = Fx::Definition.new(:_, 15)
+
+      expect(definition.version).to eq "15"
+    end
+  end
+end
