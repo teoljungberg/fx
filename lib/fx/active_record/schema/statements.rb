@@ -5,11 +5,11 @@ module Fx
     module Schema
       module Statements
         def create_function(name, version: 1)
-          execute function(name: name, version: version)
+          execute Fx.database.create_function(name: name, version: version)
         end
 
         def drop_function(name, revert_to_version: nil)
-          execute "DROP FUNCTION #{name}();"
+          execute Fx.database.drop_function(name)
         end
 
         def update_function(name, version: nil, revert_to_version: nil)
@@ -19,16 +19,6 @@ module Fx
 
           drop_function(name)
           create_function(name, version: version)
-        end
-
-        private
-
-        def function(name:, version:)
-          File.read ::Rails.root.join(
-            "db",
-            "functions",
-            "#{name}_v#{version}.sql",
-          )
         end
       end
     end
