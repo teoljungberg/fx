@@ -3,24 +3,73 @@ require "rails/generators/active_record"
 
 module Fx
   module Generators
-    class FunctionGenerator < Rails::Generators::Base
+    class FunctionGenerator < Rails::Generators::NamedBase
+      FUNCTION_DEFINITION_PATH = Rails.root.join(*["db", "functions"])
       include Rails::Generators::Migration
       source_root File.expand_path("../templates", __FILE__)
-      argument :function_name, type: :string
 
       def create_function_definition
-        create_file "db/functions/#{function_name}_v1.sql"
+        create_file definition.path
       end
 
       def create_migration_file
-        migration_template(
-          "db/migrate/create_function.erb",
-          "db/migrate/create_#{function_name}.rb"
-        )
+        if updating_existing_function?
+          migration_template(
+            "db/migrate/update_function.erb",
+            "db/migrate/update_#{file_name}_to_version_#{version}.rb"
+          )
+        else
+          migration_template(
+            "db/migrate/create_function.erb",
+            "db/migrate/create_#{file_name}.rb"
+          )
+        end
       end
 
       def self.next_migration_number(dir)
         ::ActiveRecord::Generators::Base.next_migration_number(dir)
+      end
+
+      no_tasks do
+        def previous_version
+          @_previous_version ||= Dir.entries(FUNCTION_DEFINITION_PATH).
+            map { |name| version_regex.match(name).try(:[], "version").to_i }.
+            max
+        end
+
+        def version
+          @_version ||= previous_version.next
+        end
+
+        def migration_class_name
+          if updating_existing_function?
+            "Update#{class_name}ToVersion#{version}"
+          else
+            super
+          end
+        end
+
+        def formatted_name
+          if singular_name.include?(".")
+            "\"#{singular_name}\""
+          else
+            ":#{singular_name}"
+          end
+        end
+      end
+
+      private
+
+      def version_regex
+        /\A#{file_name}_v(?<version>\d+)\.sql\z/
+      end
+
+      def updating_existing_function?
+        previous_version > 0
+      end
+
+      def definition
+        Fx::Definition.new(file_name, version)
       end
     end
   end
