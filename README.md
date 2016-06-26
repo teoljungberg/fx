@@ -18,65 +18,67 @@ F(x) ships with support for PostgreSQL. The adapter is configurable (see
 `Fx::Configuration`) and has a minimal interface (see
 `Fx::Adapters::Postgres`) that other gems can provide.
 
-## Great, how do I create a function?
+## Great, how do I create a trigger and a function?
 
-You've got this great idea for a function you'd like to call `assert`. You can
-create the migration and the corresponding definition file with the following
-command:
+You've got this great idea for a trigger you'd like to call
+`uppercase_users_name`. You can create the migration and the corresponding
+definition file with the following command:
 
 ```sh
-$ rails generate fx:function assert
-      create  db/functions/assert_results_v01.sql
-      create  db/migrate/[TIMESTAMP]_create_assert.rb
+% rails generate fx:trigger uppercase_users_name
+      create  db/triggers/uppercase_users_name_v01.sql
+      create  db/migrate/[TIMESTAMP]_create_trigger_uppercase_users_name.rb
 ```
 
-Edit the `db/functions/assert_v01.sql` file with the SQL statement that
-defines your function. In our example, this might look something like this:
+Edit the `db/triggers/uppercase_users_name_v01.sql` file with the SQL statement
+that defines your trigger. In our example, this might look something like this:
 
 ```sql
-CREATE OR REPLACE FUNCTION assert(a text, b text) RETURNS boolean
-AS $$
-BEGIN
-    IF (a = b) THEN
-        RETURN true;
-    ELSE
-        RAISE EXCEPTION 'AssertionError';
-    END IF;
-END;
-$$ LANGUAGE plpgsql;
-
+CREATE TRIGGER uppercase_users_name
+    BEFORE INSERT ON users
+    FOR EACH ROW
+    EXECUTE PROCEDURE uppercase_users_name();
 ```
 
-The generated migration will contain a `create_function` statement. The
-migration is reversible and the schema will be dumped into your `schema.rb`
-file.
+As you see, we execute a function called `uppercase_users_name` before each
+`INSERT` on the `users` table, which is a function we don't have yet.
 
 ```sh
-$ rake db:migrate
+% rails generate fx:function uppercase_users_name
+      create  db/functions/uppercase_users_name_v01.sql
+      create  db/migrate/[TIMESTAMP]_create_function_uppercase_users_name.rb
 ```
 
-## Cool, but what if I need to change the function?
+The generated migrations contains `create_function` and `create_trigger`
+statements. The migration is reversible and the schema will be dumped into your
+`schema.rb` file.
+
+```sh
+% rake db:migrate
+```
+
+## Cool, but what if I need to change a trigger or function?
 
 Here's where F(x) really shines. Run that same function generator once more:
 
 ```sh
-$ rails generate fx:function assert
-      create  db/functions/assert_v02.sql
-      create  db/migrate/[TIMESTAMP]_update_assert_to_version_2.rb
+% rails generate fx:function uppercase_users_name
+      create  db/functions/uppercase_users_name_v02.sql
+      create  db/migrate/[TIMESTAMP]_update_function_uppercase_users_name_to_version_2.rb
 ```
 
-F(x) detected that we already had an existing `assert` function at version 1,
-created a copy of that definition as version 2, and created a migration to
-update to the version 2 schema. All that's left for you to do is tweak the
-schema in the new definition and run the `update_function` migration.
+F(x) detected that we already had an existing `uppercase_users_name` function at
+version 1, created a copy of that definition as version 2, and created a
+migration to update to the version 2 schema. All that's left for you to do is
+tweak the schema in the new definition and run the `update_function` migration.
 
-## I don't need this function anymore. Make it go away.
+## I don't need this trigger or function anymore. Make it go away.
 
-Scenic gives you `drop_function` too:
+Scenic gives you `drop_trigger` and `drop_function` too:
 
 ```ruby
 def change
-  drop_function :assert, revert_to_version: 2
+  drop_function :uppercase_users_name, revert_to_version: 2
 end
 ```
 

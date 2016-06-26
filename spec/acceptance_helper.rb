@@ -30,4 +30,32 @@ RSpec.configure do |config|
       CMD
     end
   end
+
+  def successfully(command)
+    `RAILS_ENV=test #{command}`
+    expect($?.exitstatus).to eq(0), "'#{command}' was unsuccessful"
+  end
+
+  def write_function_definition(file, contents)
+    write_definition(file, contents, "functions")
+  end
+
+  def write_trigger_definition(file, contents)
+    write_definition(file, contents, "triggers")
+  end
+
+  def write_definition(file, contents, directory)
+    File.open("db/#{directory}/#{file}.sql", File::WRONLY) do |definition|
+      definition.truncate(0)
+      definition.write(contents)
+    end
+  end
+
+  def verify_identical_definitions(def_a, def_b)
+    successfully "cmp #{def_a} #{def_b}"
+  end
+
+  def execute(command)
+    ActiveRecord::Base.connection.execute(command).first
+  end
 end

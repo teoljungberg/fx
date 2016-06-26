@@ -5,6 +5,7 @@ require "fx/command_recorder"
 require "fx/definition"
 require "fx/function"
 require "fx/schema_dumper"
+require "fx/trigger"
 
 module Fx
   def self.database

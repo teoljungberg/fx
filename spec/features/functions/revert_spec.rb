@@ -9,7 +9,7 @@ describe "Reverting migrations", :db do
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    with_definition(name: :test, sql_definition: sql_definition) do
+    with_function_definition(name: :test, sql_definition: sql_definition) do
       example.run
     end
   end
@@ -56,7 +56,11 @@ describe "Reverting migrations", :db do
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    with_definition(name: :test, version: 2, sql_definition: sql_definition) do
+    with_function_definition(
+      name: :test,
+      version: 2,
+      sql_definition: sql_definition,
+    ) do
       migration = Class.new(ActiveRecord::Migration) do
         def change
           update_function :test, version: 2, revert_to_version: 1

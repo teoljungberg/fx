@@ -1,9 +1,11 @@
 require "fx/command_recorder/arguments"
 require "fx/command_recorder/function"
+require "fx/command_recorder/trigger"
 
 module Fx
   module CommandRecorder
     include Function
+    include Trigger
 
     private
 

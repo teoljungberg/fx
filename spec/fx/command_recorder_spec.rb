@@ -87,4 +87,91 @@ describe Fx::CommandRecorder, :db do
         to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
+
+  describe "#create_trigger" do
+    it "records the created view" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+
+      recorder.create_trigger :greetings
+
+      expect(recorder.commands).to eq [
+        [:create_trigger, [:greetings], nil],
+      ]
+    end
+
+    it "reverts to drop_trigger" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+
+      recorder.create_trigger :greetings
+
+      expect(recorder.commands).to eq [
+        [:create_trigger, [:greetings], nil],
+      ]
+    end
+
+    it "reverts to drop_trigger" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+
+      recorder.revert { recorder.create_trigger :greetings }
+
+      expect(recorder.commands).to eq [[:drop_trigger, [:greetings]]]
+    end
+  end
+
+  describe "#drop_trigger" do
+    it "records the dropped view" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+
+      recorder.drop_trigger :users
+
+      expect(recorder.commands).to eq [[:drop_trigger, [:users], nil]]
+    end
+
+    it "reverts to create_trigger with specified revert_to_version" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:users, { revert_to_version: 3 }]
+      revert_args = [:users, { version: 3 }]
+
+      recorder.revert { recorder.drop_trigger(*args) }
+
+      expect(recorder.commands).to eq [[:create_trigger, revert_args]]
+    end
+
+    it "raises when reverting without revert_to_version set" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:users, { another_argument: 1 }]
+
+      expect { recorder.revert { recorder.drop_trigger(*args) } }.
+        to raise_error(ActiveRecord::IrreversibleMigration)
+    end
+  end
+
+  describe "#update_trigger" do
+    it "records the updated view" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:users, { version: 2 }]
+
+      recorder.update_trigger(*args)
+
+      expect(recorder.commands).to eq [[:update_trigger, args, nil]]
+    end
+
+    it "reverts to update_trigger with the specified revert_to_version" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:users, { version: 2, revert_to_version: 1 }]
+      revert_args = [:users, { version: 1 }]
+
+      recorder.revert { recorder.update_trigger(*args) }
+
+      expect(recorder.commands).to eq [[:update_trigger, revert_args]]
+    end
+
+    it "raises when reverting without revert_to_version set" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:users, { version: 42, another_argument: 1 }]
+
+      expect { recorder.revert { recorder.update_trigger(*args) } }.
+        to raise_error(ActiveRecord::IrreversibleMigration)
+    end
+  end
 end

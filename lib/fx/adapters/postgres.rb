@@ -14,18 +14,37 @@ module Fx
             AND pn.nspname NOT LIKE 'pg_%'
             AND pn.nspname <> 'information_schema'
       SQL
+      TRIGGERS_WITH_DEFINITIONS_QUERY = <<~SQL
+        SELECT
+            pt.tgname AS name,
+            pg_get_triggerdef(pt.oid) AS definition
+        FROM pg_trigger pt
+      SQL
 
       def self.functions
         execute(FUNCTIONS_WITH_DEFINITIONS_QUERY).
           map { |result| Fx::Function.new(result) }
       end
 
+      def self.triggers
+        execute(TRIGGERS_WITH_DEFINITIONS_QUERY).
+          map { |result| Fx::Trigger.new(result) }
+      end
+
       def self.create_function(sql_definition)
+        execute sql_definition
+      end
+
+      def self.create_trigger(sql_definition)
         execute sql_definition
       end
 
       def self.drop_function(name)
         execute "DROP FUNCTION #{name}();"
+      end
+
+      def self.drop_trigger(name, on:)
+        execute "DROP TRIGGER #{name} ON #{on};"
       end
 
       private

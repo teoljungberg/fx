@@ -1,0 +1,18 @@
+Description:
+  Create a new database trigger for your application. This will create a new
+  trigger definition file and the accompanying migration.
+
+  If a trigger of the given name already exists, create a new version of the
+  trigger and a migration to replace the old version with the new.
+
+Examples:
+
+    rails generate fx:trigger test
+
+      create: db/triggers/test_v01.sql
+      create: db/migrate/[TIMESTAMP]_create_trigger_test.rb
+
+    rails generate fx:trigger test
+
+      create: db/triggers/test_v02.sql
+      create: db/migrate/[TIMESTAMP]_update_trigger_test_to_version_2.rb

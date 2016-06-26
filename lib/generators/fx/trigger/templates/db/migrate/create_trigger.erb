@@ -1,0 +1,5 @@
+class <%= migration_class_name %> < ActiveRecord::Migration
+  def change
+    create_trigger <%= formatted_name %>, on: <%= formatted_table_name %>
+  end
+end
