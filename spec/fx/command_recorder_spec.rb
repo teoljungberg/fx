@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Fx::CommandRecorder do
+describe Fx::CommandRecorder, :db do
   describe "#create_function" do
     it "records the created function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new

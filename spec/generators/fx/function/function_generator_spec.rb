@@ -1,7 +1,7 @@
 require "spec_helper"
 require "generators/fx/function/function_generator"
 
-describe Fx::Generators::FunctionGenerator, :generator do
+describe Fx::Generators::FunctionGenerator, :db, :generator do
   it "creates a function definition file, and a migration" do
     run_generator ["test"]
 

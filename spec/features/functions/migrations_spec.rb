@@ -9,7 +9,7 @@ describe "Migrations" do
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    with_function_definition(name: :test, sql_definition: sql_definition) do
+    with_definition(name: :test, sql_definition: sql_definition) do
       example.run
     end
   end

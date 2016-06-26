@@ -1,5 +1,5 @@
-module FunctionDefinitionHelpers
-  def with_function_definition(name:, sql_definition:, version: 1)
+module DefinitionHelpers
+  def with_definition(name:, sql_definition:, version: 1)
     definition = Fx::Definition.new(name, version)
     File.open(definition.full_path, "w") { |f| f.write(sql_definition) }
     yield
@@ -9,5 +9,5 @@ module FunctionDefinitionHelpers
 end
 
 RSpec.configure do |config|
-  config.include FunctionDefinitionHelpers
+  config.include DefinitionHelpers
 end

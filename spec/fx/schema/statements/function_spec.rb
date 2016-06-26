@@ -1,7 +1,7 @@
 require "spec_helper"
-require "fx/schema/statements"
+require "fx/schema/statements/function"
 
-describe Fx::Schema::Statements, :db do
+describe Fx::Schema::Statements::Function, :db do
   describe "#create_function" do
     it "creates a function from a file" do
       database = stubbed_database
