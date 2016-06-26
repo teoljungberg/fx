@@ -4,40 +4,23 @@ require "fx/schema/statements"
 describe Fx::Schema::Statements, :db do
   describe "#create_function" do
     it "creates a function from a file" do
-      sql_definition = <<~EOS
-        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
-        BEGIN
-            RETURN 'test';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      with_function_definition(name: "test", sql_definition: sql_definition) do
-        connection.create_function(:test)
-        result = connection.execute("SELECT test() as result")
+      database = stubbed_database
+      definition = stubbed_definition
 
-        expect(result).to include "result" => "test"
-        expect(functions).to include "test"
-      end
+      connection.create_function(:test)
+
+      expect(database).to have_received(:create_function).with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new).with(:test, 1)
     end
 
     it "allows creating a function with a specific version" do
-      sql_definition = <<~EOS
-        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
-        BEGIN
-            RETURN 'test';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      with_function_definition(
-        name: "test",
-        version: 2,
-        sql_definition: sql_definition,
-      ) do
-        connection.create_function(:test, version: 2)
-        result = connection.execute("SELECT test() as result")
+      database = stubbed_database
+      definition = stubbed_definition
 
-        expect(result).to include "result" => "test"
-      end
+      connection.create_function(:test, version: 2)
+
+      expect(database).to have_received(:create_function).with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new).with(:test, 2)
     end
 
     it "raises an error if both arguments are nil" do
@@ -53,56 +36,25 @@ describe Fx::Schema::Statements, :db do
 
   describe "#drop_function" do
     it "drops the function" do
-      sql_definition = <<~EOS
-        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
-        BEGIN
-            RETURN 'test';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      with_function_definition(name: "test", sql_definition: sql_definition) do
-        connection.create_function(:test)
+      database = stubbed_database
 
-        connection.drop_function(:test)
+      connection.drop_function(:test)
 
-        expect(functions).not_to include "test"
-        expect { connection.execute("SELECT test() as result") }.
-          to raise_exception(ActiveRecord::StatementInvalid, /does not exist/)
-      end
+      expect(database).to have_received(:drop_function).with(:test)
     end
   end
 
   describe "#update_function" do
     it "updates the function" do
-      definition_one = <<~EOS
-        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
-        BEGIN
-            RETURN 'foo';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      definition_two = <<~EOS
-        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
-        BEGIN
-            RETURN 'bar';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      with_function_definition(name: "test", sql_definition: definition_one) do
-        connection.create_function(:test)
+      database = stubbed_database
+      definition = stubbed_definition
 
-        with_function_definition(
-          name: "test",
-          version: 2,
-          sql_definition: definition_two,
-        ) do
-          connection.update_function(:test, version: 2)
+      connection.update_function(:test, version: 3)
 
-          result = connection.execute("SELECT test() as result")
-
-          expect(result).to include "result" => "bar"
-        end
-      end
+      expect(database).to have_received(:drop_function).with(:test)
+      expect(database).to have_received(:create_function).
+        with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new).with(:test, 3)
     end
 
     it "raises an error if not supplied a version" do
@@ -111,10 +63,15 @@ describe Fx::Schema::Statements, :db do
     end
   end
 
-  def functions
-    connection.
-      execute("SELECT proname FROM pg_proc").
-      values.
-      flatten
+  def stubbed_database
+    instance_spy("StubbedDatabase").tap do |stubbed_database|
+      allow(Fx).to receive(:database).and_return(stubbed_database)
+    end
+  end
+
+  def stubbed_definition
+    instance_double("Fx::Definition", to_sql: "foo").tap do |stubbed_definition|
+      allow(Fx::Definition).to receive(:new).and_return(stubbed_definition)
+    end
   end
 end
