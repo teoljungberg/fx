@@ -3,12 +3,25 @@ require "spec_helper"
 describe Fx::Definition do
   describe "#to_sql" do
     it "returns the content of a function definition" do
-      sql_definition = "SELECT text 'Hi' as greeting"
+      sql_definition = <<~EOS
+        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+        BEGIN
+            RETURN 'test';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
       allow(File).to receive(:read).and_return(sql_definition)
 
-      definition = Fx::Definition.new("searches", 1)
+      definition = Fx::Definition.new("test", 1)
 
       expect(definition.to_sql).to eq sql_definition
+    end
+
+    it "raises an error if the file is empty" do
+      allow(File).to receive(:read).and_return("")
+
+      expect { Fx::Definition.new("test", 1).to_sql }.
+        to raise_error RuntimeError
     end
   end
 

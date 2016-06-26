@@ -6,7 +6,11 @@ module Fx
     end
 
     def to_sql
-      File.read(full_path)
+      File.read(full_path).tap do |content|
+        if content.empty?
+          raise "Define function in #{path} before migrating."
+        end
+      end
     end
 
     def full_path
