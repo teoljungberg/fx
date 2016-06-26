@@ -12,6 +12,10 @@ module Fx
         create_file definition.path
       end
 
+      def create_functions_directory
+        empty_directory(FUNCTION_DEFINITION_PATH)
+      end
+
       def create_migration_file
         if updating_existing_function?
           migration_template(
