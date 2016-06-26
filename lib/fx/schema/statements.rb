@@ -4,15 +4,20 @@ module Fx
   module Schema
     module Statements
       def create_function(name, version: 1, sql_definition: nil)
-        execute Fx.database.create_function(
-          name: name,
-          version: version,
-          sql_definition: sql_definition,
-        )
+        if version.nil? && sql_definition.nil?
+          raise(
+            ArgumentError,
+            "version or sql_definition must be specified",
+          )
+        end
+        sql_definition = sql_definition ||
+          definition(name: name, version: version)
+
+        Fx.database.create_function(sql_definition)
       end
 
       def drop_function(name, revert_to_version: nil)
-        execute Fx.database.drop_function(name)
+        Fx.database.drop_function(name)
       end
 
       def update_function(name, version: nil, revert_to_version: nil)
@@ -22,6 +27,12 @@ module Fx
 
         drop_function(name)
         create_function(name, version: version)
+      end
+
+      private
+
+      def definition(name:, version:)
+        Fx::Definition.new(name, version).to_sql
       end
     end
   end
