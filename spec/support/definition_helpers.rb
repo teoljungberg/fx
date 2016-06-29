@@ -1,6 +1,6 @@
 module DefinitionHelpers
   def with_definition(name:, sql_definition:, version: 1)
-    definition = Fx::Definition.new(name, version)
+    definition = Fx::Definition.new(name: name, version: version)
     FileUtils.mkdir_p(File.dirname(definition.full_path))
     File.open(definition.full_path, "w") { |f| f.write(sql_definition) }
     yield

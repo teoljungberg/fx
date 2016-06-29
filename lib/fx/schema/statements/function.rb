@@ -32,8 +32,8 @@ module Fx
 
         private
 
-        def definition(name:, version:)
-          Fx::Definition.new(name, version).to_sql
+        def definition(*args)
+          Fx::Definition.new(*args).to_sql
         end
       end
     end

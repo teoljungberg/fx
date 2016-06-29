@@ -1,6 +1,6 @@
 module Fx
   class Definition
-    def initialize(name, version)
+    def initialize(name:, version:)
       @name = name
       @version = version.to_i
     end

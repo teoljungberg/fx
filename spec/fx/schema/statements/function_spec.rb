@@ -10,7 +10,8 @@ describe Fx::Schema::Statements::Function, :db do
       connection.create_function(:test)
 
       expect(database).to have_received(:create_function).with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).with(:test, 1)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 1)
     end
 
     it "allows creating a function with a specific version" do
@@ -20,7 +21,8 @@ describe Fx::Schema::Statements::Function, :db do
       connection.create_function(:test, version: 2)
 
       expect(database).to have_received(:create_function).with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).with(:test, 2)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 2)
     end
 
     it "raises an error if both arguments are nil" do
@@ -54,7 +56,8 @@ describe Fx::Schema::Statements::Function, :db do
       expect(database).to have_received(:drop_function).with(:test)
       expect(database).to have_received(:create_function).
         with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).with(:test, 3)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 3)
     end
 
     it "raises an error if not supplied a version" do

@@ -12,7 +12,7 @@ describe Fx::Definition do
       EOS
       allow(File).to receive(:read).and_return(sql_definition)
 
-      definition = Fx::Definition.new("test", 1)
+      definition = Fx::Definition.new(name: "test", version: 1)
 
       expect(definition.to_sql).to eq sql_definition
     end
@@ -20,14 +20,14 @@ describe Fx::Definition do
     it "raises an error if the file is empty" do
       allow(File).to receive(:read).and_return("")
 
-      expect { Fx::Definition.new("test", 1).to_sql }.
+      expect { Fx::Definition.new(name: "test", version: 1).to_sql }.
         to raise_error RuntimeError
     end
   end
 
   describe "#path" do
     it "returns a sql file with padded version and function name" do
-      definition = Fx::Definition.new("test", 1)
+      definition = Fx::Definition.new(name: "test", version: 1)
 
       expect(definition.path).to eq "db/functions/test_v01.sql"
     end
@@ -35,7 +35,7 @@ describe Fx::Definition do
 
   describe "#full_path" do
     it "joins the path with Rails.root" do
-      definition = Fx::Definition.new("test", 15)
+      definition = Fx::Definition.new(name: "test", version: 15)
 
       expect(definition.full_path).to eq Rails.root.join(definition.path)
     end
@@ -43,13 +43,13 @@ describe Fx::Definition do
 
   describe "#version" do
     it "pads the version number with 0" do
-      definition = Fx::Definition.new(:_, 1)
+      definition = Fx::Definition.new(name: :_, version: 1)
 
       expect(definition.version).to eq "01"
     end
 
     it "does not pad more than 2 characters" do
-      definition = Fx::Definition.new(:_, 15)
+      definition = Fx::Definition.new(name: :_, version: 15)
 
       expect(definition.version).to eq "15"
     end

@@ -78,7 +78,7 @@ module Fx
       end
 
       def definition
-        Fx::Definition.new(file_name, version)
+        Fx::Definition.new(name: file_name, version: version)
       end
     end
   end
