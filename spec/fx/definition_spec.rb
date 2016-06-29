@@ -2,34 +2,87 @@ require "spec_helper"
 
 describe Fx::Definition do
   describe "#to_sql" do
-    it "returns the content of a function definition" do
-      sql_definition = <<~EOS
-        CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
-        BEGIN
-            RETURN 'test';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      allow(File).to receive(:read).and_return(sql_definition)
+    context "representing a function definition" do
+      it "returns the content of a function definition" do
+        sql_definition = <<~EOS
+          CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+          BEGIN
+              RETURN 'test';
+          END;
+          $$ LANGUAGE plpgsql;
+        EOS
+        allow(File).to receive(:read).and_return(sql_definition)
 
-      definition = Fx::Definition.new(name: "test", version: 1)
+        definition = Fx::Definition.new(name: "test", version: 1)
 
-      expect(definition.to_sql).to eq sql_definition
+        expect(definition.to_sql).to eq sql_definition
+      end
+
+      it "raises an error if the file is empty" do
+        allow(File).to receive(:read).and_return("")
+        definition = Fx::Definition.new(name: "test", version: 1)
+
+        expect { definition.to_sql }.to raise_error(
+          RuntimeError,
+          %r(Define function in db/functions/test_v01.sql before migrating),
+        )
+      end
     end
 
-    it "raises an error if the file is empty" do
-      allow(File).to receive(:read).and_return("")
+    context "representing a trigger definition" do
+      it "returns the content of a trigger definition" do
+        sql_definition = <<~EOS
+          CREATE TRIGGER check_update
+          BEFORE UPDATE ON accounts
+          FOR EACH ROW
+          EXECUTE PROCEDURE check_account_update();
+        EOS
+        allow(File).to receive(:read).and_return(sql_definition)
 
-      expect { Fx::Definition.new(name: "test", version: 1).to_sql }.
-        to raise_error RuntimeError
+        definition = Fx::Definition.new(
+          name: "test",
+          version: 1,
+          type: "trigger",
+        )
+
+        expect(definition.to_sql).to eq sql_definition
+      end
+
+      it "raises an error if the file is empty" do
+        allow(File).to receive(:read).and_return("")
+        definition = Fx::Definition.new(
+          name: "test",
+          version: 1,
+          type: "trigger",
+        )
+
+        expect { definition.to_sql }.to raise_error(
+          RuntimeError,
+          %r(Define trigger in db/triggers/test_v01.sql before migrating),
+        )
+      end
     end
   end
 
   describe "#path" do
-    it "returns a sql file with padded version and function name" do
-      definition = Fx::Definition.new(name: "test", version: 1)
+    context "representing a function definition" do
+      it "returns a sql file with padded version and function name" do
+        definition = Fx::Definition.new(name: "test", version: 1)
 
-      expect(definition.path).to eq "db/functions/test_v01.sql"
+        expect(definition.path).to eq "db/functions/test_v01.sql"
+      end
+    end
+
+    context "representing a trigger definition" do
+      it "returns a sql file with padded version and trigger name" do
+        definition = Fx::Definition.new(
+          name: "test",
+          version: 1,
+          type: "trigger",
+        )
+
+        expect(definition.path).to eq "db/triggers/test_v01.sql"
+      end
     end
   end
 

@@ -1,14 +1,15 @@
 module Fx
   class Definition
-    def initialize(name:, version:)
+    def initialize(name:, version:, type: "function")
       @name = name
       @version = version.to_i
+      @type = type
     end
 
     def to_sql
       File.read(full_path).tap do |content|
         if content.empty?
-          raise "Define function in #{path} before migrating."
+          raise "Define #{@type} in #{path} before migrating."
         end
       end
     end
@@ -18,7 +19,7 @@ module Fx
     end
 
     def path
-      File.join("db", "functions", filename)
+      File.join("db", @type.pluralize, filename)
     end
 
     def version
