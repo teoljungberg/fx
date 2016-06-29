@@ -5,5 +5,5 @@ Description:
 Examples:
     rails generate fx:function test
 
-      create: db/functions/test.sql
+      create: db/functions/test_v01.sql
       create: db/migrate/[TIMESTAMP]_create_test.rb
