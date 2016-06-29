@@ -4,16 +4,17 @@ require "rails/generators/active_record"
 module Fx
   module Generators
     class FunctionGenerator < Rails::Generators::NamedBase
-      FUNCTION_DEFINITION_PATH = Rails.root.join(*["db", "functions"])
       include Rails::Generators::Migration
       source_root File.expand_path("../templates", __FILE__)
 
-      def create_function_definition
-        create_file definition.path
+      def create_functions_directory
+        unless function_definition_path.exist?
+          empty_directory(function_definition_path)
+        end
       end
 
-      def create_functions_directory
-        empty_directory(FUNCTION_DEFINITION_PATH)
+      def create_function_definition
+        create_file definition.path
       end
 
       def create_migration_file
@@ -36,7 +37,7 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(FUNCTION_DEFINITION_PATH).
+          @_previous_version ||= Dir.entries(function_definition_path).
             map { |name| version_regex.match(name).try(:[], "version").to_i }.
             max
         end
@@ -63,6 +64,10 @@ module Fx
       end
 
       private
+
+      def function_definition_path
+        @_function_definition_path ||= Rails.root.join(*%w(db functions))
+      end
 
       def version_regex
         /\A#{file_name}_v(?<version>\d+)\.sql\z/
