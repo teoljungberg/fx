@@ -14,7 +14,7 @@ module Fx
 
     def to_schema
       <<~EOS
-        create_function :#{name}, sql_definition:<<-\SQL
+        create_function :#{name}, sql_definition: <<-\SQL
           #{definition}
         SQL
       EOS
