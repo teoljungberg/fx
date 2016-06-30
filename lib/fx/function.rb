@@ -4,8 +4,8 @@ module Fx
     delegate :<=>, to: :name
 
     def initialize(function_row)
-      @name = function_row.fetch("proname")
-      @definition = function_row.fetch("prosrc")
+      @name = function_row.fetch("name")
+      @definition = function_row.fetch("definition")
     end
 
     def ==(other)

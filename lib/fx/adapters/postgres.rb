@@ -3,13 +3,13 @@ module Fx
     module Postgres
       FUNCTIONS_WITH_DEFINITIONS_QUERY = <<~SQL
         SELECT
-            pp.proname,
-            pp.prosrc
+            pp.proname AS name,
+            pg_get_functiondef(pp.oid) AS definition
         FROM pg_proc pp
         INNER JOIN pg_namespace pn
-            ON (pp.pronamespace = pn.oid)
+            ON (pn.oid = pp.pronamespace)
         INNER JOIN pg_language pl
-            ON (pp.prolang = pl.oid)
+            ON (pl.oid = pp.prolang)
         WHERE pl.lanname NOT IN ('c','internal')
             AND pn.nspname NOT LIKE 'pg_%'
             AND pn.nspname <> 'information_schema'

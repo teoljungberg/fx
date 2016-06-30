@@ -50,12 +50,16 @@ module Fx::Adapters
 
         expect(Postgres.functions).to eq([
           Fx::Function.new(
-            "proname" => "test",
-            "prosrc" => <<~EOS
-
+            "name" => "test",
+            "definition" => <<~EOS
+              CREATE OR REPLACE FUNCTION public.test()
+               RETURNS text
+               LANGUAGE plpgsql
+              AS $function$
               BEGIN
                   RETURN 'test';
               END;
+              $function$
             EOS
           ),
         ])
