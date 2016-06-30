@@ -35,4 +35,26 @@ describe "Migrations" do
 
     expect { run_migration(migration, :up) }.not_to raise_error
   end
+
+  it "can run migrations that updates functions" do
+    connection.create_function(:test)
+
+    sql_definition = <<~EOS
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'testest';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    with_definition(name: :test, version: 2, sql_definition: sql_definition) do
+      migration = Class.new(ActiveRecord::Migration) do
+        def change
+          update_function :test, version: 2, revert_to_version: 1
+        end
+      end
+
+      expect { run_migration(migration, :change) }.not_to raise_error
+    end
+  end
 end
