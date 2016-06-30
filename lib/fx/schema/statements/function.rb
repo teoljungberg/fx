@@ -12,7 +12,7 @@ module Fx
             )
           end
           sql_definition = sql_definition ||
-            definition(name: name, version: version)
+            Fx::Definition.new(name: name, version: version).to_sql
 
           Fx.database.create_function(sql_definition)
         end
@@ -28,12 +28,6 @@ module Fx
 
           drop_function(name)
           create_function(name, version: version)
-        end
-
-        private
-
-        def definition(*args)
-          Fx::Definition.new(*args).to_sql
         end
       end
     end
