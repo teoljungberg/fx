@@ -21,12 +21,12 @@ module Fx
         if updating_existing_function?
           migration_template(
             "db/migrate/update_function.erb",
-            "db/migrate/update_#{file_name}_to_version_#{version}.rb"
+            "db/migrate/update_function_#{file_name}_to_version_#{version}.rb",
           )
         else
           migration_template(
             "db/migrate/create_function.erb",
-            "db/migrate/create_#{file_name}.rb"
+            "db/migrate/create_function_#{file_name}.rb",
           )
         end
       end
@@ -48,7 +48,7 @@ module Fx
 
         def migration_class_name
           if updating_existing_function?
-            "Update#{class_name}ToVersion#{version}"
+            "UpdateFunction#{class_name}ToVersion#{version}"
           else
             super
           end
