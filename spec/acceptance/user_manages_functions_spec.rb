@@ -16,6 +16,7 @@ describe "User manages functions" do
     expect(result).to eq("result" => "test")
 
     successfully "rails generate fx:function test"
+    verify_identical_function_definitions "test_v01", "test_v02"
     write_definition "test_v02", <<~EOS
       CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
       BEGIN
@@ -39,6 +40,10 @@ describe "User manages functions" do
       definition.truncate(0)
       definition.write(contents)
     end
+  end
+
+  def verify_identical_function_definitions(def_a, def_b)
+    successfully "cmp db/functions/#{def_a}.sql db/functions/#{def_b}.sql"
   end
 
   def execute(command)

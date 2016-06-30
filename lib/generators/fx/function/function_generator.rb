@@ -14,7 +14,11 @@ module Fx
       end
 
       def create_function_definition
-        create_file definition.path
+        if creating_new_function?
+          create_file definition.path
+        else
+          copy_file previous_definition.full_path, definition.full_path
+        end
       end
 
       def create_migration_file
@@ -77,8 +81,16 @@ module Fx
         previous_version > 0
       end
 
+      def creating_new_function?
+        previous_version == 0
+      end
+
       def definition
         Fx::Definition.new(name: file_name, version: version)
+      end
+
+      def previous_definition
+        Fx::Definition.new(name: file_name, version: previous_version)
       end
     end
   end
