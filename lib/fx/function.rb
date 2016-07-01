@@ -13,11 +13,12 @@ module Fx
     end
 
     def to_schema
-      <<~EOS
-        create_function :#{name}, sql_definition: <<-\SQL
-          #{definition}
-        SQL
-      EOS
+      <<-SCHEMA
+
+  create_function :#{name}, sql_definition: <<-\SQL
+    #{definition.indent(2)}
+  SQL
+       SCHEMA
     end
   end
 end

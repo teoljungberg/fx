@@ -13,11 +13,12 @@ module Fx
     end
 
     def to_schema
-      <<~DEFINITION
-        create_trigger :#{name}, sql_definition: <<-\SQL
-          #{definition}
-        SQL
-      DEFINITION
+      <<-SCHEMA
+
+  create_trigger :#{name}, sql_definition: <<-\SQL
+    #{definition.indent(2)}
+  SQL
+      SCHEMA
     end
   end
 end
