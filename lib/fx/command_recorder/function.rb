@@ -1,5 +1,6 @@
 module Fx
   module CommandRecorder
+    # @api private
     module Function
       def create_function(*args)
         record(:create_function, args)

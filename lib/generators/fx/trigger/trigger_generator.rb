@@ -3,6 +3,7 @@ require "rails/generators/active_record"
 
 module Fx
   module Generators
+    # @api private
     class TriggerGenerator < Rails::Generators::NamedBase
       include Rails::Generators::Migration
       source_root File.expand_path("../templates", __FILE__)

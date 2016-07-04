@@ -1,5 +1,6 @@
 module Fx
   module CommandRecorder
+    # @api private
     class Arguments
       def initialize(args)
         @args = args.freeze

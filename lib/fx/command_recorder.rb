@@ -3,6 +3,7 @@ require "fx/command_recorder/function"
 require "fx/command_recorder/trigger"
 
 module Fx
+  # @api private
   module CommandRecorder
     include Function
     include Trigger

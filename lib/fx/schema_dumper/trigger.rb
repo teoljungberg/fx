@@ -2,6 +2,7 @@ require "rails"
 
 module Fx
   module SchemaDumper
+    # @api private
     module Trigger
       def tables(stream)
         super
@@ -43,8 +44,3 @@ module Fx
     end
   end
 end
-
-ActiveRecord::SchemaDumper.send(
-  :prepend,
-  Fx::SchemaDumper::Trigger,
-)

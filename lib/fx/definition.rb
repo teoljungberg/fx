@@ -1,4 +1,5 @@
 module Fx
+  # @api private
   class Definition
     def initialize(name:, version:, type: "function")
       @name = name

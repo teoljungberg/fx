@@ -89,7 +89,7 @@ describe Fx::CommandRecorder, :db do
   end
 
   describe "#create_trigger" do
-    it "records the created view" do
+    it "records the created trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
       recorder.create_trigger :greetings
@@ -119,7 +119,7 @@ describe Fx::CommandRecorder, :db do
   end
 
   describe "#drop_trigger" do
-    it "records the dropped view" do
+    it "records the dropped trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
       recorder.drop_trigger :users
@@ -147,7 +147,7 @@ describe Fx::CommandRecorder, :db do
   end
 
   describe "#update_trigger" do
-    it "records the updated view" do
+    it "records the updated trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:users, { version: 2 }]
 

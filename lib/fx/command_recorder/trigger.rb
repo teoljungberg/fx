@@ -1,5 +1,6 @@
 module Fx
   module CommandRecorder
+    # @api private
     module Trigger
       def create_trigger(*args)
         record(:create_trigger, args)

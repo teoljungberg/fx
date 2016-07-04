@@ -1,4 +1,5 @@
 module Fx
+  # @api private
   class Trigger
     attr_reader :name, :definition
     delegate :<=>, to: :name
