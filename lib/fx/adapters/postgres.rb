@@ -1,3 +1,5 @@
+require "fx/adapters/postgres/functions"
+
 module Fx
   # F(x) database adapters.
   #
@@ -14,21 +16,6 @@ module Fx
     # The methods are documented here for insight into specifics of how F(x)
     # integrates with Postgres and the responsibilities of {Fx::Adapters}.
     class Postgres
-      # The SQL query used by F(x) to retrieve the functions considered dumpable
-      # into `db/schema.rb`.
-      FUNCTIONS_WITH_DEFINITIONS_QUERY = <<~SQL
-        SELECT
-            pp.proname AS name,
-            pg_get_functiondef(pp.oid) AS definition
-        FROM pg_proc pp
-        INNER JOIN pg_namespace pn
-            ON (pn.oid = pp.pronamespace)
-        INNER JOIN pg_language pl
-            ON (pl.oid = pp.prolang)
-        WHERE pl.lanname NOT IN ('c','internal')
-            AND pn.nspname NOT LIKE 'pg_%'
-            AND pn.nspname <> 'information_schema'
-      SQL
       # The SQL query used by F(x) to retrieve the triggers considered dumpable
       # into `db/schema.rb`.
       TRIGGERS_WITH_DEFINITIONS_QUERY = <<~SQL
@@ -49,8 +36,7 @@ module Fx
       #
       # @return [Array<Fx::Function>]
       def functions
-        execute(FUNCTIONS_WITH_DEFINITIONS_QUERY).
-          map { |result| Fx::Function.new(result) }
+        Functions.all(connectable)
       end
 
       # Returns an array of triggers in the database.
