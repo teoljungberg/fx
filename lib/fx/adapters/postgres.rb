@@ -1,4 +1,5 @@
 require "fx/adapters/postgres/functions"
+require "fx/adapters/postgres/triggers"
 
 module Fx
   # F(x) database adapters.
@@ -16,15 +17,6 @@ module Fx
     # The methods are documented here for insight into specifics of how F(x)
     # integrates with Postgres and the responsibilities of {Fx::Adapters}.
     class Postgres
-      # The SQL query used by F(x) to retrieve the triggers considered dumpable
-      # into `db/schema.rb`.
-      TRIGGERS_WITH_DEFINITIONS_QUERY = <<~SQL
-        SELECT
-            pt.tgname AS name,
-            pg_get_triggerdef(pt.oid) AS definition
-        FROM pg_trigger pt
-      SQL
-
       def initialize(connectable = ActiveRecord::Base.connection)
         @connectable = connectable
       end
@@ -46,8 +38,7 @@ module Fx
       #
       # @return [Array<Fx::Trigger>]
       def triggers
-        execute(TRIGGERS_WITH_DEFINITIONS_QUERY).
-          map { |result| Fx::Trigger.new(result) }
+        Triggers.all(connectable)
       end
 
       # Creates a function in the database.
