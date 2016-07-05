@@ -80,8 +80,12 @@ module Fx
           raise ArgumentError, "version is required"
         end
 
-        drop_function(name)
-        create_function(name, version: version)
+        sql_definition = Fx::Definition.new(
+          name: name,
+          version: version,
+        ).to_sql
+
+        Fx.database.update_function(name, sql_definition)
       end
     end
   end

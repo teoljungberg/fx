@@ -53,9 +53,8 @@ describe Fx::Statements::Function, :db do
 
       connection.update_function(:test, version: 3)
 
-      expect(database).to have_received(:drop_function).with(:test)
-      expect(database).to have_received(:create_function).
-        with(definition.to_sql)
+      expect(database).to have_received(:update_function).
+        with(:test, definition.to_sql)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 3)
     end

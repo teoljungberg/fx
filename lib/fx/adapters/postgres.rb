@@ -43,7 +43,8 @@ module Fx
 
       # Creates a function in the database.
       #
-      # This is typically called in a migration via {Fx::Statements::Function#create_function}.
+      # This is typically called in a migration via
+      # {Fx::Statements::Function#create_function}.
       #
       # @param sql_definition The SQL schema for the function.
       #
@@ -63,9 +64,42 @@ module Fx
         execute sql_definition
       end
 
+      # Updates a function in the database.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::Function#update_function}.
+      #
+      # @param name The name of the function.
+      # @param sql_definition The SQL schema for the function.
+      #
+      # @return [void]
+      def update_function(name, sql_definition)
+        drop_function(name)
+        create_function(sql_definition)
+      end
+
+      # Updates a trigger in the database.
+      #
+      # The existing trigger is dropped and recreated using the supplied `on`
+      # and `version` parameter.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::Function#update_trigger}.
+      #
+      # @param name The name of the trigger.
+      # @param on The associated table for the trigger to drop
+      # @param sql_definition The SQL schema for the function.
+      #
+      # @return [void]
+      def update_trigger(name, on:, sql_definition:)
+        drop_trigger(name, on: on)
+        create_trigger(sql_definition)
+      end
+
       # Drops the function from the database
       #
-      # This is typically called in a migration via {Fx::Statements::Function#drop_function}.
+      # This is typically called in a migration via
+      # {Fx::Statements::Function#drop_function}.
       #
       # @param name The name of the function to drop
       #
