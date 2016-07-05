@@ -7,7 +7,8 @@ module Fx::Adapters
         postgres = Postgres.new
         postgres.create_function(
           <<~EOS
-            CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+            CREATE OR REPLACE FUNCTION test()
+            RETURNS text AS $$
             BEGIN
                 RETURN 'test';
             END;
@@ -56,7 +57,8 @@ module Fx::Adapters
         postgres = Postgres.new
         postgres.create_function(
           <<~EOS
-            CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+            CREATE OR REPLACE FUNCTION test()
+            RETURNS text AS $$
             BEGIN
                 RETURN 'test';
             END;
@@ -75,7 +77,8 @@ module Fx::Adapters
         postgres = Postgres.new
         postgres.create_function(
           <<~EOS
-            CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+            CREATE OR REPLACE FUNCTION test()
+            RETURNS text AS $$
             BEGIN
                 RETURN 'test';
             END;

@@ -3,7 +3,8 @@ require "spec_helper"
 describe "Reverting migrations", :db do
   around do |example|
     sql_definition = <<~EOS
-      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
@@ -50,7 +51,8 @@ describe "Reverting migrations", :db do
     connection.create_function(:test)
 
     sql_definition = <<~EOS
-      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
       BEGIN
         RETURN 'bar';
       END;

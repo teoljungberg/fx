@@ -3,7 +3,8 @@ require "spec_helper"
 describe "Migrations" do
   around do |example|
     sql_definition = <<~EOS
-      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;

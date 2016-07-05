@@ -4,7 +4,8 @@ describe "User manages functions" do
   it "handles simple functions" do
     successfully "rails generate fx:function test"
     write_function_definition "test_v01", <<~EOS
-      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
@@ -21,7 +22,8 @@ describe "User manages functions" do
       "db/functions/test_v02.sql",
     )
     write_function_definition "test_v02", <<~EOS
-      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
       BEGIN
           RETURN 'testest';
       END;

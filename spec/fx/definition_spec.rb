@@ -5,7 +5,8 @@ describe Fx::Definition do
     context "representing a function definition" do
       it "returns the content of a function definition" do
         sql_definition = <<~EOS
-          CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+          CREATE OR REPLACE FUNCTION test()
+          RETURNS text AS $$
           BEGIN
               RETURN 'test';
           END;

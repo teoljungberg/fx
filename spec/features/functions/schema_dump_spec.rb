@@ -3,7 +3,8 @@ require "spec_helper"
 describe "Schema dump", :db do
   it "dumps a create_function for a function in the database" do
     sql_definition = <<~EOS
-      CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;

@@ -10,7 +10,8 @@ describe "Schema dump", :db do
       );
     EOS
     Fx.database.create_function <<~EOS
-      CREATE OR REPLACE FUNCTION uppercase_users_name() RETURNS trigger AS $$
+      CREATE OR REPLACE FUNCTION uppercase_users_name()
+      RETURNS trigger AS $$
       BEGIN
         NEW.upper_name = UPPER(NEW.name);
         RETURN NEW;
