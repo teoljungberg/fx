@@ -9,7 +9,8 @@ describe Fx::Statements::Trigger, :db do
 
       connection.create_trigger(:test)
 
-      expect(database).to have_received(:create_trigger).with(definition.to_sql)
+      expect(database).to have_received(:create_trigger).
+        with(definition.to_sql)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 1, type: "trigger")
     end
@@ -20,7 +21,8 @@ describe Fx::Statements::Trigger, :db do
 
       connection.create_trigger(:test, version: 2)
 
-      expect(database).to have_received(:create_trigger).with(definition.to_sql)
+      expect(database).to have_received(:create_trigger).
+        with(definition.to_sql)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 2, type: "trigger")
     end
@@ -42,7 +44,8 @@ describe Fx::Statements::Trigger, :db do
 
       connection.drop_trigger(:test, on: :users)
 
-      expect(database).to have_received(:drop_trigger).with(:test, on: :users)
+      expect(database).to have_received(:drop_trigger).
+        with(:test, on: :users)
     end
   end
 
@@ -53,10 +56,16 @@ describe Fx::Statements::Trigger, :db do
 
       connection.update_trigger(:test, on: :users, version: 3)
 
-      expect(database).to have_received(:drop_trigger).with(:test, on: :users)
-      expect(database).to have_received(:create_trigger).with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 3, type: "trigger")
+      expect(database).to have_received(:update_trigger).with(
+        :test,
+        on: :users,
+        sql_definition: definition.to_sql,
+      )
+      expect(Fx::Definition).to have_received(:new).with(
+        name: :test,
+        version: 3,
+        type: "trigger",
+      )
     end
 
     it "raises an error if not supplied a version" do

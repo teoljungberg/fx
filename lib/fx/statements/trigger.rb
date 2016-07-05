@@ -89,8 +89,17 @@ module Fx
           raise ArgumentError, "on is required"
         end
 
-        drop_trigger(name, on: on)
-        create_trigger(name, version: version)
+        sql_definition = Fx::Definition.new(
+          name: name,
+          version: version,
+          type: DEFINTION_TYPE,
+        ).to_sql
+
+        Fx.database.update_trigger(
+          name,
+          on: on,
+          sql_definition: sql_definition,
+        )
       end
     end
   end

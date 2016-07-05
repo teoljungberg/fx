@@ -55,7 +55,8 @@ module Fx
 
       # Creates a trigger in the database.
       #
-      # This is typically called in a migration via {Fx::Statements::Trigger#create_trigger}.
+      # This is typically called in a migration via
+      # {Fx::Statements::Trigger#create_trigger}.
       #
       # @param sql_definition The SQL schema for the trigger.
       #
@@ -110,7 +111,8 @@ module Fx
 
       # Drops the trigger from the database
       #
-      # This is typically called in a migration via {Fx::Statements::Trigger#drop_trigger}.
+      # This is typically called in a migration via
+      # {Fx::Statements::Trigger#drop_trigger}.
       #
       # @param name The name of the trigger to drop
       # @param on The associated table for the trigger to drop
