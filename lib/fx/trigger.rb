@@ -15,10 +15,10 @@ module Fx
 
     def to_schema
       <<-SCHEMA
-
   create_trigger :#{name}, sql_definition: <<-\SQL
     #{definition.indent(2)}
   SQL
+
       SCHEMA
     end
   end
