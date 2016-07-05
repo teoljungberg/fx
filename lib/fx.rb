@@ -4,7 +4,7 @@ require "fx/command_recorder"
 require "fx/configuration"
 require "fx/definition"
 require "fx/function"
-require "fx/schema/statements"
+require "fx/statements"
 require "fx/schema_dumper"
 require "fx/trigger"
 

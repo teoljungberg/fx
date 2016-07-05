@@ -9,7 +9,7 @@ module Fx
     #
     # These methods are used interally by F(x) and are not intended for direct
     # use. Methods that alter database schema are intended to be called via
-    # {Fx::Schema::Statements}.
+    # {Fx::Statements}.
     #
     # The methods are documented here for insight into specifics of how F(x)
     # integrates with Postgres and the responsibilities of {Fx::Adapters}.
@@ -62,7 +62,7 @@ module Fx
 
       # Creates a function in the database.
       #
-      # This is typically called in a migration via {Fx::Schema::Statements::Function#create_function}.
+      # This is typically called in a migration via {Fx::Statements::Function#create_function}.
       #
       # @param sql_definition The SQL schema for the function.
       #
@@ -73,7 +73,7 @@ module Fx
 
       # Creates a trigger in the database.
       #
-      # This is typically called in a migration via {Fx::Schema::Statements::Trigger#create_trigger}.
+      # This is typically called in a migration via {Fx::Statements::Trigger#create_trigger}.
       #
       # @param sql_definition The SQL schema for the trigger.
       #
@@ -84,7 +84,7 @@ module Fx
 
       # Drops the function from the database
       #
-      # This is typically called in a migration via {Fx::Schema::Statements::Function#drop_function}.
+      # This is typically called in a migration via {Fx::Statements::Function#drop_function}.
       #
       # @param name The name of the function to drop
       #
@@ -95,7 +95,7 @@ module Fx
 
       # Drops the trigger from the database
       #
-      # This is typically called in a migration via {Fx::Schema::Statements::Trigger#drop_trigger}.
+      # This is typically called in a migration via {Fx::Statements::Trigger#drop_trigger}.
       #
       # @param name The name of the trigger to drop
       # @param on The associated table for the trigger to drop

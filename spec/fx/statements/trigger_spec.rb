@@ -1,7 +1,7 @@
 require "spec_helper"
-require "fx/schema/statements/trigger"
+require "fx/statements/trigger"
 
-describe Fx::Schema::Statements::Trigger, :db do
+describe Fx::Statements::Trigger, :db do
   describe "#create_trigger" do
     it "creates a trigger from a file" do
       database = stubbed_database

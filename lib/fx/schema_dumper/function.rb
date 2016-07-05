@@ -35,7 +35,7 @@ module Fx
             else
               raise(
                 StandardError,
-                "ActiveRecord::SchemaDumper.ignore_tables accepts an array of String and / or Regexp values.",
+                "ActiveRecordDumper.ignore_tables accepts an array of String and / or Regexp values.",
               )
             end
           end
