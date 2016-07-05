@@ -13,7 +13,7 @@ module Fx
     #
     # The methods are documented here for insight into specifics of how F(x)
     # integrates with Postgres and the responsibilities of {Fx::Adapters}.
-    module Postgres
+    class Postgres
       # The SQL query used by F(x) to retrieve the functions considered dumpable
       # into `db/schema.rb`.
       FUNCTIONS_WITH_DEFINITIONS_QUERY = <<~SQL
@@ -38,13 +38,17 @@ module Fx
         FROM pg_trigger pt
       SQL
 
+      def initialize(connectable = ActiveRecord::Base.connection)
+        @connectable = connectable
+      end
+
       # Returns an array of functions in the database.
       #
       # This collection of functions is used by the [Fx::SchemaDumper] to
       # populate the `schema.rb` file.
       #
       # @return [Array<Fx::Function>]
-      def self.functions
+      def functions
         execute(FUNCTIONS_WITH_DEFINITIONS_QUERY).
           map { |result| Fx::Function.new(result) }
       end
@@ -55,7 +59,7 @@ module Fx
       # populate the `schema.rb` file.
       #
       # @return [Array<Fx::Trigger>]
-      def self.triggers
+      def triggers
         execute(TRIGGERS_WITH_DEFINITIONS_QUERY).
           map { |result| Fx::Trigger.new(result) }
       end
@@ -67,7 +71,7 @@ module Fx
       # @param sql_definition The SQL schema for the function.
       #
       # @return [void]
-      def self.create_function(sql_definition)
+      def create_function(sql_definition)
         execute sql_definition
       end
 
@@ -78,7 +82,7 @@ module Fx
       # @param sql_definition The SQL schema for the trigger.
       #
       # @return [void]
-      def self.create_trigger(sql_definition)
+      def create_trigger(sql_definition)
         execute sql_definition
       end
 
@@ -89,7 +93,7 @@ module Fx
       # @param name The name of the function to drop
       #
       # @return [void]
-      def self.drop_function(name)
+      def drop_function(name)
         execute "DROP FUNCTION #{name}();"
       end
 
@@ -101,16 +105,17 @@ module Fx
       # @param on The associated table for the trigger to drop
       #
       # @return [void]
-      def self.drop_trigger(name, on:)
+      def drop_trigger(name, on:)
         execute "DROP TRIGGER #{name} ON #{on};"
       end
 
       private
 
-      def self.execute(sql, base = ActiveRecord::Base)
-        base.connection.execute(sql)
+      attr_reader :connectable
+
+      def execute(sql)
+        connectable.execute(sql)
       end
-      private_class_method :execute
     end
   end
 end

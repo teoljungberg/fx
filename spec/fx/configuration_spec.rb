@@ -2,8 +2,8 @@ require "spec_helper"
 
 describe Fx::Configuration do
   it "defaults the database adapter to postgres" do
-    expect(Fx.configuration.database).to eq Fx::Adapters::Postgres
-    expect(Fx.database).to eq Fx::Adapters::Postgres
+    expect(Fx.configuration.database).to be_a Fx::Adapters::Postgres
+    expect(Fx.database).to be_a Fx::Adapters::Postgres
   end
 
   it "allows the database adapter to be set" do

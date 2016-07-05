@@ -27,12 +27,12 @@ module Fx
   class Configuration
     # The F(x) database adapter instance to use when executing SQL.
     #
-    # Defaults to the singleton {Fx::Adapters::Postgres}
+    # Defaults to an instance of {Fx::Adapters::Postgres}
     # @return Fx adapter
     attr_accessor :database
 
     def initialize
-      @database = Fx::Adapters::Postgres
+      @database = Fx::Adapters::Postgres.new
     end
   end
 end

@@ -4,7 +4,8 @@ module Fx::Adapters
   describe Postgres, :db do
     describe ".create_function" do
       it "successfully creates a function" do
-        Postgres.create_function(
+        postgres = Postgres.new
+        postgres.create_function(
           <<~EOS
             CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
             BEGIN
@@ -14,7 +15,7 @@ module Fx::Adapters
           EOS
         )
 
-        expect(Postgres.functions.map(&:name)).to include("test")
+        expect(postgres.functions.map(&:name)).to include("test")
       end
     end
 
@@ -27,7 +28,8 @@ module Fx::Adapters
               upper_name varchar(256)
           );
         EOS
-        Postgres.create_function <<~EOS
+        postgres = Postgres.new
+        postgres.create_function <<~EOS
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -36,7 +38,7 @@ module Fx::Adapters
           END;
           $$ LANGUAGE plpgsql;
         EOS
-        Postgres.create_trigger(
+        postgres.create_trigger(
           <<~EOS
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
@@ -45,13 +47,14 @@ module Fx::Adapters
           EOS
         )
 
-        expect(Postgres.triggers.map(&:name)).to include("uppercase_users_name")
+        expect(postgres.triggers.map(&:name)).to include("uppercase_users_name")
       end
     end
 
     describe ".drop_function" do
       it "successfully drops a function" do
-        Postgres.create_function(
+        postgres = Postgres.new
+        postgres.create_function(
           <<~EOS
             CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
             BEGIN
@@ -61,15 +64,16 @@ module Fx::Adapters
           EOS
         )
 
-        Postgres.drop_function(:test)
+        postgres.drop_function(:test)
 
-        expect(Postgres.functions.map(&:name)).not_to include("test")
+        expect(postgres.functions.map(&:name)).not_to include("test")
       end
     end
 
     describe ".functions" do
       it "finds functions and builds Fx::Function objects" do
-        Postgres.create_function(
+        postgres = Postgres.new
+        postgres.create_function(
           <<~EOS
             CREATE OR REPLACE FUNCTION test() RETURNS text AS $$
             BEGIN
@@ -79,7 +83,7 @@ module Fx::Adapters
           EOS
         )
 
-        expect(Postgres.functions).to eq([
+        expect(postgres.functions).to eq([
           Fx::Function.new(
             "name" => "test",
             "definition" => <<~EOS
@@ -106,7 +110,8 @@ module Fx::Adapters
               upper_name varchar(256)
           );
         EOS
-        Postgres.create_function <<~EOS
+        postgres = Postgres.new
+        postgres.create_function <<~EOS
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -121,9 +126,9 @@ module Fx::Adapters
               FOR EACH ROW
               EXECUTE PROCEDURE uppercase_users_name()
         EOS
-        Postgres.create_trigger(sql_definition)
+        postgres.create_trigger(sql_definition)
 
-        expect(Postgres.triggers).to eq(
+        expect(postgres.triggers).to eq(
           [
             Fx::Trigger.new(
               "name" => "uppercase_users_name",
