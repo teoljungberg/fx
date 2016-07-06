@@ -14,12 +14,12 @@ module Fx
     end
 
     def to_schema
-      <<-SCHEMA
-  create_function :#{name}, sql_definition: <<-\SQL
-    #{definition.indent(2)}
-  SQL
+      <<-SCHEMA.indent(4)
+create_function :#{name}, sql_definition: <<-\SQL
+#{definition.indent(2)}
+SQL
 
-       SCHEMA
+      SCHEMA
     end
   end
 end
