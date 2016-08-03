@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Migrations" do
+describe "Function migrations", :db do
   around do |example|
     sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test()
