@@ -7,9 +7,7 @@ describe Fx::CommandRecorder, :db do
 
       recorder.create_function :test
 
-      expect(recorder.commands).to eq [
-        [:create_function, [:test], nil],
-      ]
+      expect(recorder.commands).to eq [[:create_function, [:test], nil]]
     end
 
     it "reverts to drop_function" do
@@ -17,9 +15,7 @@ describe Fx::CommandRecorder, :db do
 
       recorder.create_function :test
 
-      expect(recorder.commands).to eq [
-        [:create_function, [:test], nil],
-      ]
+      expect(recorder.commands).to eq [[:create_function, [:test], nil]]
     end
 
     it "reverts to drop_function" do
@@ -94,9 +90,7 @@ describe Fx::CommandRecorder, :db do
 
       recorder.create_trigger :greetings
 
-      expect(recorder.commands).to eq [
-        [:create_trigger, [:greetings], nil],
-      ]
+      expect(recorder.commands).to eq [[:create_trigger, [:greetings], nil]]
     end
 
     it "reverts to drop_trigger" do
