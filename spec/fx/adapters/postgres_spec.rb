@@ -2,7 +2,7 @@ require "spec_helper"
 
 module Fx::Adapters
   describe Postgres, :db do
-    describe ".create_function" do
+    describe "#create_function" do
       it "successfully creates a function" do
         postgres = Postgres.new
         postgres.create_function(
@@ -20,7 +20,7 @@ module Fx::Adapters
       end
     end
 
-    describe ".create_trigger" do
+    describe "#create_trigger" do
       it "successfully creates a trigger" do
         connection.execute <<~EOS
           CREATE TABLE users (
@@ -52,7 +52,7 @@ module Fx::Adapters
       end
     end
 
-    describe ".drop_function" do
+    describe "#drop_function" do
       it "successfully drops a function" do
         postgres = Postgres.new
         postgres.create_function(
@@ -72,7 +72,7 @@ module Fx::Adapters
       end
     end
 
-    describe ".functions" do
+    describe "#functions" do
       it "finds functions and builds Fx::Function objects" do
         postgres = Postgres.new
         postgres.create_function(
@@ -104,7 +104,7 @@ module Fx::Adapters
       end
     end
 
-    describe ".triggers" do
+    describe "#triggers" do
       it "finds triggers and builds Fx::Trigger objects" do
         connection.execute <<~EOS
           CREATE TABLE users (
