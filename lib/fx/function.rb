@@ -14,7 +14,7 @@ module Fx
     end
 
     def to_schema
-      <<-SCHEMA.indent(4)
+      <<-SCHEMA.indent(2)
 create_function :#{name}, sql_definition: <<-\SQL
 #{definition.indent(2)}
 SQL
