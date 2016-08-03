@@ -9,7 +9,8 @@ describe Fx::Statements::Function, :db do
 
       connection.create_function(:test)
 
-      expect(database).to have_received(:create_function).with(definition.to_sql)
+      expect(database).to have_received(:create_function).
+        with(definition.to_sql)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 1)
     end
@@ -20,7 +21,8 @@ describe Fx::Statements::Function, :db do
 
       connection.create_function(:test, version: 2)
 
-      expect(database).to have_received(:create_function).with(definition.to_sql)
+      expect(database).to have_received(:create_function).
+        with(definition.to_sql)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 2)
     end
@@ -72,7 +74,7 @@ describe Fx::Statements::Function, :db do
   end
 
   def stubbed_definition
-    instance_double("Fx::Definition", to_sql: "foo").tap do |stubbed_definition|
+    instance_double("Fx::Definition", to_sql: nil).tap do |stubbed_definition|
       allow(Fx::Definition).to receive(:new).and_return(stubbed_definition)
     end
   end

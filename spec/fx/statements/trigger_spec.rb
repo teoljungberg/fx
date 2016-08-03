@@ -81,7 +81,7 @@ describe Fx::Statements::Trigger, :db do
   end
 
   def stubbed_definition
-    instance_double("Fx::Definition", to_sql: "foo").tap do |stubbed_definition|
+    instance_double("Fx::Definition", to_sql: nil).tap do |stubbed_definition|
       allow(Fx::Definition).to receive(:new).and_return(stubbed_definition)
     end
   end

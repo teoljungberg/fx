@@ -27,7 +27,8 @@ describe Fx::Generators::FunctionGenerator, :generator do
 
       expect(function_definition).to exist
       expect(migration).to be_a_migration
-      expect(migration_file(migration)).to contain "UpdateFunctionTestToVersion2"
+      expect(migration_file(migration)).
+        to contain("UpdateFunctionTestToVersion2")
     end
   end
 end
