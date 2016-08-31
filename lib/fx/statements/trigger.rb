@@ -16,10 +16,10 @@ module Fx
       #   `sql_definition` takes prescedence.
       # @return The database response from executing the create statement.
       #
-      # @example Create from `db/triggers/uppercase_users_name_v02.sql`
-      #   create_trigger(:uppercase_users_name, version: 2)
+      # @example Create trigger from `db/triggers/uppercase_users_name_v01.sql`
+      #   create_trigger(:uppercase_users_name, version: 1)
       #
-      # @example Create from provided SQL string
+      # @example Create trigger from provided SQL string
       #   create_trigger(:uppercase_users_name, sql_definition: <<-SQL)
       #     CREATE TRIGGER uppercase_users_name
       #         BEFORE INSERT ON users
@@ -34,12 +34,11 @@ module Fx
             "version or sql_definition must be specified",
           )
         end
-        sql_definition = sql_definition ||
-          Fx::Definition.new(
-            name: name,
-            version: version,
-            type: DEFINTION_TYPE,
-          ).to_sql
+        sql_definition ||= Fx::Definition.new(
+          name: name,
+          version: version,
+          type: DEFINTION_TYPE,
+        ).to_sql
 
         Fx.database.create_trigger(sql_definition)
       end
@@ -74,7 +73,7 @@ module Fx
       #   `rake db rollback`
       # @return The database response from executing the create statement.
       #
-      # @example
+      # @example Update trigger to a given version
       #   update_trigger(
       #     :log_inserts,
       #     on: :users,
@@ -82,14 +81,27 @@ module Fx
       #     revert_to_version: 2,
       #   )
       #
-      def update_trigger(name, version: nil, on: nil, revert_to_version: nil)
-        if version.nil?
-          raise ArgumentError, "version is required"
-        elsif on.nil?
+      # @example Update trigger from provided SQL string
+      #   update_trigger(:uppercase_users_name, sql_definition: <<-SQL)
+      #     CREATE TRIGGER uppercase_users_name
+      #         BEFORE INSERT ON users
+      #         FOR EACH ROW
+      #         EXECUTE PROCEDURE uppercase_users_name();
+      #    SQL
+      #
+      def update_trigger(name, version: nil, on: nil, sql_definition: nil, revert_to_version: nil)
+        if version.nil? && sql_definition.nil?
+          raise(
+            ArgumentError,
+            "version or sql_definition must be specified",
+          )
+        end
+
+        if on.nil?
           raise ArgumentError, "on is required"
         end
 
-        sql_definition = Fx::Definition.new(
+        sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
           type: DEFINTION_TYPE,

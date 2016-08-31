@@ -68,9 +68,34 @@ describe Fx::Statements::Trigger, :db do
       )
     end
 
+
+    it "updates a trigger from a text definition" do
+      database = stubbed_database
+
+      connection.update_trigger(
+        :test,
+        on: :users,
+        sql_definition: "a definition",
+      )
+
+      expect(database).to have_received(:update_trigger).with(
+        :test,
+        on: :users,
+        sql_definition: "a definition",
+      )
+    end
+
     it "raises an error if not supplied a version" do
-      expect { connection.update_trigger(:test) }.
-        to raise_error(ArgumentError, /version is required/)
+      expect {
+        connection.update_trigger(
+          :whatever,
+          version: nil,
+          sql_definition: nil,
+        )
+      }.to raise_error(
+        ArgumentError,
+        /version or sql_definition must be specified/,
+      )
     end
   end
 

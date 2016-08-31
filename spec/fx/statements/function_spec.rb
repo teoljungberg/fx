@@ -34,7 +34,10 @@ describe Fx::Statements::Function, :db do
           version: nil,
           sql_definition: nil,
         )
-      }.to raise_error ArgumentError
+      }.to raise_error(
+        ArgumentError,
+        /version or sql_definition must be specified/,
+      )
     end
   end
 
@@ -61,9 +64,28 @@ describe Fx::Statements::Function, :db do
         with(name: :test, version: 3)
     end
 
+    it "updates a function from a text definition" do
+      database = stubbed_database
+
+      connection.update_function(:test, sql_definition: "a definition")
+
+      expect(database).to have_received(:update_function).with(
+        :test,
+        "a definition",
+      )
+    end
+
     it "raises an error if not supplied a version" do
-      expect { connection.update_function(:test) }.
-        to raise_error(ArgumentError, /version is required/)
+      expect {
+        connection.update_function(
+          :whatever,
+          version: nil,
+          sql_definition: nil,
+        )
+      }.to raise_error(
+        ArgumentError,
+        /version or sql_definition must be specified/,
+      )
     end
   end
 

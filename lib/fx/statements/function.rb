@@ -36,8 +36,7 @@ module Fx
             "version or sql_definition must be specified",
           )
         end
-        sql_definition = sql_definition ||
-          Fx::Definition.new(name: name, version: version).to_sql
+        sql_definition ||= Fx::Definition.new(name: name, version: version).to_sql
 
         Fx.database.create_function(sql_definition)
       end
@@ -57,30 +56,44 @@ module Fx
         Fx.database.drop_function(name)
       end
 
-      # Update a database function to a new version.
-      #
-      # The existing function is dropped and recreated using the supplied
-      # `version` parameter.
+      # Update a database function.
       #
       # @param name [String, Symbol] The name of the database function.
-      # @param version [Fixnum] The version number of the function.
-      # @param revert_to_version [Fixnum] The version number to rollback to on
-      #   `rake db rollback`.
+      # @param version [Fixnum] The version number of the function, used to
+      #   find the definition file in `db/functions`. This defaults to `1` if
+      #   not provided.
+      # @param sql_definition [String] The SQL query for the function schema.
+      #   If both `sql_defintion` and `version` are provided,
+      #   `sql_definition` takes prescedence.
       # @return The database response from executing the create statement.
       #
-      # @example
+      # @example Update function to a given version
       #   update_function(
       #     :uppercase_users_name,
       #     version: 3,
       #     revert_to_version: 2,
       #   )
       #
-      def update_function(name, version: nil, revert_to_version: nil)
-        if version.nil?
-          raise ArgumentError, "version is required"
+      # @example Update function from provided SQL string
+      #   update_function(:uppercase_users_name, sql_definition: <<-SQL)
+      #     CREATE OR REPLACE FUNCTION uppercase_users_name()
+      #     RETURNS trigger AS $$
+      #     BEGIN
+      #       NEW.upper_name = UPPER(NEW.name);
+      #       RETURN NEW;
+      #     END;
+      #     $$ LANGUAGE plpgsql;
+      #   SQL
+      #
+      def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil)
+        if version.nil? && sql_definition.nil?
+          raise(
+            ArgumentError,
+            "version or sql_definition must be specified",
+          )
         end
 
-        sql_definition = Fx::Definition.new(
+        sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
         ).to_sql
