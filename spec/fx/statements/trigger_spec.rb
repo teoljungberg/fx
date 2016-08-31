@@ -27,14 +27,19 @@ describe Fx::Statements::Trigger, :db do
         with(name: :test, version: 2, type: "trigger")
     end
 
-    it "raises an error if both arguments are nil" do
+    it "raises an error if both arguments are set" do
+      stubbed_database
+
       expect {
         connection.create_trigger(
           :whatever,
-          version: nil,
-          sql_definition: nil,
+          version: 1,
+          sql_definition: "a definition",
         )
-      }.to raise_error ArgumentError
+      }.to raise_error(
+        ArgumentError,
+        /cannot both be set/,
+      )
     end
   end
 
@@ -68,7 +73,6 @@ describe Fx::Statements::Trigger, :db do
       )
     end
 
-
     it "updates a trigger from a text definition" do
       database = stubbed_database
 
@@ -95,6 +99,21 @@ describe Fx::Statements::Trigger, :db do
       }.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/,
+      )
+    end
+
+    it "raises an error if both arguments are set" do
+      stubbed_database
+
+      expect {
+        connection.update_trigger(
+          :whatever,
+          version: 1,
+          sql_definition: "a definition",
+        )
+      }.to raise_error(
+        ArgumentError,
+        /cannot both be set/,
       )
     end
   end

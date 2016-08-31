@@ -11,9 +11,9 @@ module Fx
       # @param version [Fixnum] The version number of the trigger, used to
       #   find the definition file in `db/triggers`. This defaults to `1` if
       #   not provided.
-      # @param sql_definition [String] The SQL query for the trigger schema.
-      #   If both `sql_defintion` and `version` are provided,
-      #   `sql_definition` takes prescedence.
+      # @param sql_definition [String] The SQL query for the function. An error
+      #   will be raised if `sql_definition` and `version` are both set,
+      #   as they are mutually exclusive.
       # @return The database response from executing the create statement.
       #
       # @example Create trigger from `db/triggers/uppercase_users_name_v01.sql`
@@ -27,13 +27,18 @@ module Fx
       #         EXECUTE PROCEDURE uppercase_users_name();
       #    SQL
       #
-      def create_trigger(name, version: 1, on: nil, sql_definition: nil)
-        if version.nil? && sql_definition.nil?
+      def create_trigger(name, version: nil, on: nil, sql_definition: nil)
+        if version.present? && sql_definition.present?
           raise(
             ArgumentError,
-            "version or sql_definition must be specified",
+            "sql_definition and version cannot both be set",
           )
         end
+
+        if version.nil?
+          version = 1
+        end
+
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
@@ -69,6 +74,9 @@ module Fx
       # @param version [Fixnum] The version number of the trigger.
       # @param on [String, Symbol] The name of the table the database trigger
       #   is associated with.
+      # @param sql_definition [String] The SQL query for the function. An error
+      #   will be raised if `sql_definition` and `version` are both set,
+      #   as they are mutually exclusive.
       # @param revert_to_version [Fixnum] The version number to rollback to on
       #   `rake db rollback`
       # @return The database response from executing the create statement.
@@ -94,6 +102,13 @@ module Fx
           raise(
             ArgumentError,
             "version or sql_definition must be specified",
+          )
+        end
+
+        if version.present? && sql_definition.present?
+          raise(
+            ArgumentError,
+            "sql_definition and version cannot both be set",
           )
         end
 
