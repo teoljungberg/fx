@@ -1,7 +1,5 @@
 # F(x)
 
-[![Build Status](https://travis-ci.com/thoughtbot/fx.svg)](https://travis-ci.com/thoughtbot/fx)
-
 F(x) adds methods to `ActiveRecord::Migration` to create and manage database
 functions and triggers in Rails.
 
@@ -81,14 +79,3 @@ def change
   drop_function :uppercase_users_name, revert_to_version: 2
 end
 ```
-
-## About
-
-Fx(x) is maintained by thoughtbot, inc. The names and logos for thoughtbot are
-trademarks of thoughtbot, inc.
-
-We love open source software!  See [our other projects][community] or [hire
-us][hire] to help build your product.
-
-[community]: https://thoughtbot.com/community?utm_source=github
-[hire]: https://thoughtbot.com/hire-us?utm_source=github
