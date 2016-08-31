@@ -72,7 +72,7 @@ tweak the schema in the new definition and run the `update_function` migration.
 
 ## I don't need this trigger or function anymore. Make it go away.
 
-Scenic gives you `drop_trigger` and `drop_function` too:
+F(x) gives you `drop_trigger` and `drop_function` too:
 
 ```ruby
 def change
