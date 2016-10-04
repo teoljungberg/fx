@@ -16,9 +16,8 @@ module Fx
     def to_schema
       <<-SCHEMA
   create_trigger :#{name}, sql_definition: <<-\SQL
-    #{definition}
+      #{definition}
   SQL
-
       SCHEMA
     end
   end
