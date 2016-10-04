@@ -13,13 +13,11 @@ module Fx
               pp.proname AS name,
               pg_get_functiondef(pp.oid) AS definition
           FROM pg_proc pp
-          INNER JOIN pg_namespace pn
-              ON (pn.oid = pp.pronamespace)
-          INNER JOIN pg_language pl
-              ON (pl.oid = pp.prolang)
-          WHERE pl.lanname NOT IN ('c','internal')
-              AND pn.nspname NOT LIKE 'pg_%'
-              AND pn.nspname <> 'information_schema'
+          JOIN pg_namespace pn
+              ON pn.oid = pp.pronamespace
+          LEFT JOIN pg_depend pd
+              ON pd.objid = pp.oid AND pd.deptype = 'e'
+          WHERE pn.nspname = 'public' AND pd.objid IS NULL;
         SQL
 
         # Wraps #all as a static facade.

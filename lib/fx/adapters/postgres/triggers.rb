@@ -13,6 +13,12 @@ module Fx
               pt.tgname AS name,
               pg_get_triggerdef(pt.oid) AS definition
           FROM pg_trigger pt
+          JOIN pg_class pc
+              ON (pc.oid = pt.tgrelid)
+          JOIN pg_proc pp
+              ON (pp.oid = pt.tgfoid)
+          WHERE pt.tgname
+          NOT ILIKE '%constraint%' AND pt.tgname NOT ILIKE 'pg%';
         SQL
 
         # Wraps #all as a static facade.
