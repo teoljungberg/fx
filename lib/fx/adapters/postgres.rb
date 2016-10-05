@@ -1,3 +1,4 @@
+require "fx/adapters/postgres/connection"
 require "fx/adapters/postgres/functions"
 require "fx/adapters/postgres/triggers"
 
@@ -8,16 +9,21 @@ module Fx
   # additional adapters. The {Fx::Adapters::Postgres} adapter provides the
   # interface.
   module Adapters
-    # An adapter for managing Postgres triggers and functions.
+    # Creates an instance of the F(x) Postgres adapter.
     #
-    # These methods are used interally by F(x) and are not intended for direct
-    # use. Methods that alter database schema are intended to be called via
-    # {Fx::Statements}.
+    # This is the default adapter for F(x). Configuring it via
+    # {Fx.configure} is not required, but the example below shows how one
+    # would explicitly set it.
     #
-    # The methods are documented here for insight into specifics of how F(x)
-    # integrates with Postgres and the responsibilities of {Fx::Adapters}.
+    # @param [#connection] connectable An object that returns the connection
+    #   for F(x) to use. Defaults to `ActiveRecord::Base`.
+    #
+    # @example
+    #  Fx.configure do |config|
+    #    config.adapter = Fx::Adapters::Postgres.new
+    #  end
     class Postgres
-      def initialize(connectable = ActiveRecord::Base.connection)
+      def initialize(connectable = ActiveRecord::Base)
         @connectable = connectable
       end
 
@@ -28,7 +34,7 @@ module Fx
       #
       # @return [Array<Fx::Function>]
       def functions
-        Functions.all(connectable)
+        Functions.all(connection)
       end
 
       # Returns an array of triggers in the database.
@@ -38,7 +44,7 @@ module Fx
       #
       # @return [Array<Fx::Trigger>]
       def triggers
-        Triggers.all(connectable)
+        Triggers.all(connection)
       end
 
       # Creates a function in the database.
@@ -126,8 +132,10 @@ module Fx
 
       attr_reader :connectable
 
-      def execute(sql)
-        connectable.execute(sql)
+      delegate :execute, to: :connection
+
+      def connection
+        Connection.new(connectable.connection)
       end
     end
   end

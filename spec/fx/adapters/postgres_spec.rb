@@ -4,8 +4,8 @@ module Fx::Adapters
   describe Postgres, :db do
     describe "#create_function" do
       it "successfully creates a function" do
-        postgres = Postgres.new
-        postgres.create_function(
+        adapter = Postgres.new
+        adapter.create_function(
           <<~EOS
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
@@ -16,7 +16,7 @@ module Fx::Adapters
           EOS
         )
 
-        expect(postgres.functions.map(&:name)).to include("test")
+        expect(adapter.functions.map(&:name)).to include("test")
       end
     end
 
@@ -29,8 +29,8 @@ module Fx::Adapters
               upper_name varchar(256)
           );
         EOS
-        postgres = Postgres.new
-        postgres.create_function <<~EOS
+        adapter = Postgres.new
+        adapter.create_function <<~EOS
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -39,7 +39,7 @@ module Fx::Adapters
           END;
           $$ LANGUAGE plpgsql;
         EOS
-        postgres.create_trigger(
+        adapter.create_trigger(
           <<~EOS
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
@@ -48,14 +48,14 @@ module Fx::Adapters
           EOS
         )
 
-        expect(postgres.triggers.map(&:name)).to include("uppercase_users_name")
+        expect(adapter.triggers.map(&:name)).to include("uppercase_users_name")
       end
     end
 
     describe "#drop_function" do
       it "successfully drops a function" do
-        postgres = Postgres.new
-        postgres.create_function(
+        adapter = Postgres.new
+        adapter.create_function(
           <<~EOS
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
@@ -66,16 +66,16 @@ module Fx::Adapters
           EOS
         )
 
-        postgres.drop_function(:test)
+        adapter.drop_function(:test)
 
-        expect(postgres.functions.map(&:name)).not_to include("test")
+        expect(adapter.functions.map(&:name)).not_to include("test")
       end
     end
 
     describe "#functions" do
       it "finds functions and builds Fx::Function objects" do
-        postgres = Postgres.new
-        postgres.create_function(
+        adapter = Postgres.new
+        adapter.create_function(
           <<~EOS
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
@@ -86,7 +86,7 @@ module Fx::Adapters
           EOS
         )
 
-        expect(postgres.functions).to eq([
+        expect(adapter.functions).to eq([
           Fx::Function.new(
             "name" => "test",
             "definition" => <<~EOS
@@ -113,8 +113,8 @@ module Fx::Adapters
               upper_name varchar(256)
           );
         EOS
-        postgres = Postgres.new
-        postgres.create_function <<~EOS
+        adapter = Postgres.new
+        adapter.create_function <<~EOS
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -129,9 +129,9 @@ module Fx::Adapters
               FOR EACH ROW
               EXECUTE PROCEDURE uppercase_users_name()
         EOS
-        postgres.create_trigger(sql_definition)
+        adapter.create_trigger(sql_definition)
 
-        expect(postgres.triggers).to eq(
+        expect(adapter.triggers).to eq(
           [
             Fx::Trigger.new(
               "name" => "uppercase_users_name",
