@@ -28,8 +28,8 @@ module Fx
           new(*args).all
         end
 
-        def initialize(connectable = ActiveRecord::Base.connection)
-          @connectable = connectable
+        def initialize(connection)
+          @connection = connection
         end
 
         # All of the triggers that this connection has defined.
@@ -41,10 +41,10 @@ module Fx
 
         private
 
-        attr_reader :connectable
+        attr_reader :connection
 
         def triggers_from_postgres
-          connectable.execute(TRIGGERS_WITH_DEFINITIONS_QUERY)
+          connection.execute(TRIGGERS_WITH_DEFINITIONS_QUERY)
         end
 
         def to_fx_trigger(result)

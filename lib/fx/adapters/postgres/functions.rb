@@ -27,8 +27,8 @@ module Fx
           new(*args).all
         end
 
-        def initialize(connectable = ActiveRecord::Base.connection)
-          @connectable = connectable
+        def initialize(connection)
+          @connection = connection
         end
 
         # All of the functions that this connection has defined.
@@ -40,10 +40,10 @@ module Fx
 
         private
 
-        attr_reader :connectable
+        attr_reader :connection
 
         def functions_from_postgres
-          connectable.execute(FUNCTIONS_WITH_DEFINITIONS_QUERY)
+          connection.execute(FUNCTIONS_WITH_DEFINITIONS_QUERY)
         end
 
         def to_fx_function(result)
