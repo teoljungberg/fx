@@ -16,7 +16,7 @@ describe "Function migrations", :db do
   end
 
   it "can run migrations that create functions" do
-    migration = Class.new(ActiveRecord::Migration) do
+    migration = Class.new(migration_class) do
       def up
         create_function :test
       end
@@ -28,7 +28,7 @@ describe "Function migrations", :db do
   it "can run migrations that drop functions" do
     connection.create_function(:test)
 
-    migration = Class.new(ActiveRecord::Migration) do
+    migration = Class.new(migration_class) do
       def up
         drop_function :test
       end
@@ -53,7 +53,7 @@ describe "Function migrations", :db do
       version: 2,
       sql_definition: sql_definition,
     ) do
-      migration = Class.new(ActiveRecord::Migration) do
+      migration = Class.new(migration_class) do
         def change
           update_function :test, version: 2, revert_to_version: 1
         end

@@ -16,7 +16,7 @@ describe "Reverting migrations", :db do
   end
 
   it "can run reversible migrations for creating functions" do
-    migration = Class.new(ActiveRecord::Migration) do
+    migration = Class.new(migration_class) do
       def change
         create_function :test
       end
@@ -28,12 +28,12 @@ describe "Reverting migrations", :db do
   it "can run reversible migrations for dropping functions" do
     connection.create_function(:test)
 
-    good_migration = Class.new(ActiveRecord::Migration) do
+    good_migration = Class.new(migration_class) do
       def change
         drop_function :test, revert_to_version: 1
       end
     end
-    bad_migration = Class.new(ActiveRecord::Migration) do
+    bad_migration = Class.new(migration_class) do
       def change
         drop_function :test
       end
@@ -63,7 +63,7 @@ describe "Reverting migrations", :db do
       version: 2,
       sql_definition: sql_definition,
     ) do
-      migration = Class.new(ActiveRecord::Migration) do
+      migration = Class.new(migration_class) do
         def change
           update_function :test, version: 2, revert_to_version: 1
         end

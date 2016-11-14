@@ -33,7 +33,7 @@ describe "Trigger migrations", :db do
   end
 
   it "can run migrations that create triggers" do
-    migration = Class.new(ActiveRecord::Migration) do
+    migration = Class.new(migration_class) do
       def up
         create_trigger :uppercase_users_name
       end
@@ -45,7 +45,7 @@ describe "Trigger migrations", :db do
   it "can run migrations that drop triggers" do
     connection.create_trigger(:uppercase_users_name)
 
-    migration = Class.new(ActiveRecord::Migration) do
+    migration = Class.new(migration_class) do
       def up
         drop_trigger :uppercase_users_name, on: :users
       end

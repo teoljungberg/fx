@@ -7,6 +7,14 @@ module MigrationsHelper
     end
   end
 
+  def migration_class
+    if Rails::VERSION::MAJOR >= 5
+      ::ActiveRecord::Migration[5.0]
+    else
+      ::ActiveRecord::Migration
+    end
+  end
+
   def connection
     @_connection ||= ActiveRecord::Base.connection
   end

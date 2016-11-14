@@ -33,7 +33,7 @@ describe "Reverting migrations", :db do
   end
 
   it "can run reversible migrations for creating triggers" do
-    migration = Class.new(ActiveRecord::Migration) do
+    migration = Class.new(migration_class) do
       def change
         create_trigger :uppercase_users_name, on: :users
       end
@@ -45,12 +45,12 @@ describe "Reverting migrations", :db do
   it "can run reversible migrations for dropping triggers" do
     connection.create_trigger(:uppercase_users_name, on: :users)
 
-    good_migration = Class.new(ActiveRecord::Migration) do
+    good_migration = Class.new(migration_class) do
       def change
         drop_trigger :uppercase_users_name, on: :users, revert_to_version: 1
       end
     end
-    bad_migration = Class.new(ActiveRecord::Migration) do
+    bad_migration = Class.new(migration_class) do
       def change
         drop_trigger :uppercase_users_name, on: :users
       end
@@ -78,7 +78,7 @@ describe "Reverting migrations", :db do
       sql_definition: sql_definition,
       version: 2,
     ) do
-      migration = Class.new(ActiveRecord::Migration) do
+      migration = Class.new(migration_class) do
         def change
           update_trigger(
             :uppercase_users_name,
