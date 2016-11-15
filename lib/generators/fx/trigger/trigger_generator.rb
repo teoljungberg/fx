@@ -56,6 +56,14 @@ module Fx
           end
         end
 
+        def activerecord_migration_class
+          if ActiveRecord::Migration.respond_to?(:current_version)
+            "ActiveRecord::Migration[5.0]"
+          else
+            "ActiveRecord::Migration"
+          end
+        end
+
         def formatted_name
           if singular_name.include?(".")
             "\"#{singular_name}\""
