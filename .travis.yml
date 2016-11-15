@@ -23,7 +23,10 @@ gemfile:
   - gemfiles/rails41.gemfile
   - gemfiles/rails42.gemfile
   - gemfiles/rails50.gemfile
+  - gemfiles/rails_edge.gemfile
 matrix:
+  allow_failures:
+    - gemfile: gemfiles/rails_edge.gemfile
   exclude:
     - rvm: 2.1.10
       gemfile: gemfiles/rails50.gemfile
