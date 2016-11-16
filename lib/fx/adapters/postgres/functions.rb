@@ -17,7 +17,8 @@ module Fx
               ON pn.oid = pp.pronamespace
           LEFT JOIN pg_depend pd
               ON pd.objid = pp.oid AND pd.deptype = 'e'
-          WHERE pn.nspname = 'public' AND pd.objid IS NULL;
+          WHERE pn.nspname = 'public' AND pd.objid IS NULL
+          ORDER BY pp.oid;
         SQL
 
         # Wraps #all as a static facade.

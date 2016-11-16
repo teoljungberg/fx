@@ -18,7 +18,8 @@ module Fx
           JOIN pg_proc pp
               ON (pp.oid = pt.tgfoid)
           WHERE pt.tgname
-          NOT ILIKE '%constraint%' AND pt.tgname NOT ILIKE 'pg%';
+          NOT ILIKE '%constraint%' AND pt.tgname NOT ILIKE 'pg%'
+          ORDER BY pc.oid;
         SQL
 
         # Wraps #all as a static facade.
