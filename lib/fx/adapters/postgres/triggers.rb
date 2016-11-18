@@ -8,7 +8,7 @@ module Fx
       class Triggers
         # The SQL query used by F(x) to retrieve the triggers considered
         # dumpable into `db/schema.rb`.
-        TRIGGERS_WITH_DEFINITIONS_QUERY = <<~SQL
+        TRIGGERS_WITH_DEFINITIONS_QUERY = <<-EOS.freeze
           SELECT
               pt.tgname AS name,
               pg_get_triggerdef(pt.oid) AS definition
@@ -20,7 +20,7 @@ module Fx
           WHERE pt.tgname
           NOT ILIKE '%constraint%' AND pt.tgname NOT ILIKE 'pg%'
           ORDER BY pc.oid;
-        SQL
+        EOS
 
         # Wraps #all as a static facade.
         #

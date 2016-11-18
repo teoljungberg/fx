@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe "Function migrations", :db do
   around do |example|
-    sql_definition = <<~EOS
+    sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN
@@ -40,7 +40,7 @@ describe "Function migrations", :db do
   it "can run migrations that updates functions" do
     connection.create_function(:test)
 
-    sql_definition = <<~EOS
+    sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN

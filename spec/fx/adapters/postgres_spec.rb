@@ -6,7 +6,7 @@ module Fx::Adapters
       it "successfully creates a function" do
         adapter = Postgres.new
         adapter.create_function(
-          <<~EOS
+          <<-EOS
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
@@ -22,7 +22,7 @@ module Fx::Adapters
 
     describe "#create_trigger" do
       it "successfully creates a trigger" do
-        connection.execute <<~EOS
+        connection.execute <<-EOS
           CREATE TABLE users (
               id int PRIMARY KEY,
               name varchar(256),
@@ -30,7 +30,7 @@ module Fx::Adapters
           );
         EOS
         adapter = Postgres.new
-        adapter.create_function <<~EOS
+        adapter.create_function <<-EOS
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -40,7 +40,7 @@ module Fx::Adapters
           $$ LANGUAGE plpgsql;
         EOS
         adapter.create_trigger(
-          <<~EOS
+          <<-EOS
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
                 FOR EACH ROW
@@ -56,7 +56,7 @@ module Fx::Adapters
       it "successfully drops a function" do
         adapter = Postgres.new
         adapter.create_function(
-          <<~EOS
+          <<-EOS
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
@@ -76,7 +76,7 @@ module Fx::Adapters
       it "finds functions and builds Fx::Function objects" do
         adapter = Postgres.new
         adapter.create_function(
-          <<~EOS
+          <<-EOS
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
@@ -86,27 +86,13 @@ module Fx::Adapters
           EOS
         )
 
-        expect(adapter.functions).to eq([
-          Fx::Function.new(
-            "name" => "test",
-            "definition" => <<~EOS
-              CREATE OR REPLACE FUNCTION public.test()
-               RETURNS text
-               LANGUAGE plpgsql
-              AS $function$
-              BEGIN
-                  RETURN 'test';
-              END;
-              $function$
-            EOS
-          ),
-        ])
+        expect(adapter.functions.map(&:name)).to eq ["test"]
       end
     end
 
     describe "#triggers" do
       it "finds triggers and builds Fx::Trigger objects" do
-        connection.execute <<~EOS
+        connection.execute <<-EOS
           CREATE TABLE users (
               id int PRIMARY KEY,
               name varchar(256),
@@ -114,7 +100,7 @@ module Fx::Adapters
           );
         EOS
         adapter = Postgres.new
-        adapter.create_function <<~EOS
+        adapter.create_function <<-EOS
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -123,7 +109,7 @@ module Fx::Adapters
           END;
           $$ LANGUAGE plpgsql;
         EOS
-        sql_definition = <<~EOS
+        sql_definition = <<-EOS
           CREATE TRIGGER uppercase_users_name
               BEFORE INSERT ON users
               FOR EACH ROW
@@ -131,19 +117,8 @@ module Fx::Adapters
         EOS
         adapter.create_trigger(sql_definition)
 
-        expect(adapter.triggers).to eq(
-          [
-            Fx::Trigger.new(
-              "name" => "uppercase_users_name",
-              "definition" => format_trigger(sql_definition),
-            ),
-          ],
-        )
+        expect(adapter.triggers.map(&:name)).to eq ["uppercase_users_name"]
       end
-    end
-
-    def format_trigger(trigger)
-      trigger.gsub("\n", "").gsub("    ", " ")
     end
   end
 end

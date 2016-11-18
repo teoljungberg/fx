@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe "Reverting migrations", :db do
   around do |example|
-    connection.execute <<~EOS
+    connection.execute <<-EOS
       CREATE TABLE users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
       );
     EOS
-    Fx.database.create_function <<~EOS
+    Fx.database.create_function <<-EOS
       CREATE OR REPLACE FUNCTION uppercase_users_name()
       RETURNS trigger AS $$
       BEGIN
@@ -18,7 +18,7 @@ describe "Reverting migrations", :db do
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    sql_definition = <<~EOS
+    sql_definition = <<-EOS
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
@@ -67,7 +67,7 @@ describe "Reverting migrations", :db do
   it "can run reversible migrations for updating triggers" do
     connection.create_trigger(:uppercase_users_name)
 
-    sql_definition = <<~EOS
+    sql_definition = <<-EOS
       CREATE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
           FOR EACH ROW

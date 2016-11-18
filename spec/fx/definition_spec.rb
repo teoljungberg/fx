@@ -4,7 +4,7 @@ describe Fx::Definition do
   describe "#to_sql" do
     context "representing a function definition" do
       it "returns the content of a function definition" do
-        sql_definition = <<~EOS
+        sql_definition = <<-EOS
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
           BEGIN
@@ -32,7 +32,7 @@ describe Fx::Definition do
 
     context "representing a trigger definition" do
       it "returns the content of a trigger definition" do
-        sql_definition = <<~EOS
+        sql_definition = <<-EOS
           CREATE TRIGGER check_update
           BEFORE UPDATE ON accounts
           FOR EACH ROW
