@@ -1,5 +1,8 @@
 # F(x)
 
+[![Build Status](https://travis-ci.com/teoljungberg/fx.svg?token=AgJn4nPeY6ue2Pvy23JQ&branch=master)](https://travis-ci.com/teoljungberg/fx)
+[![Documentation Quality](http://inch-ci.org/github/teoljungberg/fx.svg?branch=master)](http://inch-ci.org/github/teoljungberg/fx)
+
 F(x) adds methods to `ActiveRecord::Migration` to create and manage database
 functions and triggers in Rails.
 
