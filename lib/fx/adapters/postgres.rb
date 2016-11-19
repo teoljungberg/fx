@@ -23,6 +23,19 @@ module Fx
     #    config.adapter = Fx::Adapters::Postgres.new
     #  end
     class Postgres
+      # Creates an instance of the F(x) Postgres adapter.
+      #
+      # This is the default adapter for F(x). Configuring it via
+      # {Fx.configure} is not required, but the example below shows how one
+      # would explicitly set it.
+      #
+      # @param [#connection] connectable An object that returns the connection
+      #   for F(x) to use. Defaults to `ActiveRecord::Base`.
+      #
+      # @example
+      #  Fx.configure do |config|
+      #    config.adapter = Fx::Adapters::Postgres.new
+      #  end
       def initialize(connectable = ActiveRecord::Base)
         @connectable = connectable
       end
