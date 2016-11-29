@@ -1,6 +1,8 @@
 module Fx
   # @api private
   class Trigger
+    include Comparable
+
     attr_reader :name, :definition
     delegate :<=>, to: :name
 
