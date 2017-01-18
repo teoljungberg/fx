@@ -53,22 +53,44 @@ module Fx::Adapters
     end
 
     describe "#drop_function" do
-      it "successfully drops a function" do
-        adapter = Postgres.new
-        adapter.create_function(
-          <<-EOS
-            CREATE OR REPLACE FUNCTION test()
-            RETURNS text AS $$
-            BEGIN
-                RETURN 'test';
-            END;
-            $$ LANGUAGE plpgsql;
-          EOS
-        )
+      context "when the function has arguments" do
+        it "successfully drops a function with the entire function signature" do
+          adapter = Postgres.new
+          adapter.create_function(
+            <<-EOS
+              CREATE FUNCTION adder(x int, y int)
+              RETURNS int AS $$
+              BEGIN
+                  RETURN $1 + $2;
+              END;
+              $$ LANGUAGE plpgsql;
+            EOS
+          )
 
-        adapter.drop_function(:test)
+          adapter.drop_function(:adder)
 
-        expect(adapter.functions.map(&:name)).not_to include("test")
+          expect(adapter.functions.map(&:name)).not_to include("adder")
+        end
+      end
+
+      context "when the function does not have arguments" do
+        it "successfully drops a function" do
+          adapter = Postgres.new
+          adapter.create_function(
+            <<-EOS
+              CREATE OR REPLACE FUNCTION test()
+              RETURNS text AS $$
+              BEGIN
+                  RETURN 'test';
+              END;
+              $$ LANGUAGE plpgsql;
+            EOS
+          )
+
+          adapter.drop_function(:test)
+
+          expect(adapter.functions.map(&:name)).not_to include("test")
+        end
       end
     end
 

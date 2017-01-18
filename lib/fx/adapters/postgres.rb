@@ -125,7 +125,7 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        execute "DROP FUNCTION #{name}();"
+        execute "DROP FUNCTION #{name}(#{arguments_for_function(name)});"
       end
 
       # Drops the trigger from the database
@@ -149,6 +149,18 @@ module Fx
 
       def connection
         Connection.new(connectable.connection)
+      end
+
+      def arguments_for_function(name)
+        arguments = execute <<-EOS
+          WITH func_oid AS (
+              SELECT oid FROM pg_proc
+              WHERE proname = '#{name}'
+          )
+          SELECT * FROM
+          pg_get_function_identity_arguments((SELECT oid FROM func_oid));
+        EOS
+        arguments[0]["pg_get_function_identity_arguments"]
       end
     end
   end
