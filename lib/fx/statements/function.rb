@@ -49,8 +49,8 @@ module Fx
       #   the `version` argument to {#create_function}.
       # @return The database response from executing the drop statement.
       #
-      # @example Drop a function, rolling back to version 3 on rollback
-      #   drop_function(:uppercase_users_name, on: :users, revert_to_version: 3)
+      # @example Drop a function, rolling back to version 2 on rollback
+      #   drop_function(:uppercase_users_name, revert_to_version: 2)
       #
       def drop_function(name, revert_to_version: nil)
         Fx.database.drop_function(name)
