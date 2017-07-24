@@ -125,7 +125,11 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        execute "DROP FUNCTION #{name}();"
+        fns = functions.select { |function| function.name == name.to_s }
+
+        fns.each do |function|
+          execute "DROP FUNCTION #{name}(#{function.arguments});"
+        end
       end
 
       # Drops the trigger from the database
