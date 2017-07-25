@@ -1,4 +1,18 @@
 module DefinitionHelpers
+  def with_aggregate_definition(name:, sql_definition:, version: 1, &block)
+    definition = Fx::Definition.new(
+      name: name,
+      version: version,
+      type: "aggregate",
+    )
+
+    with_definition(
+      definition: definition,
+      sql_definition: sql_definition,
+      block: block,
+    )
+  end
+
   def with_function_definition(name:, sql_definition:, version: 1, &block)
     definition = Fx::Definition.new(name: name, version: version)
 

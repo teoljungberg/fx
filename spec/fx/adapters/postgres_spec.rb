@@ -2,6 +2,23 @@ require "spec_helper"
 
 module Fx::Adapters
   describe Postgres, :db do
+    describe "#create_aggregate" do
+      it "successfully creates an aggregate" do
+        adapter = Postgres.new
+        adapter.create_aggregate(
+          <<-EOS
+            CREATE AGGREGATE test(anyelement)(
+                SFUNC = array_append,
+                STYPE = anyarray,
+                INITCOND = '{}'
+            );
+          EOS
+        )
+
+        expect(adapter.aggregates.map(&:name)).to include("test")
+      end
+    end
+
     describe "#create_function" do
       it "successfully creates a function" do
         adapter = Postgres.new
@@ -52,6 +69,25 @@ module Fx::Adapters
       end
     end
 
+    describe "#drop_aggregate" do
+      it "successfully drops an aggregate" do
+        adapter = Postgres.new
+        adapter.create_aggregate(
+          <<-EOS
+            CREATE AGGREGATE test(anyelement)(
+                SFUNC = array_append,
+                STYPE = anyarray,
+                INITCOND = '{}'
+            );
+          EOS
+        )
+
+        adapter.drop_aggregate(:test)
+
+        expect(adapter.aggregates.map(&:name)).not_to include("test")
+      end
+    end
+
     describe "#drop_function" do
       it "successfully drops a function" do
         adapter = Postgres.new
@@ -69,6 +105,23 @@ module Fx::Adapters
         adapter.drop_function(:test)
 
         expect(adapter.functions.map(&:name)).not_to include("test")
+      end
+    end
+
+    describe "#aggregates" do
+      it "finds aggregates and builds Fx::Aggregate objects" do
+        adapter = Postgres.new
+        adapter.create_aggregate(
+          <<-EOS
+            CREATE AGGREGATE test(anyelement)(
+                SFUNC = array_append,
+                STYPE = anyarray,
+                INITCOND = '{}'
+            );
+          EOS
+        )
+
+        expect(adapter.aggregates.map(&:name)).to eq ["test"]
       end
     end
 

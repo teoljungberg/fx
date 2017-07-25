@@ -1,3 +1,4 @@
+require "fx/adapters/postgres/aggregates"
 require "fx/adapters/postgres/connection"
 require "fx/adapters/postgres/functions"
 require "fx/adapters/postgres/triggers"
@@ -40,6 +41,16 @@ module Fx
         @connectable = connectable
       end
 
+      # Returns an array of aggregates in the database.
+      #
+      # This collection of aggregates is used by the [Fx::SchemaDumper] to
+      # populate the `schema.rb` file.
+      #
+      # @return [Array<Fx::Aggregate>]
+      def aggregates
+        Aggregates.all(connection)
+      end
+
       # Returns an array of functions in the database.
       #
       # This collection of functions is used by the [Fx::SchemaDumper] to
@@ -58,6 +69,18 @@ module Fx
       # @return [Array<Fx::Trigger>]
       def triggers
         Triggers.all(connection)
+      end
+
+      # Creates an aggregate in the database.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::Aggregate#create_aggregate}.
+      #
+      # @param sql_definition The SQL schema for the aggregate.
+      #
+      # @return [void]
+      def create_aggregate(sql_definition)
+        execute sql_definition
       end
 
       # Creates a function in the database.
@@ -82,6 +105,20 @@ module Fx
       # @return [void]
       def create_trigger(sql_definition)
         execute sql_definition
+      end
+
+      # Updates an aggregate in the database.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::Aggregate#update_aggregate}.
+      #
+      # @param name The name of the aggregate.
+      # @param sql_definition The SQL schema for the aggregate.
+      #
+      # @return [void]
+      def update_aggregate(name, sql_definition)
+        drop_aggregate(name)
+        create_aggregate(sql_definition)
       end
 
       # Updates a function in the database.
@@ -114,6 +151,22 @@ module Fx
       def update_trigger(name, on:, sql_definition:)
         drop_trigger(name, on: on)
         create_trigger(sql_definition)
+      end
+
+      # Drops the aggregate from the database
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::Aggregate#drop_aggregate}.
+      #
+      # @param name The name of the aggregate to drop
+      #
+      # @return [void]
+      def drop_aggregate(name)
+        defs = aggregates.select { |aggregate| aggregate.name == name.to_s }
+
+        defs.each do |aggregate|
+          execute "DROP AGGREGATE #{name}(#{aggregate.arguments});"
+        end
       end
 
       # Drops the function from the database
