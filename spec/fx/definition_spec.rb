@@ -2,6 +2,33 @@ require "spec_helper"
 
 describe Fx::Definition do
   describe "#to_sql" do
+    context "representing an aggregate definition" do
+      it "returns the content of an aggregate definition" do
+        sql_definition = <<-EOS
+          CREATE AGGREGATE test(anyelement)(
+              SFUNC = array_append,
+              STYPE = anyarray,
+              INITCOND = '{}'
+          );
+        EOS
+        allow(File).to receive(:read).and_return(sql_definition)
+
+        definition = Fx::Definition.new(name: "test", version: 1, type: "aggregate")
+
+        expect(definition.to_sql).to eq sql_definition
+      end
+
+      it "raises an error if the file is empty" do
+        allow(File).to receive(:read).and_return("")
+        definition = Fx::Definition.new(name: "test", version: 1, type: "aggregate")
+
+        expect { definition.to_sql }.to raise_error(
+          RuntimeError,
+          %r(Define aggregate in db/aggregates/test_v01.sql before migrating),
+        )
+      end
+    end
+
     context "representing a function definition" do
       it "returns the content of a function definition" do
         sql_definition = <<-EOS
@@ -66,6 +93,14 @@ describe Fx::Definition do
   end
 
   describe "#path" do
+    context "representing an aggregate definition" do
+      it "returns a sql file with padded version and aggregate name" do
+        definition = Fx::Definition.new(name: "test", version: 1, type: "aggregate")
+
+        expect(definition.path).to eq "db/aggregates/test_v01.sql"
+      end
+    end
+
     context "representing a function definition" do
       it "returns a sql file with padded version and function name" do
         definition = Fx::Definition.new(name: "test", version: 1)
