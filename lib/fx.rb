@@ -1,3 +1,6 @@
+require "active_record"
+require "active_support/core_ext/string/indent"
+require "active_support/core_ext/string/strip"
 require "fx/version"
 require "fx/adapters/postgres"
 require "fx/command_recorder"
