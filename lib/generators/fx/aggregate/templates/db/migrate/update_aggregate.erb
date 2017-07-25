@@ -1,0 +1,5 @@
+class <%= migration_class_name %> < <%= activerecord_migration_class %>
+  def change
+    update_aggregate <%= formatted_name %>, version: <%= version %>, revert_to_version: <%= previous_version %>
+  end
+end

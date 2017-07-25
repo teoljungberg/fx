@@ -1,3 +1,4 @@
+require "fx/command_recorder/aggregate"
 require "fx/command_recorder/arguments"
 require "fx/command_recorder/function"
 require "fx/command_recorder/trigger"
@@ -5,6 +6,7 @@ require "fx/command_recorder/trigger"
 module Fx
   # @api private
   module CommandRecorder
+    include Aggregate
     include Function
     include Trigger
 

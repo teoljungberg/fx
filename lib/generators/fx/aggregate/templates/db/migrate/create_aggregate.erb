@@ -1,0 +1,5 @@
+class <%= migration_class_name %> < <%= activerecord_migration_class %>
+  def change
+    create_aggregate <%= formatted_name %>
+  end
+end
