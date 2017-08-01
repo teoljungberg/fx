@@ -33,8 +33,7 @@ module Fx
           @connection = connection
         end
 
-        # All of the functions that this connection has defined. Functions with
-        # multiple definitions are grouped into a single object.
+        # All of the functions that this connection has defined.
         #
         # @return [Array<Fx::Function>]
         def all
