@@ -8,7 +8,7 @@ module Fx
 
     def initialize(function)
       @name = function.fetch("name")
-      @arguments = function.fetch("arguments", [])
+      @arguments = function.fetch("arguments", "")
       @definition = function.fetch("definition")
     end
 
