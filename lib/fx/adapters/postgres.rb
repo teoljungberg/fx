@@ -126,7 +126,7 @@ module Fx
       # @return [void]
       def drop_function(name)
         functions_with_matching_name(name).each do |function|
-          execute "DROP FUNCTION #{name}(#{function.arguments});"
+          execute "DROP FUNCTION #{function.signature};"
         end
       end
 

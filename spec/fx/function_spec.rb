@@ -37,6 +37,23 @@ module Fx
       end
     end
 
+    describe "#signature" do
+      it "returns the function signature" do
+        function_a = Function.new(
+          "name" => "test",
+          "definition" => "some definition",
+        )
+        function_b = Function.new(
+          "name" => "test",
+          "arguments" => "anyarray, anyelement",
+          "definition" => "some definition",
+        )
+
+        expect(function_a.signature).to eq("test()")
+        expect(function_b.signature).to eq("test(anyarray, anyelement)")
+      end
+    end
+
     describe "#to_schema" do
       it "returns a schema compatible version of the function" do
         function = Function.new(

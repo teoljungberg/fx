@@ -18,6 +18,10 @@ module Fx
         arguments == other.arguments
     end
 
+    def signature
+      "#{name}(#{arguments})"
+    end
+
     def to_schema
       <<-SCHEMA
   create_function :#{name}, sql_definition: <<-\SQL
