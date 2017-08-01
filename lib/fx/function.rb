@@ -23,11 +23,13 @@ module Fx
     end
 
     def to_schema
-      <<-SCHEMA
-  create_function :#{name}, sql_definition: <<-\SQL
-  #{definition.indent(4).rstrip}
-  SQL
+      # rubocop:disable Layout/IndentHeredoc
+      <<-SCHEMA.indent(2)
+create_function :#{name}, sql_definition: <<-\SQL
+#{definition.indent(4).rstrip}
+SQL
       SCHEMA
+      # rubocop:enable Layout/IndentHeredoc
     end
   end
 end
