@@ -1,4 +1,4 @@
-describe "Functions with multiple definitions", :db do
+describe "Functions with multiple signatures", :db do
   around do |example|
     sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION test()
@@ -21,22 +21,21 @@ describe "Functions with multiple definitions", :db do
     end
   end
 
-  let(:functions) { Fx.database.functions }
-
-  it "creates both functions" do
+  it "can create functions with multiple signatures" do
     connection.create_function(:test)
 
-    expect(functions[0].name).to eql("test")
-    expect(functions[0].arguments).to eql("")
+    functions = Fx.database.functions
+    expect(functions[0].name).to eq("test")
+    expect(functions[0].arguments).to eq("")
 
-    expect(functions[1].name).to eql("test")
-    expect(functions[1].arguments).to eql("str text")
+    expect(functions[1].name).to eq("test")
+    expect(functions[1].arguments).to eq("str text")
   end
 
-  it "drops both functions" do
+  it "drops all functions of the same name but different signatures" do
     connection.create_function(:test)
     connection.drop_function(:test)
 
-    expect(functions).to be_empty
+    expect(Fx.database.functions).to be_empty
   end
 end
