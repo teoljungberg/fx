@@ -34,4 +34,34 @@ describe "User manages functions" do
     result = execute("SELECT * FROM test() AS result")
     expect(result).to eq("result" => "testest")
   end
+
+  it "handles functions with multiple signatures correctly" do
+    sql_definition = <<-EOS
+      CREATE OR REPLACE FUNCTION test(str text)
+      RETURNS text AS $$
+      BEGIN
+          RETURN str;
+      END;
+
+      $$ LANGUAGE plpgsql;
+      CREATE OR REPLACE FUNCTION test()
+      RETURNS text AS $$
+      BEGIN
+          RETURN test('test default');
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    connection.create_function :test, sql_definition: sql_definition
+
+    successfully "rake db:schema:dump"
+    connection.drop_function :test
+
+    successfully "rake db:schema:load"
+
+    result = execute("SELECT * FROM test() AS result")
+    expect(result).to eq("result" => "test default")
+
+    result = execute("SELECT * FROM test('non default') AS result")
+    expect(result).to eq("result" => "non default")
+  end
 end
