@@ -125,9 +125,7 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        fns = functions.select { |function| function.name == name.to_s }
-
-        fns.each do |function|
+        functions_with_matching_name(name).each do |function|
           execute "DROP FUNCTION #{name}(#{function.arguments});"
         end
       end
@@ -153,6 +151,10 @@ module Fx
 
       def connection
         Connection.new(connectable.connection)
+      end
+
+      def functions_with_matching_name(name)
+        functions.select { |function| function.name == name.to_s }
       end
     end
   end
