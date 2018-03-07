@@ -39,6 +39,7 @@ module Fx
           version = 1
         end
 
+        sql_definition = sql_definition.strip_heredoc if sql_definition
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
@@ -116,6 +117,7 @@ module Fx
           raise ArgumentError, "on is required"
         end
 
+        sql_definition = sql_definition.strip_heredoc if sql_definition
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
