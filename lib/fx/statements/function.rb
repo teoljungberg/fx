@@ -36,6 +36,7 @@ module Fx
             "version or sql_definition must be specified",
           )
         end
+        sql_definition = sql_definition.strip_heredoc if sql_definition
         sql_definition ||= Fx::Definition.new(name: name, version: version).to_sql
 
         Fx.database.create_function(sql_definition)
@@ -93,6 +94,7 @@ module Fx
           )
         end
 
+        sql_definition = sql_definition.strip_heredoc if sql_definition
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
