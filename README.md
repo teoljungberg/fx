@@ -26,7 +26,7 @@ You've got this great idea for a trigger you'd like to call
 definition file with the following command:
 
 ```sh
-% rails generate fx:trigger uppercase_users_name
+% rails generate fx:trigger uppercase_users_name table_name:users
       create  db/triggers/uppercase_users_name_v01.sql
       create  db/migrate/[TIMESTAMP]_create_trigger_uppercase_users_name.rb
 ```
