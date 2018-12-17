@@ -21,9 +21,21 @@ F(x) ships with support for PostgreSQL. The adapter is configurable (see
 
 ## Great, how do I create a trigger and a function?
 
-You've got this great idea for a trigger you'd like to call
+You've got this great idea for a function you'd like to call
 `uppercase_users_name`. You can create the migration and the corresponding
 definition file with the following command:
+
+```sh
+% rails generate fx:function uppercase_users_name
+      create  db/functions/uppercase_users_name_v01.sql
+      create  db/migrate/[TIMESTAMP]_create_function_uppercase_users_name.rb
+```
+
+Edit the `db/functions/uppercase_users_name_v01.sql` file with the SQL statement
+that defines your function.
+
+Next, let's add a trigger called `uppercase_users_name` to call our new
+function each time we `INSERT` on the `users` table.
 
 ```sh
 % rails generate fx:trigger uppercase_users_name table_name:users
@@ -31,23 +43,13 @@ definition file with the following command:
       create  db/migrate/[TIMESTAMP]_create_trigger_uppercase_users_name.rb
 ```
 
-Edit the `db/triggers/uppercase_users_name_v01.sql` file with the SQL statement
-that defines your trigger. In our example, this might look something like this:
+In our example, this might look something like this:
 
 ```sql
 CREATE TRIGGER uppercase_users_name
     BEFORE INSERT ON users
     FOR EACH ROW
     EXECUTE PROCEDURE uppercase_users_name();
-```
-
-As you see, we execute a function called `uppercase_users_name` before each
-`INSERT` on the `users` table, which is a function we don't have yet.
-
-```sh
-% rails generate fx:function uppercase_users_name
-      create  db/functions/uppercase_users_name_v01.sql
-      create  db/migrate/[TIMESTAMP]_create_function_uppercase_users_name.rb
 ```
 
 The generated migrations contains `create_function` and `create_trigger`
