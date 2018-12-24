@@ -20,7 +20,7 @@ module Fx
     end
 
     def path
-      @path ||= File.join("db", @type.pluralize, filename)
+      @_path ||= File.join("db", @type.pluralize, filename)
     end
 
     def version
@@ -30,16 +30,17 @@ module Fx
     private
 
     def filename
-      @filename ||= "#{@name}_v#{version}.sql"
+      @_filename ||= "#{@name}_v#{version}.sql"
     end
 
     def find_file
-      Rails.application.config.paths["db/migrate"].each do |db_migrate_path|
-        file_path = File.absolute_path(File.join(db_migrate_path, "..", "..", path))
-        return file_path if File.exist?(file_path)
-      end
+      migration_paths.lazy
+        .map { |migration_path| File.expand_path(File.join("..", "..", path), migration_path) }
+        .find { |definition_path| File.exist?(definition_path) }
+    end
 
-      nil
+    def migration_paths
+      Rails.application.config.paths["db/migrate"].expanded
     end
   end
 end

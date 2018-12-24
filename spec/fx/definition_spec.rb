@@ -2,16 +2,17 @@ require "spec_helper"
 
 describe Fx::Definition do
   describe "#to_sql" do
+    let(:sql_definition) { <<-EOS }
+      CREATE OR REPLACE FUNCTION test()
+        RETURNS text AS $$
+        BEGIN
+            RETURN 'test';
+        END;
+        $$ LANGUAGE plpgsql;
+    EOS
+
     context "representing a function definition" do
       it "returns the content of a function definition" do
-        sql_definition = <<-EOS
-          CREATE OR REPLACE FUNCTION test()
-          RETURNS text AS $$
-          BEGIN
-              RETURN 'test';
-          END;
-          $$ LANGUAGE plpgsql;
-        EOS
         allow(File).to receive(:read).and_return(sql_definition)
 
         definition = Fx::Definition.new(name: "test", version: 1)
@@ -29,20 +30,26 @@ describe Fx::Definition do
         )
       end
 
-      it "finds file in engine" do
-        begin
-          engine_path = Rails.root.join("tmp", "engine")
+      context "when definition is at Rails engine" do
+        let(:engine_path) { Rails.root.join("tmp", "engine") }
+        let(:definition_path) { engine_path.join("db", "functions", "custom_test_v01.sql") }
+
+        before do
           FileUtils.mkdir_p(engine_path.join("db", "functions"))
 
-          sql_file_path = engine_path.join("db", "functions", "custom_test_v01.sql")
-          File.open(sql_file_path, "w") { |f| f.write("sql def") }
+          File.write(definition_path, sql_definition)
 
-          Rails.application.config.paths["db/migrate"].concat([engine_path.join("db", "migrate").to_s])
+          Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
+        end
+
+        after do
+          FileUtils.rm_rf(engine_path)
+        end
+
+        it "returns the content of a function definition" do
           definition = Fx::Definition.new(name: "custom_test", version: 1)
 
-          expect(definition.to_sql).to eq "sql def"
-        ensure
-          FileUtils.rm_rf(engine_path)
+          expect(definition.to_sql).to eq sql_definition
         end
       end
     end
