@@ -28,6 +28,23 @@ describe Fx::Definition do
           %r(Define function in db/functions/test_v01.sql before migrating),
         )
       end
+
+      it "finds file in engine" do
+        begin
+          engine_path = Rails.root.join("tmp", "engine")
+          FileUtils.mkdir_p(engine_path.join("db", "functions"))
+
+          sql_file_path = engine_path.join("db", "functions", "custom_test_v01.sql")
+          File.open(sql_file_path, "w") { |f| f.write("sql def") }
+
+          Rails.application.config.paths["db/migrate"].concat([engine_path.join("db", "migrate").to_s])
+          definition = Fx::Definition.new(name: "custom_test", version: 1)
+
+          expect(definition.to_sql).to eq "sql def"
+        ensure
+          FileUtils.rm_rf(engine_path)
+        end
+      end
     end
 
     context "representing a trigger definition" do
