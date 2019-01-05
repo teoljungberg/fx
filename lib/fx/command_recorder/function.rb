@@ -15,7 +15,7 @@ module Fx
       end
 
       def invert_create_function(args)
-        [:drop_function, args]
+        [:drop_function, [args[0], args[1].try(:except, :version)].compact]
       end
 
       def invert_drop_function(args)

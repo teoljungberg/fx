@@ -21,8 +21,14 @@ describe "Reverting migrations", :db do
         create_function :test
       end
     end
+    migration_with_version = Class.new(migration_class) do
+      def change
+        create_function :test, version: 1
+      end
+    end
 
     expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+    expect { run_migration(migration_with_version, [:up, :down]) }.not_to raise_error
   end
 
   it "can run reversible migrations for dropping functions" do
