@@ -34,9 +34,10 @@ module Fx
           first = triggers.first
           expect(triggers.size).to eq 1
           expect(first.name).to eq "uppercase_users_name"
-          expect(first.definition).to eq <<-EOS.strip_heredoc.strip
-            CREATE TRIGGER uppercase_users_name BEFORE INSERT ON users FOR EACH ROW EXECUTE PROCEDURE uppercase_users_name()
-          EOS
+          expect(first.definition).to include("BEFORE INSERT")
+          expect(first.definition).to match(/ON [public\.users|users]/)
+          expect(first.definition).to include("FOR EACH ROW")
+          expect(first.definition).to include("EXECUTE PROCEDURE uppercase_users_name()")
         end
       end
     end
