@@ -125,7 +125,25 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        execute "DROP FUNCTION #{name}();"
+        # https://www.postgresql.org/docs/9.6/sql-dropfunction.html
+        # DROP FUNCTION [ IF EXISTS ] name ( [ [ argmode ] [ argname ] argtype [, ...] ] ) ...
+        #
+        # https://www.postgresql.org/docs/10/sql-dropfunction.html
+        # DROP FUNCTION [ IF EXISTS ] name [ ( [ [ argmode ] [ argname ] argtype [, ...] ] ) ] ...
+        #                                  ^                                                 ^
+        #                                  Notice how the arguments are optional since 10 +
+        #
+        # If you have two function with the same name but with different arguments it
+        # complain with
+        # => drop function test;
+        # ERROR:  function name "test" is not unique
+        # HINT:  Specify the argument list to select the function unambiguously.
+
+        if postgres_version >= 10_00_00
+          execute "DROP FUNCTION #{name};"
+        else
+          execute "DROP FUNCTION #{name}();"
+        end
       end
 
       # Drops the trigger from the database
@@ -149,6 +167,31 @@ module Fx
 
       def connection
         Connection.new(connectable.connection)
+      end
+
+      def postgres_version
+        # SHOW server_version_num;
+        # 110002 for 11.2
+        # ^^     Major
+        #   ^^   Minor
+        #     ^^ Patch
+
+        #  90514 for 9.5.14
+        #  ^     Major
+        #   ^^   Minor
+        #     ^^ Patch
+
+        # We could also use the human readable format but it is harder to compare
+        # SHOW server_version; -- returns 11.2 and 9.5.14
+
+        # server_version_num has only been available since 8.2.
+        begin
+          query = execute "SHOW server_version_num"
+          return query.first["server_version_num"].to_i
+        rescue ActiveRecord::StatementInvalid => e
+          # ¯\_(ツ)_/¯ server_version_num was introduced in  8.2 i set at the default
+          return 80200
+        end
       end
     end
   end
