@@ -19,10 +19,10 @@ rvm:
   - 2.2.6
   - 2.1.10
 gemfile:
-  - gemfiles/rails40.gemfile
-  - gemfiles/rails41.gemfile
   - gemfiles/rails42.gemfile
   - gemfiles/rails50.gemfile
+  - gemfiles/rails51.gemfile
+  - gemfiles/rails52.gemfile
   - gemfiles/rails_edge.gemfile
 matrix:
   allow_failures:
