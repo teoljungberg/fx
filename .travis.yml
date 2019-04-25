@@ -1,5 +1,5 @@
 addons:
-  postgresql: "10"
+  postgresql: "9.6"
 before_install:
   - "echo '--colour' > ~/.rspec"
   - "echo 'gem: --no-document' > ~/.gemrc"
@@ -9,7 +9,9 @@ branches:
   only:
     - master
 install:
+  - pg_lsclusters
   - travis_retry bin/setup
+  - date
 language:
   - ruby
 notifications:
