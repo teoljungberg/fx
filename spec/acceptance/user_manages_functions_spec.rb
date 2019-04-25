@@ -48,6 +48,7 @@ describe "User manages functions" do
     successfully "rake db:migrate"
 
     result = execute("SELECT * FROM adder(1, 2) AS result")
+    result["result"] = result["result"].to_i
     expect(result).to eq("result" => 3)
 
     successfully "rails destroy fx:function adder"
