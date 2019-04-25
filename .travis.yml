@@ -1,5 +1,5 @@
 addons:
-  postgresql: "9.4"
+  postgresql: "10"
 before_install:
   - "echo '--colour' > ~/.rspec"
   - "echo 'gem: --no-document' > ~/.gemrc"
