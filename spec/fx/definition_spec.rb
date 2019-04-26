@@ -28,6 +28,29 @@ describe Fx::Definition do
           %r(Define function in db/functions/test_v01.sql before migrating),
         )
       end
+
+      context "when definition is at Rails engine" do
+        it "returns the content of a function definition" do
+          sql_definition = <<-EOS
+            CREATE OR REPLACE FUNCTION test()
+            RETURNS text AS $$
+            BEGIN
+                RETURN 'test';
+            END;
+            $$ LANGUAGE plpgsql;
+          EOS
+          engine_path = Rails.root.join("tmp", "engine")
+          FileUtils.mkdir_p(engine_path.join("db", "functions"))
+          File.write(engine_path.join("db", "functions", "custom_test_v01.sql"), sql_definition)
+          Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
+
+          definition = Fx::Definition.new(name: "custom_test", version: 1)
+
+          expect(definition.to_sql).to eq sql_definition
+
+          FileUtils.rm_rf(engine_path)
+        end
+      end
     end
 
     context "representing a trigger definition" do

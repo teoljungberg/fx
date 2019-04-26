@@ -8,7 +8,7 @@ module Fx
     end
 
     def to_sql
-      File.read(full_path).tap do |content|
+      File.read(find_file || full_path).tap do |content|
         if content.empty?
           raise "Define #{@type} in #{path} before migrating."
         end
@@ -20,7 +20,7 @@ module Fx
     end
 
     def path
-      File.join("db", @type.pluralize, filename)
+      @_path ||= File.join("db", @type.pluralize, filename)
     end
 
     def version
@@ -30,7 +30,17 @@ module Fx
     private
 
     def filename
-      "#{@name}_v#{version}.sql"
+      @_filename ||= "#{@name}_v#{version}.sql"
+    end
+
+    def find_file
+      migration_paths.lazy
+        .map { |migration_path| File.expand_path(File.join("..", "..", path), migration_path) }
+        .find { |definition_path| File.exist?(definition_path) }
+    end
+
+    def migration_paths
+      Rails.application.config.paths["db/migrate"].expanded
     end
   end
 end
