@@ -2,17 +2,16 @@ require "spec_helper"
 
 describe Fx::Definition do
   describe "#to_sql" do
-    let(:sql_definition) { <<-EOS }
-      CREATE OR REPLACE FUNCTION test()
-        RETURNS text AS $$
-        BEGIN
-            RETURN 'test';
-        END;
-        $$ LANGUAGE plpgsql;
-    EOS
-
     context "representing a function definition" do
       it "returns the content of a function definition" do
+        sql_definition = <<-EOS
+          CREATE OR REPLACE FUNCTION test()
+          RETURNS text AS $$
+          BEGIN
+              RETURN 'test';
+          END;
+          $$ LANGUAGE plpgsql;
+        EOS
         allow(File).to receive(:read).and_return(sql_definition)
 
         definition = Fx::Definition.new(name: "test", version: 1)
@@ -31,12 +30,18 @@ describe Fx::Definition do
       end
 
       context "when definition is at Rails engine" do
-        let(:engine_path) { Rails.root.join("tmp", "engine") }
-        let(:definition_path) { engine_path.join("db", "functions", "custom_test_v01.sql") }
-
         it "returns the content of a function definition" do
+          sql_definition = <<-EOS
+            CREATE OR REPLACE FUNCTION test()
+            RETURNS text AS $$
+            BEGIN
+                RETURN 'test';
+            END;
+            $$ LANGUAGE plpgsql;
+          EOS
+          engine_path = Rails.root.join("tmp", "engine")
           FileUtils.mkdir_p(engine_path.join("db", "functions"))
-          File.write(definition_path, sql_definition)
+          File.write(engine_path.join("db", "functions", "custom_test_v01.sql"), sql_definition)
           Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
 
           definition = Fx::Definition.new(name: "custom_test", version: 1)
