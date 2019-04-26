@@ -34,22 +34,16 @@ describe Fx::Definition do
         let(:engine_path) { Rails.root.join("tmp", "engine") }
         let(:definition_path) { engine_path.join("db", "functions", "custom_test_v01.sql") }
 
-        before do
-          FileUtils.mkdir_p(engine_path.join("db", "functions"))
-
-          File.write(definition_path, sql_definition)
-
-          Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
-        end
-
-        after do
-          FileUtils.rm_rf(engine_path)
-        end
-
         it "returns the content of a function definition" do
+          FileUtils.mkdir_p(engine_path.join("db", "functions"))
+          File.write(definition_path, sql_definition)
+          Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
+
           definition = Fx::Definition.new(name: "custom_test", version: 1)
 
           expect(definition.to_sql).to eq sql_definition
+
+          FileUtils.rm_rf(engine_path)
         end
       end
     end
