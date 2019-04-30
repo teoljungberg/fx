@@ -1,15 +1,3 @@
-appraise "rails40" do
-  gem "activerecord", "~> 4.0.0"
-  gem "railties", "~> 4.0.0"
-  gem "pg", "~> 0.15"
-end
-
-appraise "rails41" do
-  gem "activerecord", "~> 4.1.0"
-  gem "railties", "~> 4.1.0"
-  gem "pg", "~> 0.15"
-end
-
 appraise "rails42" do
   gem "activerecord", "~> 4.2.0"
   gem "railties", "~> 4.2.0"

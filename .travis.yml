@@ -19,8 +19,6 @@ rvm:
   - 2.5
   - 2.4
 gemfile:
-  - gemfiles/rails40.gemfile
-  - gemfiles/rails41.gemfile
   - gemfiles/rails42.gemfile
   - gemfiles/rails50.gemfile
   - gemfiles/rails51.gemfile
