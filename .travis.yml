@@ -15,9 +15,9 @@ language:
 notifications:
   email: false
 rvm:
-  - 2.3.1
-  - 2.2.6
-  - 2.1.10
+  - 2.3
+  - 2.2
+  - 2.1
 gemfile:
   - gemfiles/rails40.gemfile
   - gemfiles/rails41.gemfile
@@ -28,5 +28,5 @@ matrix:
   allow_failures:
     - gemfile: gemfiles/rails_edge.gemfile
   exclude:
-    - rvm: 2.1.10
+    - rvm: 2.1
       gemfile: gemfiles/rails50.gemfile
