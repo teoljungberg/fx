@@ -59,7 +59,7 @@ GEM
     minitest (5.11.3)
     nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
-    pg (1.1.4)
+    pg (0.21.0)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
@@ -118,7 +118,7 @@ DEPENDENCIES
   bundler (>= 1.5)
   database_cleaner
   fx!
-  pg
+  pg (~> 0.15)
   pry
   railties (~> 4.2.0)
   rake
