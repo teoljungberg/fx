@@ -125,7 +125,11 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        execute "DROP FUNCTION #{name}();"
+        if support_drop_function_without_args
+          execute "DROP FUNCTION #{name};"
+        else
+          execute "DROP FUNCTION #{name}();"
+        end
       end
 
       # Drops the trigger from the database
@@ -149,6 +153,13 @@ module Fx
 
       def connection
         Connection.new(connectable.connection)
+      end
+
+      def support_drop_function_without_args
+        # https://www.postgresql.org/docs/9.6/sql-dropfunction.html
+        # https://www.postgresql.org/docs/10/sql-dropfunction.html
+
+        PG.connect.server_version >= 10_00_00
       end
     end
   end
