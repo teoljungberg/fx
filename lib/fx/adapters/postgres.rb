@@ -23,6 +23,22 @@ module Fx
     #    config.adapter = Fx::Adapters::Postgres.new
     #  end
     class Postgres
+      
+      # The SQL query used by F(x) to retrieve the function name 
+      # with its signature.
+      FUNCTION_NAME_WITH_SIGNATURE = <<-EOS.freeze
+          SELECT
+              pp.proname AS name,
+              CONCAT(pp.proname, '(', pg_get_function_identity_arguments(pp.oid), ')') AS signature
+          FROM pg_proc pp
+          JOIN pg_namespace pn
+              ON pn.oid = pp.pronamespace
+          LEFT JOIN pg_depend pd
+              ON pd.objid = pp.oid AND pd.deptype = 'e'
+          WHERE pn.nspname = 'public' AND pd.objid IS NULL;
+        EOS
+
+
       # Creates an instance of the F(x) Postgres adapter.
       #
       # This is the default adapter for F(x). Configuring it via
@@ -128,7 +144,8 @@ module Fx
         if support_drop_function_without_args
           execute "DROP FUNCTION #{name};"
         else
-          execute "DROP FUNCTION #{name}();"
+          signature = function_signature_by_name name
+          execute "DROP FUNCTION #{signature};"
         end
       end
 
@@ -158,8 +175,12 @@ module Fx
       def support_drop_function_without_args
         # https://www.postgresql.org/docs/9.6/sql-dropfunction.html
         # https://www.postgresql.org/docs/10/sql-dropfunction.html
-
+        
         PG.connect.server_version >= 10_00_00
+      end
+
+      def function_signature_by_name(name)
+        connection.execute(FUNCTION_NAME_WITH_SIGNATURE).find { |tuple| tuple['name'] == name.to_s }['signature']
       end
     end
   end

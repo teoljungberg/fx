@@ -21,6 +21,8 @@ module Fx
           ORDER BY pp.oid;
         EOS
 
+        CREATE_FUNCTION_COMMAND = 'CREATE OR REPLACE FUNCTION'
+
         # Wraps #all as a static facade.
         #
         # @return [Array<Fx::Function>]
@@ -48,7 +50,13 @@ module Fx
         end
 
         def to_fx_function(result)
-          Fx::Function.new(result)
+          function = Fx::Function.new(result)
+          remove_public_schema_name_from_definition!(function)
+          function
+        end
+
+        def remove_public_schema_name_from_definition!(function)
+          function.definition.sub! "#{CREATE_FUNCTION_COMMAND} public.", "#{CREATE_FUNCTION_COMMAND} "
         end
       end
     end

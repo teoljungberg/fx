@@ -21,7 +21,7 @@ module Fx
           expect(functions.size).to eq 1
           expect(first.name).to eq "test"
           expect(first.definition).to eq <<-EOS.strip_heredoc
-            CREATE OR REPLACE FUNCTION public.test()
+            CREATE OR REPLACE FUNCTION test()
              RETURNS text
              LANGUAGE plpgsql
             AS $function$
