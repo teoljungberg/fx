@@ -26,7 +26,7 @@ module Fx
       
       # The SQL query used by F(x) to retrieve the function name 
       # with its signature.
-      FUNCTION_NAME_WITH_SIGNATURE = <<-EOS.freeze
+      FUNCTION_NAMES_WITH_THEIR_SIGNATURE = <<-EOS.freeze
           SELECT
               pp.proname AS name,
               CONCAT(pp.proname, '(', pg_get_function_identity_arguments(pp.oid), ')') AS signature
@@ -175,12 +175,12 @@ module Fx
       def support_drop_function_without_args
         # https://www.postgresql.org/docs/9.6/sql-dropfunction.html
         # https://www.postgresql.org/docs/10/sql-dropfunction.html
-        
+
         PG.connect.server_version >= 10_00_00
       end
 
       def function_signature_by_name(name)
-        connection.execute(FUNCTION_NAME_WITH_SIGNATURE).find { |tuple| tuple['name'] == name.to_s }['signature']
+        connection.execute(FUNCTION_NAMES_WITH_THEIR_SIGNATURE).find { |tuple| tuple['name'] == name.to_s }['signature']
       end
     end
   end
