@@ -159,7 +159,7 @@ module Fx
         # https://www.postgresql.org/docs/9.6/sql-dropfunction.html
         # https://www.postgresql.org/docs/10/sql-dropfunction.html
 
-        PG.connect.server_version >= 10_00_00
+        connection.raw_connection.server_version >= 10_00_00
       end
     end
   end
