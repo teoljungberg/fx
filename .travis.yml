@@ -9,9 +9,6 @@ before_install:
   - "echo 'gem: --no-document' > ~/.gemrc"
   - git config --global user.name "Travis CI"
   - git config --global user.email "travis-ci@example.com"
-env:
-  global:
-    - PGPORT=5433
 branches:
   only:
     - master
