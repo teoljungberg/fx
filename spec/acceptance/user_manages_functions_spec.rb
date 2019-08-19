@@ -54,4 +54,22 @@ describe "User manages functions" do
     successfully "rails destroy fx:function adder"
     successfully "rake db:migrate"
   end
+
+  it 'excludes aggregate functions on schema dumping' do
+    connection.execute <<-SQL.strip_heredoc
+      CREATE FUNCTION jsonb_merge(jsonb1 jsonb, jsonb2 jsonb) RETURNS jsonb AS $$
+      SELECT jsonb1 || jsonb2;
+      $$ LANGUAGE SQL;
+    SQL
+
+    connection.execute <<-SQL.strip_heredoc
+      CREATE AGGREGATE jsonb_merge_agg(jsonb)
+      (
+        sfunc = jsonb_merge,
+        stype = jsonb,
+        initcond = '{}'
+      )
+    SQL
+    successfully 'rake db:migrate'
+  end
 end
