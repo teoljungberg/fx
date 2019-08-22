@@ -17,6 +17,7 @@ module Fx
   # ```
   # Fx.configure do |config|
   #   config.database = Fx::Adapters::Postgres
+  #   config.define_functions_at_schema_beginning = true
   # end
   # ```
   def self.configure
@@ -31,8 +32,16 @@ module Fx
     # @return Fx adapter
     attr_accessor :database
 
+    # Configuration flag that prioritizes the order in the schema.rb of triggers and functions before other statements
+    # in order to make directly schema load work when using functions in statements below.
+    #
+    # Defaults false
+    # @return Bool
+    attr_accessor :define_functions_at_schema_beginning
+
     def initialize
       @database = Fx::Adapters::Postgres.new
+      @define_functions_at_schema_beginning = false
     end
   end
 end
