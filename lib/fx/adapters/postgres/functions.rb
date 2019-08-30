@@ -10,8 +10,8 @@ module Fx
         # dumpable into `db/schema.rb`.
         PG_11_FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-SQL.squish.freeze
           SELECT
-            pp.proname,
-            pg_get_functiondef(pp.oid)
+            pp.proname AS name,
+            pg_get_functiondef(pp.oid) AS definition
           FROM
             pg_proc pp
             JOIN pg_namespace pn ON pn.oid = pp.pronamespace
@@ -27,8 +27,8 @@ module Fx
 
         PG_10_FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-SQL.squish.freeze
           SELECT
-            pp.proname,
-            pg_get_functiondef(pp.oid)
+            pp.proname AS name,
+            pg_get_functiondef(pp.oid) AS definition
           FROM
             pg_proc pp
             JOIN pg_namespace pn ON pn.oid = pp.pronamespace
