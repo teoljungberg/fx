@@ -37,3 +37,5 @@ matrix:
   exclude:
     - rvm: 2.4
       gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails60.gemfile
