@@ -1,8 +1,3 @@
-appraise "rails50" do
-  gem "activerecord", "~> 5.0"
-  gem "railties", "~> 5.0"
-end
-
 appraise "rails51" do
   gem "activerecord", "~> 5.1"
   gem "railties", "~> 5.1"
