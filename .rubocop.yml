@@ -364,9 +364,17 @@ Style/TrailingCommaInArguments:
     - no_comma
   Enabled: true
 
-Style/TrailingCommaInLiteral:
-  Description: 'Checks for trailing comma in array and hash literals.'
-  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas'
+Style/TrailingCommaInArrayLiteral:
+  Description: 'Checks for trailing comma in array literals.'
+  EnforcedStyleForMultiline: comma
+  SupportedStyles:
+    - comma
+    - consistent_comma
+    - no_comma
+  Enabled: true
+
+Style/TrailingCommaInHashLiteral:
+  Description: 'Checks for trailing comma in hash literals.'
   EnforcedStyleForMultiline: comma
   SupportedStyles:
     - comma
