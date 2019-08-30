@@ -472,10 +472,6 @@ Style/InitialIndentation:
     Checks the indentation of the first non-blank non-comment line in a file.
   Enabled: false
 
-Lint/LiteralInCondition:
-  Description: 'Checks of literals used in conditions.'
-  Enabled: false
-
 Lint/LiteralInInterpolation:
   Description: 'Checks for literals used in interpolation.'
   Enabled: false
