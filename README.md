@@ -84,3 +84,7 @@ def change
   drop_function :uppercase_users_name, revert_to_version: 2
 end
 ```
+
+## Contributing
+
+See [contributing](CONTRIBUTING.md) for more details.
