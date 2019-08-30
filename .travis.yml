@@ -31,8 +31,6 @@ gemfile:
 matrix:
   allow_failures:
     - gemfile: gemfiles/rails_edge.gemfile
-    - gemfile: gemfiles/rails40.gemfile
-    - gemfile: gemfiles/rails41.gemfile
   exclude:
     - rvm: 2.4
       gemfile: gemfiles/rails_edge.gemfile
