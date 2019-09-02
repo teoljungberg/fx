@@ -30,7 +30,7 @@ module Fx
     private
 
     def filename
-      @_filename ||= "#{@name}_v#{version}.sql"
+      @_filename ||= "#{@name.to_s.tr(".", "_")}_v#{version}.sql"
     end
 
     def find_file

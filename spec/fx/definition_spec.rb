@@ -95,6 +95,12 @@ describe Fx::Definition do
 
         expect(definition.path).to eq "db/functions/test_v01.sql"
       end
+
+      it "handles schema-qualified function names" do
+        definition = Fx::Definition.new(name: "other_schema.test", version: 1)
+
+        expect(definition.path).to eq "db/functions/other_schema_test_v01.sql"
+      end
     end
 
     context "representing a trigger definition" do

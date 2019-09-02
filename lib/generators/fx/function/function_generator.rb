@@ -78,6 +78,16 @@ module Fx
 
       private
 
+      alias original_file_name file_name
+
+      def file_name
+        original_file_name.tr(".", "_")
+      end
+
+      def singular_name
+        original_file_name
+      end
+
       def function_definition_path
         @_function_definition_path ||= Rails.root.join(*%w(db functions))
       end

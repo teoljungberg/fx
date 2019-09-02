@@ -54,4 +54,21 @@ describe "User manages functions" do
     successfully "rails destroy fx:function adder"
     successfully "rake db:migrate"
   end
+
+  it "handles schema-qualified functions" do
+    execute("CREATE SCHEMA other_schema")
+    successfully "rails generate fx:function other_schema.test"
+    write_function_definition "other_schema_test_v01", <<-EOS
+      CREATE OR REPLACE FUNCTION other_schema.test()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'test';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    successfully "rake db:migrate"
+
+    result = execute("SELECT * FROM other_schema.test() AS result")
+    expect(result).to eq("result" => "test")
+  end
 end
