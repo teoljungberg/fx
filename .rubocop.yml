@@ -139,6 +139,12 @@ Layout/ExtraSpacing:
   Description: 'Do not use unnecessary spacing.'
   Enabled: true
 
+Naming/MemoizedInstanceVariableName:
+  Description: >-
+                  This cop checks for memoized methods whose instance variable
+                  name does not match the method name.
+  EnforcedStyleForLeadingUnderscores: required
+
 Naming/FileName:
   Description: 'Use snake_case for source file names.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#snake-case-files'
