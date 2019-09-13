@@ -6,7 +6,7 @@ module Fx::Adapters
       it "successfully creates a function" do
         adapter = Postgres.new
         adapter.create_function(
-          <<-SQL
+          <<-SQL,
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
@@ -40,7 +40,7 @@ module Fx::Adapters
           $$ LANGUAGE plpgsql;
         SQL
         adapter.create_trigger(
-          <<-SQL
+          <<-SQL,
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
                 FOR EACH ROW
@@ -57,7 +57,7 @@ module Fx::Adapters
         it "successfully drops a function with the entire function signature" do
           adapter = Postgres.new
           adapter.create_function(
-            <<-SQL
+            <<-SQL,
               CREATE FUNCTION adder(x int, y int)
               RETURNS int AS $$
               BEGIN
@@ -77,7 +77,7 @@ module Fx::Adapters
         it "successfully drops a function" do
           adapter = Postgres.new
           adapter.create_function(
-            <<-SQL
+            <<-SQL,
               CREATE OR REPLACE FUNCTION test()
               RETURNS text AS $$
               BEGIN
@@ -98,7 +98,7 @@ module Fx::Adapters
       it "finds functions and builds Fx::Function objects" do
         adapter = Postgres.new
         adapter.create_function(
-          <<-SQL
+          <<-SQL,
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
