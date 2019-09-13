@@ -22,6 +22,6 @@ if RUBY_VERSION > "2.2.0"
 
   appraise "rails-edge" do
     gem "rails", github: "rails/rails"
-    gem "arel", :github => "rails/arel"
+    gem "arel", github: "rails/arel"
   end
 end
