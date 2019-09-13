@@ -22,7 +22,7 @@ describe "Reverting migrations", :db do
       end
     end
 
-    expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+    expect { run_migration(migration, %i[up down]) }.not_to raise_error
   end
 
   it "can run reversible migrations for dropping functions" do
@@ -39,8 +39,8 @@ describe "Reverting migrations", :db do
       end
     end
 
-    expect { run_migration(good_migration, [:up, :down]) }.not_to raise_error
-    expect { run_migration(bad_migration, [:up, :down]) }.
+    expect { run_migration(good_migration, %i[up down]) }.not_to raise_error
+    expect { run_migration(bad_migration, %i[up down]) }.
       to raise_error(
         ActiveRecord::IrreversibleMigration,
         /`create_function` is reversible only if given a `revert_to_version`/,
@@ -69,7 +69,7 @@ describe "Reverting migrations", :db do
         end
       end
 
-      expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+      expect { run_migration(migration, %i[up down]) }.not_to raise_error
     end
   end
 end
