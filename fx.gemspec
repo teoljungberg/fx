@@ -22,16 +22,16 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = ["lib"]
 
+  spec.add_development_dependency "ammeter", ">= 1.1.3"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bundler", ">= 1.5"
   spec.add_development_dependency "database_cleaner"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec", ">= 3.3"
   spec.add_development_dependency "pg"
   spec.add_development_dependency "pry"
-  spec.add_development_dependency "ammeter", ">= 1.1.3"
-  spec.add_development_dependency "yard"
+  spec.add_development_dependency "rake"
   spec.add_development_dependency "redcarpet"
+  spec.add_development_dependency "rspec", ">= 3.3"
+  spec.add_development_dependency "yard"
 
   spec.add_dependency "activerecord", ">= 4.0.0"
   spec.add_dependency "railties", ">= 4.0.0"

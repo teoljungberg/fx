@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 gem "activerecord", "~> 4.2.0"
-gem "railties", "~> 4.2.0"
 gem "pg", "~> 0.15"
+gem "railties", "~> 4.2.0"
 
 gemspec path: "../"
