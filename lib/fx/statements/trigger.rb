@@ -98,7 +98,13 @@ module Fx
       #         EXECUTE PROCEDURE uppercase_users_name();
       #    SQL
       #
-      def update_trigger(name, version: nil, on: nil, sql_definition: nil, revert_to_version: nil)
+      def update_trigger(
+        name,
+        version: nil,
+        on: nil,
+        sql_definition: nil,
+        revert_to_version: nil
+      )
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,

@@ -37,7 +37,9 @@ module Fx
           expect(first.definition).to include("BEFORE INSERT")
           expect(first.definition).to match(/ON [public\.users|users]/)
           expect(first.definition).to include("FOR EACH ROW")
-          expect(first.definition).to include("EXECUTE PROCEDURE uppercase_users_name()")
+          expect(first.definition).to include(
+            "EXECUTE PROCEDURE uppercase_users_name()",
+          )
         end
       end
     end

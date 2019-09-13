@@ -34,9 +34,9 @@ module Fx
     end
 
     def find_file
-      migration_paths.lazy
-        .map { |migration_path| File.expand_path(File.join("..", "..", path), migration_path) }
-        .find { |definition_path| File.exist?(definition_path) }
+      migration_paths.lazy.map do |migration_path|
+        File.expand_path(File.join("..", "..", path), migration_path)
+      end.find { |definition_path| File.exist?(definition_path) }
     end
 
     def migration_paths

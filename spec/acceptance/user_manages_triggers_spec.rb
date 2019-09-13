@@ -13,7 +13,9 @@ describe "User manages triggers" do
       END;
       $$ LANGUAGE plpgsql;
     SQL
-    successfully "rails generate fx:trigger uppercase_users_name table_name:users"
+    successfully(
+      "rails generate fx:trigger uppercase_users_name table_name:users",
+    )
     write_trigger_definition "uppercase_users_name_v01", <<-SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
@@ -31,7 +33,9 @@ describe "User manages triggers" do
     result = execute("SELECT upper_name FROM users WHERE name = 'Bob';")
     expect(result).to eq("upper_name" => "BOB")
 
-    successfully "rails generate fx:trigger uppercase_users_name table_name:users"
+    successfully(
+      "rails generate fx:trigger uppercase_users_name table_name:users",
+    )
     write_trigger_definition "uppercase_users_name_v02", <<-SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
