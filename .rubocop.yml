@@ -135,6 +135,12 @@ Style/EvenOdd:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#predicate-methods'
   Enabled: false
 
+Style/ExpandPathArguments:
+  Description: >-
+                  This cop checks for use of the `File.expand_path` arguments.
+                  Likewise, it also checks for the `Pathname.new` argument.
+  Enabled: false
+
 Layout/ExtraSpacing:
   Description: 'Do not use unnecessary spacing.'
   Enabled: true
