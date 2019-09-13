@@ -106,10 +106,6 @@ Layout/DotPosition:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#consistent-multi-line-chains'
   EnforcedStyle: trailing
 
-Layout/EmptyLineAfterMagicComment:
-  Description: 'Checks for a newline after the final magic comment.'
-  Enabled: false
-
 Style/DoubleNegation:
   Description: 'Checks for uses of double negation (!!).'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-bang-bang'
@@ -117,6 +113,10 @@ Style/DoubleNegation:
 
 Style/EachWithObject:
   Description: 'Prefer `each_with_object` over `inject` or `reduce`.'
+  Enabled: false
+
+Layout/EmptyLineAfterMagicComment:
+  Description: 'Checks for a newline after the final magic comment.'
   Enabled: false
 
 Style/EmptyLiteral:
@@ -138,12 +138,6 @@ Style/EvenOdd:
 Layout/ExtraSpacing:
   Description: 'Do not use unnecessary spacing.'
   Enabled: true
-
-Naming/MemoizedInstanceVariableName:
-  Description: >-
-                  This cop checks for memoized methods whose instance variable
-                  name does not match the method name.
-  EnforcedStyleForLeadingUnderscores: required
 
 Naming/FileName:
   Description: 'Use snake_case for source file names.'
@@ -207,6 +201,12 @@ Metrics/LineLength:
   Description: 'Limit lines to 80 characters.'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#80-character-limits'
   Max: 80
+
+Naming/MemoizedInstanceVariableName:
+  Description: >-
+                  This cop checks for memoized methods whose instance variable
+                  name does not match the method name.
+  EnforcedStyleForLeadingUnderscores: required
 
 Metrics/MethodLength:
   Description: 'Avoid methods longer than 10 lines of code.'
