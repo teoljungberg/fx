@@ -87,11 +87,11 @@ module Fx
       end
 
       def updating_existing_function?
-        previous_version > 0
+        previous_version.positive?
       end
 
       def creating_new_function?
-        previous_version == 0
+        previous_version.zero?
       end
 
       def definition

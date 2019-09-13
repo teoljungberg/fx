@@ -97,7 +97,7 @@ module Fx
       end
 
       def updating_existing_trigger?
-        previous_version > 0
+        previous_version.positive?
       end
 
       def definition
