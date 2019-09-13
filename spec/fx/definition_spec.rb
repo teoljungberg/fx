@@ -4,14 +4,14 @@ describe Fx::Definition do
   describe "#to_sql" do
     context "representing a function definition" do
       it "returns the content of a function definition" do
-        sql_definition = <<-EOS
+        sql_definition = <<-SQL
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
           BEGIN
               RETURN 'test';
           END;
           $$ LANGUAGE plpgsql;
-        EOS
+        SQL
         allow(File).to receive(:read).and_return(sql_definition)
 
         definition = Fx::Definition.new(name: "test", version: 1)
@@ -31,14 +31,14 @@ describe Fx::Definition do
 
       context "when definition is at Rails engine" do
         it "returns the content of a function definition" do
-          sql_definition = <<-EOS
+          sql_definition = <<-SQL
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
                 RETURN 'test';
             END;
             $$ LANGUAGE plpgsql;
-          EOS
+          SQL
           engine_path = Rails.root.join("tmp", "engine")
           FileUtils.mkdir_p(engine_path.join("db", "functions"))
           File.write(engine_path.join("db", "functions", "custom_test_v01.sql"), sql_definition)
@@ -55,12 +55,12 @@ describe Fx::Definition do
 
     context "representing a trigger definition" do
       it "returns the content of a trigger definition" do
-        sql_definition = <<-EOS
+        sql_definition = <<-SQL
           CREATE TRIGGER check_update
           BEFORE UPDATE ON accounts
           FOR EACH ROW
           EXECUTE PROCEDURE check_account_update();
-        EOS
+        SQL
         allow(File).to receive(:read).and_return(sql_definition)
 
         definition = Fx::Definition.new(

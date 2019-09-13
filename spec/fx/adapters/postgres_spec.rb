@@ -6,14 +6,14 @@ module Fx::Adapters
       it "successfully creates a function" do
         adapter = Postgres.new
         adapter.create_function(
-          <<-EOS
+          <<-SQL
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
                 RETURN 'test';
             END;
             $$ LANGUAGE plpgsql;
-          EOS
+          SQL
         )
 
         expect(adapter.functions.map(&:name)).to include("test")
@@ -22,15 +22,15 @@ module Fx::Adapters
 
     describe "#create_trigger" do
       it "successfully creates a trigger" do
-        connection.execute <<-EOS
+        connection.execute <<-SQL
           CREATE TABLE users (
               id int PRIMARY KEY,
               name varchar(256),
               upper_name varchar(256)
           );
-        EOS
+        SQL
         adapter = Postgres.new
-        adapter.create_function <<-EOS
+        adapter.create_function <<-SQL
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -38,14 +38,14 @@ module Fx::Adapters
             RETURN NEW;
           END;
           $$ LANGUAGE plpgsql;
-        EOS
+        SQL
         adapter.create_trigger(
-          <<-EOS
+          <<-SQL
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
                 FOR EACH ROW
                 EXECUTE PROCEDURE uppercase_users_name();
-          EOS
+          SQL
         )
 
         expect(adapter.triggers.map(&:name)).to include("uppercase_users_name")
@@ -57,14 +57,14 @@ module Fx::Adapters
         it "successfully drops a function with the entire function signature" do
           adapter = Postgres.new
           adapter.create_function(
-            <<-EOS
+            <<-SQL
               CREATE FUNCTION adder(x int, y int)
               RETURNS int AS $$
               BEGIN
                   RETURN $1 + $2;
               END;
               $$ LANGUAGE plpgsql;
-            EOS
+            SQL
           )
 
           adapter.drop_function(:adder)
@@ -77,14 +77,14 @@ module Fx::Adapters
         it "successfully drops a function" do
           adapter = Postgres.new
           adapter.create_function(
-            <<-EOS
+            <<-SQL
               CREATE OR REPLACE FUNCTION test()
               RETURNS text AS $$
               BEGIN
                   RETURN 'test';
               END;
               $$ LANGUAGE plpgsql;
-            EOS
+            SQL
           )
 
           adapter.drop_function(:test)
@@ -98,14 +98,14 @@ module Fx::Adapters
       it "finds functions and builds Fx::Function objects" do
         adapter = Postgres.new
         adapter.create_function(
-          <<-EOS
+          <<-SQL
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
                 RETURN 'test';
             END;
             $$ LANGUAGE plpgsql;
-          EOS
+          SQL
         )
 
         expect(adapter.functions.map(&:name)).to eq ["test"]
@@ -114,15 +114,15 @@ module Fx::Adapters
 
     describe "#triggers" do
       it "finds triggers and builds Fx::Trigger objects" do
-        connection.execute <<-EOS
+        connection.execute <<-SQL
           CREATE TABLE users (
               id int PRIMARY KEY,
               name varchar(256),
               upper_name varchar(256)
           );
-        EOS
+        SQL
         adapter = Postgres.new
-        adapter.create_function <<-EOS
+        adapter.create_function <<-SQL
           CREATE OR REPLACE FUNCTION uppercase_users_name()
           RETURNS trigger AS $$
           BEGIN
@@ -130,13 +130,13 @@ module Fx::Adapters
             RETURN NEW;
           END;
           $$ LANGUAGE plpgsql;
-        EOS
-        sql_definition = <<-EOS
+        SQL
+        sql_definition = <<-SQL
           CREATE TRIGGER uppercase_users_name
               BEFORE INSERT ON users
               FOR EACH ROW
               EXECUTE PROCEDURE uppercase_users_name()
-        EOS
+        SQL
         adapter.create_trigger(sql_definition)
 
         expect(adapter.triggers.map(&:name)).to eq ["uppercase_users_name"]
