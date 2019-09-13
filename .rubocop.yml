@@ -106,6 +106,10 @@ Layout/DotPosition:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#consistent-multi-line-chains'
   EnforcedStyle: trailing
 
+Layout/EmptyLineAfterMagicComment:
+  Description: 'Checks for a newline after the final magic comment.'
+  Enabled: false
+
 Style/DoubleNegation:
   Description: 'Checks for uses of double negation (!!).'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-bang-bang'
