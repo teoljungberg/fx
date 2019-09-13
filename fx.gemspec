@@ -11,11 +11,11 @@ Gem::Specification.new do |spec|
   spec.summary       = <<-SUMMARY
     Support for database functions and triggers in Rails migrations
   SUMMARY
+  spec.homepage      = "https://github.com/teoljungberg/fx"
   spec.description   = <<-DESCRIPTION
     Adds methods to ActiveRecord::Migration to create and manage database functions
     and triggers in Rails
   DESCRIPTION
-  spec.homepage      = "https://github.com/teoljungberg/fx"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
