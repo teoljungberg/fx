@@ -49,13 +49,17 @@ module Fx
             SQL
           )
 
-          expect(adapter.triggers.map(&:name)).to include("uppercase_users_name")
+          expect(adapter.triggers.map(&:name)).to include(
+            "uppercase_users_name",
+          )
         end
       end
 
       describe "#drop_function" do
         context "when the function has arguments" do
-          it "successfully drops a function with the entire function signature" do
+          it(
+            "successfully drops a function with the entire function signature",
+          ) do
             adapter = Postgres.new
             adapter.create_function(
               <<-SQL,
