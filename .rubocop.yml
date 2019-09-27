@@ -150,7 +150,7 @@ Naming/FileName:
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#snake-case-files'
   Enabled: false
 
-Lint/FlipFlop:
+Style/FlipFlop:
   Description: 'Checks for flip flops'
   StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#no-flip-flops'
   Enabled: false
