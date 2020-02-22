@@ -18,7 +18,7 @@ module Fx
     def to_schema
       <<-SCHEMA.indent(2)
 create_function :#{name}, sql_definition: <<-\SQL
-#{definition.indent(4).rstrip}
+#{definition.indent(4).rstrip.gsub("\\", "\\\\\\\\")}
 SQL
       SCHEMA
     end

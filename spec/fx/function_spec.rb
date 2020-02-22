@@ -50,6 +50,19 @@ module Fx
   SQL
         EOS
       end
+
+      it "maintains escaped backslashes" do
+        function = Function.new(
+          "name" => "uppercase_users_name",
+          "definition" => "\\x00",
+        )
+
+        expect(function.to_schema).to eq <<-EOS
+  create_function :uppercase_users_name, sql_definition: <<-\SQL
+      \\\\x00
+  SQL
+        EOS
+      end
     end
   end
 end
