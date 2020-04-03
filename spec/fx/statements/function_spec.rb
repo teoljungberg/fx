@@ -59,7 +59,7 @@ describe Fx::Statements::Function, :db do
       connection.update_function(:test, version: 3)
 
       expect(database).to have_received(:update_function).
-        with(:test, definition.to_sql)
+        with(:test, definition.to_sql, replace: false)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 3)
     end
@@ -72,7 +72,20 @@ describe Fx::Statements::Function, :db do
       expect(database).to have_received(:update_function).with(
         :test,
         "a definition",
+        replace: false
       )
+    end
+
+    it "replaces the function" do
+      database = stubbed_database
+      definition = stubbed_definition
+
+      connection.update_function(:test, version: 3, replace: true)
+
+      expect(database).to have_received(:update_function).
+        with(:test, definition.to_sql, replace: true)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 3)
     end
 
     it "raises an error if not supplied a version" do

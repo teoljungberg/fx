@@ -41,6 +41,29 @@ describe Fx::Generators::FunctionGenerator, :generator do
       expect(migration).to be_a_migration
       expect(migration_file(migration)).
         to contain("UpdateFunctionTestToVersion2")
+      expect(migration_file(migration)).
+        not_to contain(", replace: true")
+    end
+  end
+
+  it "replaces an existing function" do
+    with_function_definition(
+      name: "test",
+      version: 1,
+      sql_definition: "hello",
+    ) do
+      allow(Dir).to receive(:entries).and_return(["test_v01.sql"])
+      migration = file("db/migrate/update_function_test_to_version_2.rb")
+      function_definition = file("db/functions/test_v02.sql")
+
+      run_generator ["test", "--replace=true"]
+
+      expect(function_definition).to exist
+      expect(migration).to be_a_migration
+      expect(migration_file(migration)).
+        to contain("UpdateFunctionTestToVersion2")
+      expect(migration_file(migration)).
+        to contain(", replace: true")
     end
   end
 end

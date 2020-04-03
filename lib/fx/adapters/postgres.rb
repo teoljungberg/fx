@@ -93,9 +93,13 @@ module Fx
       # @param sql_definition The SQL schema for the function.
       #
       # @return [void]
-      def update_function(name, sql_definition)
-        drop_function(name)
-        create_function(sql_definition)
+      def update_function(name, sql_definition, replace: false)
+        if replace
+          create_function(sql_definition)
+        else
+          drop_function(name)
+          create_function(sql_definition)
+        end
       end
 
       # Updates a trigger in the database.
