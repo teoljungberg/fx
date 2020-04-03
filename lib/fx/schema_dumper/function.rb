@@ -5,8 +5,8 @@ module Fx
     # @api private
     module Function
       def tables(stream)
-        super
         functions(stream)
+        super
       end
 
       def functions(stream)
