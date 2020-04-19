@@ -7,7 +7,7 @@ module Fx::Adapters
         adapter = Postgres.new
         adapter.create_aggregate(
           <<-EOS
-            CREATE AGGREGATE test(anyelement)(
+            CREATE OR REPLACE AGGREGATE test(anyelement)(
                 SFUNC = array_append,
                 STYPE = anyarray,
                 INITCOND = '{}'
@@ -74,7 +74,7 @@ module Fx::Adapters
         adapter = Postgres.new
         adapter.create_aggregate(
           <<-EOS
-            CREATE AGGREGATE test(anyelement)(
+            CREATE OR REPLACE AGGREGATE test(anyelement)(
                 SFUNC = array_append,
                 STYPE = anyarray,
                 INITCOND = '{}'
@@ -113,7 +113,7 @@ module Fx::Adapters
         adapter = Postgres.new
         adapter.create_aggregate(
           <<-EOS
-            CREATE AGGREGATE test(anyelement)(
+            CREATE OR REPLACE AGGREGATE test(anyelement)(
                 SFUNC = array_append,
                 STYPE = anyarray,
                 INITCOND = '{}'

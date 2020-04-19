@@ -5,7 +5,7 @@ describe Fx::Definition do
     context "representing an aggregate definition" do
       it "returns the content of an aggregate definition" do
         sql_definition = <<-EOS
-          CREATE AGGREGATE test(anyelement)(
+          CREATE OR REPLACE AGGREGATE test(anyelement)(
               SFUNC = array_append,
               STYPE = anyarray,
               INITCOND = '{}'

@@ -24,7 +24,7 @@ module Fx
     def to_schema
       <<-SCHEMA
   create_aggregate :#{name}, sql_definition: <<-\SQL
-      CREATE AGGREGATE #{name}(#{arguments})(
+      CREATE OR REPLACE AGGREGATE #{name}(#{arguments})(
           #{options_for_create_statement.join(",\n").indent(10).lstrip}
       );
   SQL

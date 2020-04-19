@@ -3,7 +3,7 @@ require "spec_helper"
 describe Fx::SchemaDumper::Aggregate, :db do
   it "dumps a create_aggregate for an aggregate in the database" do
     sql_definition = <<-EOS
-      CREATE AGGREGATE test(anyelement)(
+      CREATE OR REPLACE AGGREGATE test(anyelement)(
           SFUNC = array_append,
           STYPE = anyarray,
           INITCOND = '{}'
@@ -17,7 +17,7 @@ describe Fx::SchemaDumper::Aggregate, :db do
     output = stream.string
     expect(output).to include <<-SCHEMA
   create_aggregate :test, sql_definition: <<-SQL
-      CREATE AGGREGATE test(anyelement)(
+      CREATE OR REPLACE AGGREGATE test(anyelement)(
           SFUNC = array_append,
           STYPE = anyarray,
           INITCOND = '{}'

@@ -32,7 +32,7 @@ module Fx
 
         expect(aggregate.to_schema).to eq <<-EOS
   create_aggregate :uppercase_users_name, sql_definition: <<-\SQL
-      CREATE AGGREGATE uppercase_users_name()(
+      CREATE OR REPLACE AGGREGATE uppercase_users_name()(
           SFUNC = array_append,
           STYPE = anyelement
       );

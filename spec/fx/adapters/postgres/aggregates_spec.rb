@@ -7,7 +7,7 @@ module Fx
         it "returns `Aggregate` objects" do
           connection = ActiveRecord::Base.connection
           connection.execute <<-EOS.strip_heredoc
-            CREATE AGGREGATE test(anyelement)(
+            CREATE OR REPLACE AGGREGATE test(anyelement)(
               sfunc = array_append,
               stype = anyarray,
               initcond = '{}'
@@ -29,7 +29,7 @@ module Fx
 
           expect(first.to_schema).to eq <<-SCHEMA
   create_aggregate :test, sql_definition: <<-\SQL
-      CREATE AGGREGATE test(anyelement)(
+      CREATE OR REPLACE AGGREGATE test(anyelement)(
           SFUNC = array_append,
           STYPE = anyarray,
           INITCOND = '{}'

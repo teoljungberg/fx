@@ -19,7 +19,7 @@ describe "User manages aggregates" do
 
   let(:aggregate_template) do
     <<-SQL.freeze
-      CREATE AGGREGATE aggregate_test(anyelement)(
+      CREATE OR REPLACE AGGREGATE aggregate_test(anyelement)(
         SFUNC = array_append,
         STYPE = anyarray,
         FINALFUNC = aggregate_test%1$d,

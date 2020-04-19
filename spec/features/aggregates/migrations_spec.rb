@@ -3,7 +3,7 @@ require "spec_helper"
 describe "Aggregate migrations", :db do
   around do |example|
     sql_definition = <<-EOS
-      CREATE AGGREGATE test(anyelement)(
+      CREATE OR REPLACE AGGREGATE test(anyelement)(
         sfunc = array_append,
         stype = anyarray,
         initcond = '{}'
@@ -15,7 +15,7 @@ describe "Aggregate migrations", :db do
     end
   end
 
-  it "can run migrations that create aggregates" do
+  it "can run migrations that CREATE OR REPLACE AGGREGATEs" do
     migration = Class.new(migration_class) do
       def up
         create_aggregate :test
@@ -41,7 +41,7 @@ describe "Aggregate migrations", :db do
     connection.create_aggregate(:test)
 
     sql_definition = <<-EOS
-      CREATE AGGREGATE test(anyelement)(
+      CREATE OR REPLACE AGGREGATE test(anyelement)(
         sfunc = array_append,
         stype = anyarray,
         initcond = '{}'

@@ -19,7 +19,7 @@ module Fx
           LEFT JOIN pg_depend pd
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           WHERE pn.nspname = 'public'
-            AND NOT pp.proisagg
+            AND pp.prokind = 'f'
             AND pd.objid IS NULL
           ORDER BY pp.oid;
         EOS

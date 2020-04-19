@@ -23,7 +23,7 @@ module Fx
       #
       # @example Create from provided SQL string
       #   create_aggregate(:median, sql_definition: <<-SQL)
-      #     CREATE AGGREGATE median(NUMERIC)(
+      #     CREATE OR REPLACE AGGREGATE median(NUMERIC)(
       #       SFUNC = array_append,
       #       STYPE = NUMERIC[],
       #       FINALFUNC = array_median,
@@ -83,7 +83,7 @@ module Fx
       #
       # @example Update aggregate from provided SQL string
       #   update_aggregate(:median, sql_definition: <<-SQL)
-      #     CREATE AGGREGATE median(NUMERIC)(
+      #     CREATE OR REPLACE AGGREGATE median(NUMERIC)(
       #       SFUNC = array_append,
       #       STYPE = NUMERIC[],
       #       FINALFUNC = array_median,
