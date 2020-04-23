@@ -5,8 +5,9 @@ module Fx
     # @api private
     module Function
       def tables(stream)
-        functions(stream)
+        functions(stream) if Fx.configuration.dump_functions_at_beginning_of_schema
         super
+        functions(stream) unless Fx.configuration.dump_functions_at_beginning_of_schema
       end
 
       def functions(stream)

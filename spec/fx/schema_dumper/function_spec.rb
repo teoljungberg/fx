@@ -3,20 +3,39 @@ require "spec_helper"
 describe Fx::SchemaDumper::Function, :db do
   it "dumps a create_function for a function in the database" do
     sql_definition = <<-EOS
-      CREATE OR REPLACE FUNCTION test()
+      CREATE OR REPLACE FUNCTION my_function()
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    connection.create_function :test, sql_definition: sql_definition
+    connection.create_function :my_function, sql_definition: sql_definition
+    connection.create_table :my_table
     stream = StringIO.new
 
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
     output = stream.string
-    expect(output).to include "create_function :test, sql_definition: <<-SQL"
-    expect(output).to include "RETURN 'test';"
+    expect(output).to match /create_table "my_table".*create_function :my_function.*RETURN 'test';/m
+  end
+
+  it "dumps a create_function for a function in the database", dump_functions_at_beginning_of_schema: true do
+    sql_definition = <<-EOS
+      CREATE OR REPLACE FUNCTION my_function()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'test';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    connection.create_function :my_function, sql_definition: sql_definition
+    connection.create_table :my_table
+    stream = StringIO.new
+
+    ActiveRecord::SchemaDumper.dump(connection, stream)
+
+    output = stream.string
+    expect(output).to match /create_function :my_function.*RETURN 'test';.*create_table "my_table"/m
   end
 end
