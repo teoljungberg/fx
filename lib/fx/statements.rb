@@ -9,8 +9,3 @@ module Fx
     include Trigger
   end
 end
-
-ActiveRecord::ConnectionAdapters::AbstractAdapter.send(
-  :include,
-  Fx::Statements,
-)
