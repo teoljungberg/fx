@@ -41,6 +41,26 @@ describe Fx::Statements::Trigger, :db do
         /cannot both be set/,
       )
     end
+
+    it 'interpolates table_name in definition with `on` option' do
+      database = stubbed_database
+      definition = parametrized_definition
+      table_name = 'test_table'
+
+      connection.create_trigger(:test, on: table_name)
+
+      expect(database).to have_received(:create_trigger).
+        with(definition.to_sql % { table_name: table_name })
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 1, type: "trigger")
+    end
+
+    it 'raise error `ArgumentError` if definition expect table_name and `on` was not passed', focus: true do
+      stubbed_database
+      parametrized_definition
+
+      expect { connection.create_trigger(:test) }.to raise_error(ArgumentError)
+    end
   end
 
   describe "#drop_trigger" do
@@ -116,6 +136,25 @@ describe Fx::Statements::Trigger, :db do
         /cannot both be set/,
       )
     end
+
+    it 'interpolates table_name in definition with `on` option' do
+      database = stubbed_database
+      definition = parametrized_definition
+      table_name = :users
+
+      connection.update_trigger(:test, on: table_name, version: 3)
+
+      expect(database).to have_received(:update_trigger).with(
+        :test,
+        on: :users,
+        sql_definition: definition.to_sql % { table_name: table_name },
+      )
+      expect(Fx::Definition).to have_received(:new).with(
+        name: :test,
+        version: 3,
+        type: "trigger",
+      )
+    end
   end
 
   def stubbed_database
@@ -126,6 +165,12 @@ describe Fx::Statements::Trigger, :db do
 
   def stubbed_definition
     instance_double("Fx::Definition", to_sql: nil).tap do |stubbed_definition|
+      allow(Fx::Definition).to receive(:new).and_return(stubbed_definition)
+    end
+  end
+
+  def parametrized_definition
+    instance_double("Fx::Definition", to_sql: 'parametrized %{table_name}').tap do |stubbed_definition|
       allow(Fx::Definition).to receive(:new).and_return(stubbed_definition)
     end
   end

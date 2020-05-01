@@ -46,6 +46,16 @@ module Fx
           type: DEFINTION_TYPE,
         ).to_sql
 
+        begin
+          interpolate_params = on ? { table_name: on } : {}
+          sql_definition = sql_definition % interpolate_params if sql_definition
+        rescue KeyError
+          raise(
+            ArgumentError,
+            "`on` option required for sql definition with `table_name` variable"
+          )
+        end
+
         Fx.database.create_trigger(sql_definition)
       end
 
@@ -123,6 +133,8 @@ module Fx
           version: version,
           type: DEFINTION_TYPE,
         ).to_sql
+
+        sql_definition = sql_definition % { table_name: on } if sql_definition && on
 
         Fx.database.update_trigger(
           name,
