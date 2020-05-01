@@ -22,8 +22,3 @@ module Fx
     end
   end
 end
-
-ActiveRecord::Migration::CommandRecorder.send(
-  :include,
-  Fx::CommandRecorder,
-)

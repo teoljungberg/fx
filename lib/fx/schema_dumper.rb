@@ -8,8 +8,3 @@ module Fx
     include Trigger
   end
 end
-
-ActiveRecord::SchemaDumper.send(
-  :prepend,
-  Fx::SchemaDumper,
-)
