@@ -3,14 +3,14 @@ require "acceptance_helper"
 describe "User manages functions" do
   it "handles simple functions" do
     successfully "rails generate fx:function test"
-    write_function_definition "test_v01", <<-EOS
+    write_function_definition "test_v01", <<-SQL
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     successfully "rake db:migrate"
 
     result = execute("SELECT * FROM test() AS result")
@@ -21,14 +21,14 @@ describe "User manages functions" do
       "db/functions/test_v01.sql",
       "db/functions/test_v02.sql",
     )
-    write_function_definition "test_v02", <<-EOS
+    write_function_definition "test_v02", <<-SQL
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN
           RETURN 'testest';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     successfully "rake db:migrate"
 
     result = execute("SELECT * FROM test() AS result")
@@ -37,14 +37,14 @@ describe "User manages functions" do
 
   it "handles functions with arguments" do
     successfully "rails generate fx:function adder"
-    write_function_definition "adder_v01", <<-EOS
+    write_function_definition "adder_v01", <<-SQL
       CREATE FUNCTION adder(x int, y int)
       RETURNS int AS $$
       BEGIN
           RETURN $1 + $2;
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     successfully "rake db:migrate"
 
     result = execute("SELECT * FROM adder(1, 2) AS result")

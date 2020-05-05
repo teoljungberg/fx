@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe "Reverting migrations", :db do
   around do |example|
-    connection.execute <<-EOS
+    connection.execute <<-SQL
       CREATE TABLE users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
       );
-    EOS
-    Fx.database.create_function <<-EOS
+    SQL
+    Fx.database.create_function <<-SQL
       CREATE OR REPLACE FUNCTION uppercase_users_name()
       RETURNS trigger AS $$
       BEGIN
@@ -17,13 +17,13 @@ describe "Reverting migrations", :db do
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
-    EOS
-    sql_definition = <<-EOS
+    SQL
+    sql_definition = <<-SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE PROCEDURE uppercase_users_name();
-    EOS
+    SQL
     with_trigger_definition(
       name: :uppercase_users_name,
       sql_definition: sql_definition,
@@ -39,7 +39,7 @@ describe "Reverting migrations", :db do
       end
     end
 
-    expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+    expect { run_migration(migration, %i[up down]) }.not_to raise_error
   end
 
   it "can run reversible migrations for dropping triggers" do
@@ -56,8 +56,8 @@ describe "Reverting migrations", :db do
       end
     end
 
-    expect { run_migration(good_migration, [:up, :down]) }.not_to raise_error
-    expect { run_migration(bad_migration, [:up, :down]) }.
+    expect { run_migration(good_migration, %i[up down]) }.not_to raise_error
+    expect { run_migration(bad_migration, %i[up down]) }.
       to raise_error(
         ActiveRecord::IrreversibleMigration,
         /`create_trigger` is reversible only if given a `revert_to_version`/,
@@ -67,12 +67,12 @@ describe "Reverting migrations", :db do
   it "can run reversible migrations for updating triggers" do
     connection.create_trigger(:uppercase_users_name)
 
-    sql_definition = <<-EOS
+    sql_definition = <<-SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
           FOR EACH ROW
           EXECUTE PROCEDURE uppercase_users_name();
-    EOS
+    SQL
     with_trigger_definition(
       name: :uppercase_users_name,
       sql_definition: sql_definition,
@@ -89,7 +89,7 @@ describe "Reverting migrations", :db do
         end
       end
 
-      expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+      expect { run_migration(migration, %i[up down]) }.not_to raise_error
     end
   end
 end

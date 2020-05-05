@@ -8,7 +8,7 @@ module Fx
       class Functions
         # The SQL query used by F(x) to retrieve the functions considered
         # dumpable into `db/schema.rb`.
-        FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-EOS.freeze
+        FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-SQL.freeze
           SELECT
               pp.proname AS name,
               pg_get_functiondef(pp.oid) AS definition
@@ -19,7 +19,7 @@ module Fx
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           WHERE pn.nspname = 'public' AND pd.objid IS NULL
           ORDER BY pp.oid;
-        EOS
+        SQL
 
         # Wraps #all as a static facade.
         #

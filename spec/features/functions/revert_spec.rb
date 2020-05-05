@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe "Reverting migrations", :db do
   around do |example|
-    sql_definition = <<-EOS
+    sql_definition = <<-SQL
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     with_function_definition(name: :test, sql_definition: sql_definition) do
       example.run
     end
@@ -22,7 +22,7 @@ describe "Reverting migrations", :db do
       end
     end
 
-    expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+    expect { run_migration(migration, %i[up down]) }.not_to raise_error
   end
 
   it "can run reversible migrations for dropping functions" do
@@ -39,8 +39,8 @@ describe "Reverting migrations", :db do
       end
     end
 
-    expect { run_migration(good_migration, [:up, :down]) }.not_to raise_error
-    expect { run_migration(bad_migration, [:up, :down]) }.
+    expect { run_migration(good_migration, %i[up down]) }.not_to raise_error
+    expect { run_migration(bad_migration, %i[up down]) }.
       to raise_error(
         ActiveRecord::IrreversibleMigration,
         /`create_function` is reversible only if given a `revert_to_version`/,
@@ -50,14 +50,14 @@ describe "Reverting migrations", :db do
   it "can run reversible migrations for updating functions" do
     connection.create_function(:test)
 
-    sql_definition = <<-EOS
+    sql_definition = <<-SQL
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN
         RETURN 'bar';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     with_function_definition(
       name: :test,
       version: 2,
@@ -69,7 +69,7 @@ describe "Reverting migrations", :db do
         end
       end
 
-      expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+      expect { run_migration(migration, %i[up down]) }.not_to raise_error
     end
   end
 end

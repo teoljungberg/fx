@@ -29,7 +29,7 @@ module Fx
       private
 
       def options
-        @options ||= @args[1] || {}
+        @_options ||= @args[1] || {}
       end
 
       def options_for_revert

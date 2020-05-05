@@ -23,12 +23,12 @@ module Fx
         if updating_existing_trigger?
           migration_template(
             "db/migrate/update_trigger.erb",
-            "db/migrate/update_trigger_#{file_name}_to_version_#{version}.rb"
+            "db/migrate/update_trigger_#{file_name}_to_version_#{version}.rb",
           )
         else
           migration_template(
             "db/migrate/create_trigger.erb",
-            "db/migrate/create_trigger_#{file_name}.rb"
+            "db/migrate/create_trigger_#{file_name}.rb",
           )
         end
       end
@@ -97,7 +97,7 @@ module Fx
       end
 
       def updating_existing_trigger?
-        previous_version > 0
+        previous_version.positive?
       end
 
       def definition
@@ -109,7 +109,7 @@ module Fx
       end
 
       def trigger_definition_path
-        @_trigger_definition_path ||= Rails.root.join(*["db", "triggers"])
+        @_trigger_definition_path ||= Rails.root.join("db", "triggers")
       end
     end
   end

@@ -2,14 +2,14 @@ require "spec_helper"
 
 describe Fx::SchemaDumper::Trigger, :db do
   it "dumps a create_trigger for a trigger in the database" do
-    connection.execute <<-EOS
+    connection.execute <<-SQL
       CREATE TABLE users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
       );
-    EOS
-    Fx.database.create_function <<-EOS
+    SQL
+    Fx.database.create_function <<-SQL
       CREATE OR REPLACE FUNCTION uppercase_users_name()
       RETURNS trigger AS $$
       BEGIN
@@ -17,13 +17,13 @@ describe Fx::SchemaDumper::Trigger, :db do
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
-    EOS
-    sql_definition = <<-EOS
+    SQL
+    sql_definition = <<-SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE PROCEDURE uppercase_users_name();
-    EOS
+    SQL
     connection.create_trigger(
       :uppercase_users_name,
       sql_definition: sql_definition,
