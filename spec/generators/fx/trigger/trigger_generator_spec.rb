@@ -14,6 +14,18 @@ describe Fx::Generators::TriggerGenerator, :generator do
     expect(migration_file(migration)).to contain "on: :some_table"
   end
 
+  context "when passed --no-migration" do
+    it "creates a only trigger definition file" do
+      migration = file("db/migrate/create_trigger_test.rb")
+      trigger_definition = file("db/triggers/test_v01.sql")
+
+      run_generator ["test", "--no-migration"]
+
+      expect(trigger_definition).to exist
+      expect(migration_file(migration)).not_to exist
+    end
+  end
+
   it "supports naming the table as `on` aswell as `table_name`" do
     migration = file("db/migrate/create_trigger_test.rb")
     trigger_definition = file("db/triggers/test_v01.sql")

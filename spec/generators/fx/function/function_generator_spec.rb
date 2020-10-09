@@ -13,6 +13,18 @@ describe Fx::Generators::FunctionGenerator, :generator do
     expect(migration_file(migration)).to contain "CreateFunctionTest"
   end
 
+  context "when passed --no-migration" do
+    it "creates a only function definition file" do
+      migration = file("db/migrate/create_function_test.rb")
+      function_definition = file("db/functions/test_v01.sql")
+
+      run_generator ["test", "--no-migration"]
+
+      expect(function_definition).to exist
+      expect(migration_file(migration)).not_to exist
+    end
+  end
+
   it "updates an existing function" do
     with_function_definition(
       name: "test",
