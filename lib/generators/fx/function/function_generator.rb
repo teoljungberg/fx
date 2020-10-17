@@ -8,6 +8,8 @@ module Fx
       include Rails::Generators::Migration
       source_root File.expand_path("../templates", __FILE__)
 
+      class_option :migration, type: :boolean
+
       def create_functions_directory
         unless function_definition_path.exist?
           empty_directory(function_definition_path)
@@ -23,6 +25,7 @@ module Fx
       end
 
       def create_migration_file
+        return if skip_migration_creation?
         if updating_existing_function?
           migration_template(
             "db/migrate/update_function.erb",
@@ -100,6 +103,16 @@ module Fx
 
       def previous_definition
         Fx::Definition.new(name: file_name, version: previous_version)
+      end
+
+      # Skip creating migration file if:
+      #   - migrations option is nil or false
+      def skip_migration_creation?
+        !migration
+      end
+
+      def migration
+        options[:migration]
       end
     end
   end

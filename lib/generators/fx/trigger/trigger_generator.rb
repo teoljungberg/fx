@@ -9,6 +9,8 @@ module Fx
       source_root File.expand_path("../templates", __FILE__)
       argument :table_name, type: :hash, required: true
 
+      class_option :migration, type: :boolean
+
       def create_triggers_directory
         unless trigger_definition_path.exist?
           empty_directory(trigger_definition_path)
@@ -20,6 +22,7 @@ module Fx
       end
 
       def create_migration_file
+        return if skip_migration_creation?
         if updating_existing_trigger?
           migration_template(
             "db/migrate/update_trigger.erb",
@@ -110,6 +113,16 @@ module Fx
 
       def trigger_definition_path
         @_trigger_definition_path ||= Rails.root.join(*["db", "triggers"])
+      end
+
+      # Skip creating migration file if:
+      #   - migrations option is nil or false
+      def skip_migration_creation?
+        !migration
+      end
+
+      def migration
+        options[:migration]
       end
     end
   end

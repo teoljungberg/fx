@@ -5,6 +5,8 @@ Description:
   If a trigger of the given name already exists, create a new version of the
   trigger and a migration to replace the old version with the new.
 
+  When --no-migration is passed, skips generating a migration.
+
 Examples:
 
     rails generate fx:trigger test
