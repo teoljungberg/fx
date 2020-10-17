@@ -85,6 +85,29 @@ def change
 end
 ```
 
+## What if I need to use a function as the default value of a column?
+
+You need to set F(x) to dump the functions in the beginning of db/schema.rb in a
+initializer:
+
+```ruby
+# config/initializers/fx.rb
+Fx.configure do |config|
+  config.dump_functions_at_beginning_of_schema = true
+end
+```
+
+And then you can use a lambda in your migration file:
+
+```ruby
+create_table :my_table do |t|
+  t.string :my_column, default: -> { "my_function()" }
+end
+```
+
+That's how you tell Rails to use the default as a literal SQL for the default
+column value instead of a plain string.
+
 ## Contributing
 
 See [contributing](CONTRIBUTING.md) for more details.
