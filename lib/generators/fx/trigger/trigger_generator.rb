@@ -121,8 +121,9 @@ module Fx
         !migration
       end
 
+      # True unless explicitly false
       def migration
-        options[:migration]
+        options[:migration] != false
       end
     end
   end
