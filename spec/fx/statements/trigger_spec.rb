@@ -27,6 +27,17 @@ describe Fx::Statements::Trigger, :db do
         with(name: :test, version: 2, type: "trigger")
     end
 
+    it "get the trigger sql from a file" do
+      database = stubbed_database
+      definition = stubbed_definition
+
+      connection.trigger_sql(:test, version: 1)
+
+      expect(definition).to have_received(:to_sql)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 1, type: "trigger")
+    end
+
     it "raises an error if both arguments are set" do
       stubbed_database
 

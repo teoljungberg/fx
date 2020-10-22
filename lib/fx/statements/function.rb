@@ -37,7 +37,7 @@ module Fx
           )
         end
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.new(name: name, version: version).to_sql
+        sql_definition ||= function_sql(name, version: version)
 
         Fx.database.create_function(sql_definition)
       end
@@ -95,12 +95,16 @@ module Fx
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.new(
+        sql_definition ||= function_sql(name, version: version)
+
+        Fx.database.update_function(name, sql_definition)
+      end
+
+      def function_sql(name, version:)
+        ::Fx::Definition.new(
           name: name,
           version: version,
         ).to_sql
-
-        Fx.database.update_function(name, sql_definition)
       end
     end
   end
