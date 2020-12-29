@@ -27,6 +27,17 @@ describe Fx::Statements::Function, :db do
         with(name: :test, version: 2)
     end
 
+    it "get the function sql from a file" do
+      database = stubbed_database
+      definition = stubbed_definition
+
+      connection.function_sql(:test, version: 1)
+
+      expect(definition).to have_received(:to_sql)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 1)
+    end
+
     it "raises an error if both arguments are nil" do
       expect {
         connection.create_function(

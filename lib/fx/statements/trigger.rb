@@ -40,11 +40,7 @@ module Fx
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.new(
-          name: name,
-          version: version,
-          type: DEFINTION_TYPE,
-        ).to_sql
+        sql_definition ||= trigger_sql(name, version: version)
 
         Fx.database.create_trigger(sql_definition)
       end
@@ -118,17 +114,21 @@ module Fx
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.new(
-          name: name,
-          version: version,
-          type: DEFINTION_TYPE,
-        ).to_sql
+        sql_definition ||= trigger_sql(name, version: version)
 
         Fx.database.update_trigger(
           name,
           on: on,
           sql_definition: sql_definition,
         )
+      end
+
+      def trigger_sql(name, version:)
+        Fx::Definition.new(
+          name: name,
+          version: version,
+          type: DEFINTION_TYPE,
+        ).to_sql
       end
     end
   end
