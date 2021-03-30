@@ -186,6 +186,7 @@ module Fx
             execute "DROP FUNCTION #{name};"
           else
             execute "DROP FUNCTION #{name}(#{function.arguments});"
+          end
         end
       end
 
