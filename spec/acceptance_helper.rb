@@ -37,6 +37,10 @@ RSpec.configure do |config|
     expect($?.exitstatus).to eq(0), "'#{command}' was unsuccessful"
   end
 
+  def write_aggregate_definition(file, contents)
+    write_definition(file, contents, "aggregates")
+  end
+
   def write_function_definition(file, contents)
     write_definition(file, contents, "functions")
   end
@@ -57,6 +61,10 @@ RSpec.configure do |config|
   end
 
   def execute(command)
-    ActiveRecord::Base.connection.execute(command).first
+    execute_raw(command).first
+  end
+
+  def execute_raw(command)
+    ActiveRecord::Base.connection.execute(command)
   end
 end

@@ -11,6 +11,7 @@ module Fx
         FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-EOS.freeze
           SELECT
               pp.proname AS name,
+              pg_get_function_identity_arguments(pp.oid) AS arguments,
               pg_get_functiondef(pp.oid) AS definition
           FROM pg_proc pp
           JOIN pg_namespace pn
@@ -19,8 +20,10 @@ module Fx
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           LEFT JOIN pg_aggregate pa
               ON pa.aggfnoid = pp.oid
-          WHERE pn.nspname = 'public' AND pd.objid IS NULL
-              AND pa.aggfnoid IS NULL
+          WHERE pn.nspname = 'public'
+            AND pa.aggfnoid IS NULL
+            AND pp.prokind = 'f'
+            AND pd.objid IS NULL
           ORDER BY pp.oid;
         EOS
 
@@ -35,7 +38,8 @@ module Fx
           @connection = connection
         end
 
-        # All of the functions that this connection has defined.
+        # All of the functions that this connection has defined. Functions with
+        # multiple definitions are grouped into a single object.
         #
         # @return [Array<Fx::Function>]
         def all
