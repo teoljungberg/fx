@@ -18,7 +18,7 @@ describe "Function migrations", :db do
   it "can run migrations that create functions" do
     migration = Class.new(migration_class) do
       def up
-        create_function :test
+        create_function :test, version: 1
       end
     end
 
@@ -26,7 +26,7 @@ describe "Function migrations", :db do
   end
 
   it "can run migrations that drop functions" do
-    connection.create_function(:test)
+    connection.create_function(:test, version: 1)
 
     migration = Class.new(migration_class) do
       def up
@@ -38,7 +38,7 @@ describe "Function migrations", :db do
   end
 
   it "can run migrations that updates functions" do
-    connection.create_function(:test)
+    connection.create_function(:test, version: 1)
 
     sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION test()

@@ -10,7 +10,7 @@ describe Fx::SchemaDumper::Function, :db do
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    connection.create_function :my_function, sql_definition: sql_definition
+    connection.create_function :my_function, {sql_definition: sql_definition}
     connection.create_table :my_table
     stream = StringIO.new
     output = stream.string
@@ -32,7 +32,7 @@ describe Fx::SchemaDumper::Function, :db do
       END;
       $$ LANGUAGE plpgsql;
     EOS
-    connection.create_function :my_function, sql_definition: sql_definition
+    connection.create_function :my_function, {sql_definition: sql_definition}
     connection.create_table :my_table
     stream = StringIO.new
     output = stream.string
@@ -64,7 +64,7 @@ describe Fx::SchemaDumper::Function, :db do
       );
     EOS
 
-    connection.create_function :test, sql_definition: sql_definition
+    connection.create_function :test, {sql_definition: sql_definition}
     connection.execute aggregate_sql_definition
     stream = StringIO.new
 

@@ -7,7 +7,7 @@ describe Fx::Statements::Function, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_function(:test)
+      connection.create_function(:test, {version: 1})
 
       expect(database).to have_received(:create_function).
         with(definition.to_sql)
@@ -19,7 +19,7 @@ describe Fx::Statements::Function, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_function(:test, version: 2)
+      connection.create_function(:test, {version: 2})
 
       expect(database).to have_received(:create_function).
         with(definition.to_sql)
