@@ -39,6 +39,10 @@ module Fx
 
     describe "#to_schema" do
       it "returns a schema compatible version of the trigger" do
+        connection.execute <<-EOS
+          DROP TRIGGER IF EXISTS uppercase_users_name ON users;
+        EOS
+
         trigger = Trigger.new(
           "name" => "uppercase_users_name",
           "definition" => "CREATE TRIGGER uppercase_users_name ...",

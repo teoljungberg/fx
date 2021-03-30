@@ -7,7 +7,7 @@ module Fx
         it "returns `Trigger` objects" do
           connection = ActiveRecord::Base.connection
           connection.execute <<-EOS.strip_heredoc
-            CREATE TABLE users (
+          CREATE TABLE IF NOT EXISTS users (
                 id int PRIMARY KEY,
                 name varchar(256),
                 upper_name varchar(256)
@@ -23,6 +23,7 @@ module Fx
             $$ LANGUAGE plpgsql;
           EOS
           connection.execute <<-EOS.strip_heredoc
+            DROP TRIGGER IF EXISTS uppercase_users_name ON users;
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
                 FOR EACH ROW
@@ -37,7 +38,7 @@ module Fx
           expect(first.definition).to include("BEFORE INSERT")
           expect(first.definition).to match(/ON [public\.users|users]/)
           expect(first.definition).to include("FOR EACH ROW")
-          expect(first.definition).to include("EXECUTE PROCEDURE uppercase_users_name()")
+          expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
         end
       end
     end

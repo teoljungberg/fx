@@ -1,3 +1,7 @@
+### Testing
+Run Specs with `bundle exec rake spec` and NOT by directly invoking `rspec`
+### Testing
+
 # F(x)
 
 [![Build Status](https://travis-ci.com/teoljungberg/fx.svg?token=AgJn4nPeY6ue2Pvy23JQ&branch=master)](https://travis-ci.com/teoljungberg/fx)

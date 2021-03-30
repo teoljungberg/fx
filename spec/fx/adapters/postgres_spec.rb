@@ -23,7 +23,7 @@ module Fx::Adapters
     describe "#create_trigger" do
       it "successfully creates a trigger" do
         connection.execute <<-EOS
-          CREATE TABLE users (
+        CREATE TABLE IF NOT EXISTS users (
               id int PRIMARY KEY,
               name varchar(256),
               upper_name varchar(256)
@@ -41,6 +41,7 @@ module Fx::Adapters
         EOS
         adapter.create_trigger(
           <<-EOS
+            DROP TRIGGER IF EXISTS uppercase_users_name ON users;
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
                 FOR EACH ROW
@@ -58,6 +59,7 @@ module Fx::Adapters
           adapter = Postgres.new
           adapter.create_function(
             <<-EOS
+              DROP FUNCTION IF EXISTS adder;
               CREATE FUNCTION adder(x int, y int)
               RETURNS int AS $$
               BEGIN
@@ -108,14 +110,14 @@ module Fx::Adapters
           EOS
         )
 
-        expect(adapter.functions.map(&:name)).to eq ["test"]
+        expect(adapter.functions.map(&:name)).to include("test")
       end
     end
 
     describe "#triggers" do
       it "finds triggers and builds Fx::Trigger objects" do
         connection.execute <<-EOS
-          CREATE TABLE users (
+        CREATE TABLE IF NOT EXISTS users (
               id int PRIMARY KEY,
               name varchar(256),
               upper_name varchar(256)
@@ -132,6 +134,7 @@ module Fx::Adapters
           $$ LANGUAGE plpgsql;
         EOS
         sql_definition = <<-EOS
+          DROP TRIGGER IF EXISTS uppercase_users_name ON users;
           CREATE TRIGGER uppercase_users_name
               BEFORE INSERT ON users
               FOR EACH ROW

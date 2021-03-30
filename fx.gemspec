@@ -33,6 +33,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "activerecord", '>= 4.0.0'
   spec.add_dependency "railties", '>= 4.0.0'
+  spec.add_dependency "bigdecimal"
+  spec.add_dependency "json_pure"
 
   spec.required_ruby_version = ">= 2.1"
 end

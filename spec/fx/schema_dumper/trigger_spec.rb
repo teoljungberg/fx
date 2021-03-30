@@ -3,7 +3,7 @@ require "spec_helper"
 describe Fx::SchemaDumper::Trigger, :db do
   it "dumps a create_trigger for a trigger in the database" do
     connection.execute <<-EOS
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
@@ -19,6 +19,7 @@ describe Fx::SchemaDumper::Trigger, :db do
       $$ LANGUAGE plpgsql;
     EOS
     sql_definition = <<-EOS
+      DROP TRIGGER IF EXISTS uppercase_users_name ON users;
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
@@ -35,6 +36,6 @@ describe Fx::SchemaDumper::Trigger, :db do
     output = stream.string
     expect(output).to include "create_trigger :uppercase_users_name"
     expect(output).to include "sql_definition: <<-SQL"
-    expect(output).to include "EXECUTE PROCEDURE uppercase_users_name()"
+    expect(output).to include "EXECUTE FUNCTION uppercase_users_name()"
   end
 end

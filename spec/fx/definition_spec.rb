@@ -56,6 +56,7 @@ describe Fx::Definition do
     context "representing a trigger definition" do
       it "returns the content of a trigger definition" do
         sql_definition = <<-EOS
+          DROP TRIGGER IF EXISTS check_update ON accounts;
           CREATE TRIGGER check_update
           BEFORE UPDATE ON accounts
           FOR EACH ROW

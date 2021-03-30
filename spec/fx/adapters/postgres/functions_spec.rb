@@ -6,7 +6,10 @@ module Fx
       describe ".all" do
         it "returns `Function` objects" do
           connection = ActiveRecord::Base.connection
+          # We've got data bleeding between runs so we're doing some manual cleanup here as a stopgap.
           connection.execute <<-EOS.strip_heredoc
+            DROP FUNCTION IF EXISTS adder CASCADE;
+            DROP FUNCTION IF EXISTS uppercase_users_name CASCADE;
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN

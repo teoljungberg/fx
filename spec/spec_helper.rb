@@ -7,8 +7,9 @@ Dir["spec/support/**/*.rb"].sort.each { |file| load file }
 RSpec.configure do |config|
   config.order = "random"
   DatabaseCleaner.strategy = :transaction
+  DatabaseCleaner.clean_with :truncation
 
-  config.around(:each, db: true) do |example|
+  config.around(:example, db: true) do |example|
     DatabaseCleaner.start
     example.run
     DatabaseCleaner.clean

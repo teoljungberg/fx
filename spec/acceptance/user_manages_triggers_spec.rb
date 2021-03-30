@@ -15,6 +15,7 @@ describe "User manages triggers" do
     EOS
     successfully "rails generate fx:trigger uppercase_users_name table_name:users"
     write_trigger_definition "uppercase_users_name_v01", <<-EOS
+    DROP TRIGGER IF EXISTS uppercase_users_name ON users;
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
@@ -33,6 +34,7 @@ describe "User manages triggers" do
 
     successfully "rails generate fx:trigger uppercase_users_name table_name:users"
     write_trigger_definition "uppercase_users_name_v02", <<-EOS
+    DROP TRIGGER IF EXISTS uppercase_users_name ON users;
       CREATE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
           FOR EACH ROW
