@@ -46,7 +46,7 @@ describe Fx::SchemaDumper::Function, :db do
     Fx.configuration.dump_functions_at_beginning_of_schema = false
   end
 
-  it "does not dump a create_function for aggregates in the database" do
+  it "dumps a create_function for aggregates in the database" do
     sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION test(text, text)
       RETURNS text AS $$
@@ -73,6 +73,8 @@ describe Fx::SchemaDumper::Function, :db do
     output = stream.string
     expect(output).to include "create_function :test, sql_definition: <<-SQL"
     expect(output).to include "RETURN 'test';"
-    expect(output).not_to include "aggregate_test"
+    # This is a change from the original fx behavior, in that we actually support
+    # aggregates in dumps via Aggregates#aggregates_from_postgres.
+    expect(output).to include "aggregate_test"
   end
 end
