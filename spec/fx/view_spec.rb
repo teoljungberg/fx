@@ -38,18 +38,37 @@ module Fx
     end
 
     describe "#to_schema" do
-      it "returns a schema compatible version of the view" do
-        view = View.new(
-          "name" => "active_users",
-          "definition" => "SELECT * FROM users ...",
-        )
+      context 'when it is a materialized view' do
+        it "returns a schema compatible version of the materialized view" do
+          view = View.new(
+            "name" => "active_users",
+            "definition" => "SELECT * FROM users ...",
+            "materialized" => true
+          )
 
-        expect(view.to_schema).to eq <<-EOS
+          expect(view.to_schema).to eq <<-EOS
+  create_view :active_users, sql_definition: <<-\SQL
+      CREATE MATERIALIZED VIEW active_users AS
+      SELECT * FROM users ...
+  SQL
+          EOS
+        end
+      end
+
+      context 'when it is not a materialized view' do
+        it "returns a schema compatible version of the view" do
+          view = View.new(
+            "name" => "active_users",
+            "definition" => "SELECT * FROM users ...",
+          )
+
+          expect(view.to_schema).to eq <<-EOS
   create_view :active_users, sql_definition: <<-\SQL
       CREATE VIEW active_users AS
       SELECT * FROM users ...
   SQL
-        EOS
+          EOS
+        end
       end
     end
   end

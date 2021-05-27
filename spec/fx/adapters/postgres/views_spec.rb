@@ -16,14 +16,28 @@ module Fx
 
             CREATE VIEW active_users AS
               SELECT * FROM users WHERE active = true;
+
+            CREATE MATERIALIZED VIEW mat_active_users AS
+              SELECT * FROM users WHERE active = true;
           EOS
 
           views = Postgres::Views.new(connection).all
 
-          first = views.first
-          expect(views.size).to eq 1
-          expect(first.name).to eq "active_users"
-          expect(first.definition).to eq <<-EOS.strip_heredoc.rstrip
+          view = views.first
+          expect(views.size).to eq 2
+          expect(view.name).to eq "active_users"
+          expect(view.definition).to eq <<-EOS.strip_heredoc.rstrip
+           SELECT users.id,
+               users.name,
+               users.upper_name,
+               users.active
+              FROM users
+             WHERE (users.active = true);
+          EOS
+
+          materialized_view = views.last
+          expect(materialized_view.name).to eq "mat_active_users"
+          expect(materialized_view.definition).to eq <<-EOS.strip_heredoc.rstrip
            SELECT users.id,
                users.name,
                users.upper_name,

@@ -27,7 +27,7 @@ module Fx
       #     SELECT * users WHERE active = true;
       #   SQL
       #
-      def create_view(name, version: 1, sql_definition: nil)
+      def create_view(name, version: 1, sql_definition: nil, materialized: false)
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
@@ -50,13 +50,14 @@ module Fx
       # @param revert_to_version [Fixnum] Used to reverse the `drop_view`
       #   command on `rake db:rollback`. The provided version will be passed as
       #   the `version` argument to {#create_view}.
+      # @param materialized [Boolean] defines if the view is materialized or not.
       # @return The database response from executing the drop statement.
       #
       # @example Drop a view, rolling back to version 2 on rollback
       #   drop_view(:active_users, revert_to_version: 2)
       #
-      def drop_view(name, revert_to_version: nil)
-        Fx.database.drop_view(name)
+      def drop_view(name, revert_to_version: nil, materialized: false)
+        Fx.database.drop_view(name, materialized: materialized)
       end
 
       # Update a database view.
@@ -68,6 +69,7 @@ module Fx
       # @param sql_definition [String] The SQL query for the view schema.
       #   If both `sql_defintion` and `version` are provided,
       #   `sql_definition` takes prescedence.
+      # @param materialized [Boolean] defines if the view is materialized or not.
       # @return The database response from executing the create statement.
       #
       # @example Update view to a given version
@@ -84,7 +86,7 @@ module Fx
       #     SELECT * users WHERE active = true;
       #   SQL
       #
-      def update_view(name, version: nil, sql_definition: nil, revert_to_version: nil)
+      def update_view(name, version: nil, sql_definition: nil, revert_to_version: nil, materialized: false)
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
@@ -99,7 +101,7 @@ module Fx
           type: DEFINTION_TYPE
         ).to_sql
 
-        Fx.database.update_view(name, sql_definition)
+        Fx.database.update_view(name, sql_definition, materialized: materialized)
       end
     end
   end

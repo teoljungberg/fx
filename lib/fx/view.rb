@@ -3,11 +3,12 @@ module Fx
   class View
     include Comparable
 
-    attr_reader :name, :definition
+    attr_reader :name, :definition, :materialized
     delegate :<=>, to: :name
 
     def initialize(view_row)
       @name = view_row.fetch("name")
+      @materialized = view_row.fetch("materialized", false)
       @definition = view_row.fetch("definition").strip
     end
 
@@ -25,8 +26,16 @@ SQL
 
     private
 
+    def type
+      if materialized
+        "MATERIALIZED VIEW"
+      else
+        "VIEW"
+      end
+    end
+
     def definition_with_create_statement
-      "CREATE VIEW #{name} AS\n#{definition}"
+      "CREATE #{type} #{name} AS\n#{definition}"
     end
   end
 end

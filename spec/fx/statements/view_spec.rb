@@ -47,7 +47,15 @@ describe Fx::Statements::View, :db do
 
       connection.drop_view(:test)
 
-      expect(database).to have_received(:drop_view).with(:test)
+      expect(database).to have_received(:drop_view).with(:test, materialized: false)
+    end
+
+    it "drops the materialzied view" do
+      database = stubbed_database
+
+      connection.drop_view(:test, materialized: true)
+
+      expect(database).to have_received(:drop_view).with(:test, materialized: true)
     end
   end
 
@@ -59,7 +67,19 @@ describe Fx::Statements::View, :db do
       connection.update_view(:test, version: 3)
 
       expect(database).to have_received(:update_view).
-        with(:test, definition.to_sql)
+        with(:test, definition.to_sql, materialized: false)
+      expect(Fx::Definition).to have_received(:new).
+        with(name: :test, version: 3, type: "view")
+    end
+
+    it "updates a materialized view" do
+      database = stubbed_database
+      definition = stubbed_definition
+
+      connection.update_view(:test, version: 3, materialized: true)
+
+      expect(database).to have_received(:update_view).
+        with(:test, definition.to_sql, materialized: true)
       expect(Fx::Definition).to have_received(:new).
         with(name: :test, version: 3, type: "view")
     end
@@ -72,6 +92,7 @@ describe Fx::Statements::View, :db do
       expect(database).to have_received(:update_view).with(
         :test,
         "a definition",
+        materialized: false
       )
     end
 

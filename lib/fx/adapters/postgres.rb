@@ -146,10 +146,11 @@ module Fx
       #
       # @param name The name of the view.
       # @param sql_definition The SQL schema for the view.
+      # @param materialized [Boolean] defines if the view is materialized or not.
       #
       # @return [void]
-      def update_view(name, sql_definition)
-        drop_view(name)
+      def update_view(name, sql_definition, materialized: false)
+        drop_view(name, materialized: materialized)
         create_view(sql_definition)
       end
 
@@ -188,10 +189,12 @@ module Fx
       # {Fx::Statements::View#drop_view}.
       #
       # @param name The name of the view to drop
+      # @param materialized [Boolean] defines if the view is materialized or not.
       #
       # @return [void]
-      def drop_view(name)
-        execute "DROP VIEW #{name};"
+      def drop_view(name, materialized: false)
+        type = materialized ? "MATERIALIZED VIEW" : "VIEW"
+        execute "DROP #{type} #{name};"
       end
 
       private

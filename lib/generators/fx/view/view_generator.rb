@@ -8,6 +8,7 @@ module Fx
       include Rails::Generators::Migration
       source_root File.expand_path("../templates", __FILE__)
 
+      class_option :materialized, type: :boolean, default: false
       class_option :migration, type: :boolean
 
       def create_views_directory
@@ -52,6 +53,10 @@ module Fx
 
         def version
           @_version ||= previous_version.next
+        end
+
+        def materialized?
+          options[:materialized]
         end
 
         def migration_class_name
