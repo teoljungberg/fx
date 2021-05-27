@@ -19,11 +19,20 @@ module Fx
 
         MATERIALIZED_VIEWS_WITH_DEFINITIONS_QUERY = <<-EOS.freeze
           SELECT
-            matviewname AS name,
-            definition,
-            true AS materialized
+              name,
+              CASE
+                WHEN index_definition IS NULL THEN definition
+                ELSE definition || E'\n\n' || index_definition
+              END AS definition,
+              true AS materialized
+            FROM (SELECT
+              matviewname AS name,
+              definition,
+              STRING_AGG(pg_indexes.indexdef || ';', E'\n') AS index_definition
             FROM pg_catalog.pg_matviews
-          WHERE schemaname = 'public' AND matviewowner = CURRENT_USER;
+            LEFT JOIN pg_indexes ON pg_indexes.tablename = pg_matviews.matviewname
+            WHERE pg_matviews.schemaname = 'public' AND pg_matviews.matviewowner = CURRENT_USER
+            GROUP BY pg_matviews.matviewname, pg_matviews.definition) materialized_views;
         EOS
 
         # Wraps #all as a static facade.
