@@ -1,12 +1,14 @@
 require "fx/command_recorder/arguments"
 require "fx/command_recorder/function"
 require "fx/command_recorder/trigger"
+require "fx/command_recorder/view"
 
 module Fx
   # @api private
   module CommandRecorder
     include Function
     include Trigger
+    include View
 
     private
 

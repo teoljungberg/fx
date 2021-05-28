@@ -86,6 +86,38 @@ describe Fx::Definition do
         )
       end
     end
+
+    context "representing a view definition" do
+      it "returns the content of a view definition" do
+        sql_definition = <<-EOS
+          CREATE VIEW active_users AS
+          SELECT * FROM users WHERE active = true;
+        EOS
+        allow(File).to receive(:read).and_return(sql_definition)
+
+        definition = Fx::Definition.new(
+          name: "test",
+          version: 1,
+          type: "view",
+        )
+
+        expect(definition.to_sql).to eq sql_definition
+      end
+
+      it "raises an error if the file is empty" do
+        allow(File).to receive(:read).and_return("")
+        definition = Fx::Definition.new(
+          name: "test",
+          version: 1,
+          type: "view",
+        )
+
+        expect { definition.to_sql }.to raise_error(
+          RuntimeError,
+          %r(Define view in db/views/test_v01.sql before migrating),
+        )
+      end
+    end
   end
 
   describe "#path" do
@@ -106,6 +138,18 @@ describe Fx::Definition do
         )
 
         expect(definition.path).to eq "db/triggers/test_v01.sql"
+      end
+    end
+
+    context "representing a view definition" do
+      it "returns a sql file with padded version and view name" do
+        definition = Fx::Definition.new(
+          name: "test",
+          version: 1,
+          type: "view",
+        )
+
+        expect(definition.path).to eq "db/views/test_v01.sql"
       end
     end
   end

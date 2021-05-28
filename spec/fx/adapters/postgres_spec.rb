@@ -52,6 +52,26 @@ module Fx::Adapters
       end
     end
 
+    describe "#create_view" do
+      it "successfully creates a view" do
+        connection.execute <<-EOS
+          CREATE TABLE users (
+              id int PRIMARY KEY,
+              name varchar(256),
+              upper_name varchar(256),
+              active boolean
+          );
+        EOS
+        adapter = Postgres.new
+        adapter.create_view <<-EOS
+          CREATE VIEW active_users AS
+            SELECT * FROM users WHERE active = true;
+        EOS
+
+        expect(adapter.views.map(&:name)).to include("active_users")
+      end
+    end
+
     describe "#drop_function" do
       context "when the function has arguments" do
         it "successfully drops a function with the entire function signature" do
@@ -91,6 +111,29 @@ module Fx::Adapters
 
           expect(adapter.functions.map(&:name)).not_to include("test")
         end
+      end
+    end
+
+    describe "#drop_view" do
+      it "successfully drops a view" do
+        connection.execute <<-EOS
+          CREATE TABLE users (
+              id int PRIMARY KEY,
+              name varchar(256),
+              upper_name varchar(256),
+              active boolean
+          );
+        EOS
+
+        adapter = Postgres.new
+        adapter.create_view <<-EOS
+          CREATE VIEW active_users AS
+            SELECT * FROM users WHERE active = true;
+        EOS
+
+        adapter.drop_view(:active_users)
+
+        expect(adapter.views.map(&:name)).to_not include("active_users")
       end
     end
 
@@ -140,6 +183,27 @@ module Fx::Adapters
         adapter.create_trigger(sql_definition)
 
         expect(adapter.triggers.map(&:name)).to eq ["uppercase_users_name"]
+      end
+    end
+
+    describe "#views" do
+      it "finds views and builds Fx::View objects" do
+        connection.execute <<-EOS
+          CREATE TABLE users (
+              id int PRIMARY KEY,
+              name varchar(256),
+              upper_name varchar(256),
+              active boolean
+          );
+        EOS
+        adapter = Postgres.new
+        sql_definition = <<-EOS
+          CREATE VIEW active_users AS
+            SELECT * FROM users WHERE active = true;
+        EOS
+        adapter.create_view(sql_definition)
+
+        expect(adapter.views.map(&:name)).to eq ["active_users"]
       end
     end
   end
