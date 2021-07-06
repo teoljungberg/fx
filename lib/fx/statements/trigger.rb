@@ -27,7 +27,10 @@ module Fx
       #         EXECUTE PROCEDURE uppercase_users_name();
       #    SQL
       #
-      def create_trigger(name, version: nil, on: nil, sql_definition: nil)
+      def create_trigger(name, options = {})
+       version = options[:version]
+       on = options[:on]
+       sql_definition = options[:sql_definition]
         if version.present? && sql_definition.present?
           raise(
             ArgumentError,
@@ -62,7 +65,9 @@ module Fx
       # @example Drop a trigger, rolling back to version 3 on rollback
       #   drop_trigger(:log_inserts, on: :users, revert_to_version: 3)
       #
-      def drop_trigger(name, on:, revert_to_version: nil)
+      def drop_trigger(name, options = {})
+        on = options.fetch(:on)
+        revert_to_version = options[:revert_to_version]
         Fx.database.drop_trigger(name, on: on)
       end
 
@@ -98,7 +103,12 @@ module Fx
       #         EXECUTE PROCEDURE uppercase_users_name();
       #    SQL
       #
-      def update_trigger(name, version: nil, on: nil, sql_definition: nil, revert_to_version: nil)
+      # def update_trigger(name, version: nil, on: nil, sql_definition: nil, revert_to_version: nil)
+      def update_trigger(name, options = {})
+        version = options[:version]
+        on = options[:on]
+        sql_definition = options[:sql_definition]
+        revert_to_version = options[:revert_to_version]
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
