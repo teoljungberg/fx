@@ -2,6 +2,7 @@ appraise "rails42" do
   gem "activerecord", "~> 4.2.0"
   gem "railties", "~> 4.2.0"
   gem "pg", "~> 0.15"
+  gem "bigdecimal", '1.3.5'
 end
 
 if RUBY_VERSION > "2.2.0"
