@@ -29,7 +29,10 @@ module Fx
       #     $$ LANGUAGE plpgsql;
       #   SQL
       #
-      def create_function(name, version: 1, sql_definition: nil)
+      def create_function(name, options = {})
+        version = options.fetch(:version, 1)
+        sql_definition = options[:sql_definition]
+
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
@@ -53,7 +56,8 @@ module Fx
       # @example Drop a function, rolling back to version 2 on rollback
       #   drop_function(:uppercase_users_name, revert_to_version: 2)
       #
-      def drop_function(name, revert_to_version: nil)
+      def drop_function(name, options = {})
+        revert_to_version = options[:revert_to_version]
         Fx.database.drop_function(name)
       end
 
@@ -86,7 +90,11 @@ module Fx
       #     $$ LANGUAGE plpgsql;
       #   SQL
       #
-      def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil)
+      def update_function(name, options = {})
+        version = options[:version]
+        sql_definition = options[:sql_definition]
+        revert_to_version = options[:revert_to_version]
+
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
