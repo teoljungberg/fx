@@ -44,9 +44,22 @@ module Fx
           "definition" => "CREATE OR REPLACE TRIGGER uppercase_users_name ...",
         )
 
-        expect(function.to_schema).to eq <<-EOS
-  create_function :uppercase_users_name, sql_definition: <<-\SQL
+        expect(function.to_schema).to eq <<-'EOS'
+  create_function :uppercase_users_name, sql_definition: <<-'SQL'
       CREATE OR REPLACE TRIGGER uppercase_users_name ...
+  SQL
+        EOS
+      end
+
+      it "maintains backslashes" do
+        function = Function.new(
+          "name" => "regex",
+          "definition" => "CREATE OR REPLACE FUNCTION regex \\1",
+        )
+
+        expect(function.to_schema).to eq <<-'EOS'
+  create_function :regex, sql_definition: <<-'SQL'
+      CREATE OR REPLACE FUNCTION regex \1
   SQL
         EOS
       end
