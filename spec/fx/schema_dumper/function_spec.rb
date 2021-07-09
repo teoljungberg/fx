@@ -71,7 +71,7 @@ describe Fx::SchemaDumper::Function, :db do
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
     output = stream.string
-    expect(output).to include "create_function :test, sql_definition: <<-SQL"
+    expect(output).to include "create_function :test, sql_definition: <<-'SQL'"
     expect(output).to include "RETURN 'test';"
     expect(output).not_to include "aggregate_test"
   end
