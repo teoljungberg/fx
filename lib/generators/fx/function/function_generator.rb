@@ -9,6 +9,7 @@ module Fx
       source_root File.expand_path("../templates", __FILE__)
 
       class_option :migration, type: :boolean
+      class_option :replace, type: :boolean, default: false
 
       def create_functions_directory
         unless function_definition_path.exist?
@@ -87,6 +88,10 @@ module Fx
 
       def version_regex
         /\A#{file_name}_v(?<version>\d+)\.sql\z/
+      end
+
+      def replacing_existing_function?
+        options['replace']
       end
 
       def updating_existing_function?

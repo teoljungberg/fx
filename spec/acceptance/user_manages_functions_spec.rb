@@ -54,4 +54,57 @@ describe "User manages functions" do
     successfully "rails destroy fx:function adder"
     successfully "rake db:migrate"
   end
+
+  it "replaces functions with dependencies" do
+    successfully "rails generate model person name:string case_name:string"
+    successfully "rails generate fx:function case_people_name"
+    write_function_definition "case_people_name_v01", <<-EOS
+      CREATE OR REPLACE FUNCTION case_people_name()
+      RETURNS trigger AS $$
+      BEGIN
+        NEW.case_name = UPPER(NEW.name);
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+
+    successfully "rails generate fx:trigger case_people_name table_name:people"
+    write_trigger_definition "case_people_name_v01", <<-EOS
+      CREATE TRIGGER case_people_name
+          BEFORE INSERT ON people
+          FOR EACH ROW
+          EXECUTE PROCEDURE case_people_name();
+    EOS
+    successfully "rake db:migrate"
+
+    execute <<-EOS
+      INSERT INTO people
+      (name, created_at, updated_at)
+      VALUES
+      ('Bob', NOW(), NOW());
+    EOS
+    result = execute("SELECT case_name FROM people WHERE name = 'Bob';")
+    expect(result).to eq("case_name" => "BOB")
+
+    successfully "rails generate fx:function case_people_name --replace"
+    write_function_definition "case_people_name_v02", <<-EOS
+      CREATE OR REPLACE FUNCTION case_people_name()
+      RETURNS trigger AS $$
+      BEGIN
+        NEW.case_name = LOWER(NEW.name);
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    successfully "rake db:migrate"
+
+    execute <<-EOS
+      INSERT INTO people
+      (name, created_at, updated_at)
+      VALUES
+      ('Alice', NOW(), NOW());
+    EOS
+    result = execute("SELECT case_name FROM people WHERE name = 'Alice';")
+    expect(result).to eq("case_name" => "alice")
+  end
 end

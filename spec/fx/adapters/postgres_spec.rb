@@ -20,6 +20,50 @@ module Fx::Adapters
       end
     end
 
+    describe "#update_function" do
+      it "successfully updates a function" do
+        allow(adapter).to receive(:drop_function)
+        allow(adapter).to receive(:create_function)
+
+        name = "test"
+        sql_definition = <<-EOS
+          CREATE OR REPLACE FUNCTION test()
+          RETURNS text AS $$
+          BEGIN
+              RETURN 'test';
+          END;
+          $$ LANGUAGE plpgsql;
+        EOS
+
+        adapter = Postgres.new
+        adapter.update_function(name, sql_definition)
+
+        expect(adapter).to have_received(:drop_function).with(name)
+        expect(adapter).to have_received(:create_function).with(sql_definition)
+      end
+
+      it "successfully replaces a function" do
+        allow(adapter).to receive(:drop_function)
+        allow(adapter).to receive(:create_function)
+
+        name = "test"
+        sql_definition = <<-EOS
+          CREATE OR REPLACE FUNCTION test()
+          RETURNS text AS $$
+          BEGIN
+              RETURN 'test';
+          END;
+          $$ LANGUAGE plpgsql;
+        EOS
+
+        adapter = Postgres.new
+        adapter.update_function(name, sql_definition, replace: true)
+
+        expect(adapter).not_to have_received(:drop_function)
+        expect(adapter).to have_received(:create_function).with(sql_definition)
+      end
+    end
+
     describe "#create_trigger" do
       it "successfully creates a trigger" do
         connection.execute <<-EOS

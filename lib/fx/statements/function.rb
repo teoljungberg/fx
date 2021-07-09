@@ -66,6 +66,9 @@ module Fx
       # @param sql_definition [String] The SQL query for the function schema.
       #   If both `sql_defintion` and `version` are provided,
       #   `sql_definition` takes prescedence.
+      # @param replace [Boolean] Specifies if the function must not be dropped
+      #   and re-created. Use this if you want to replace an existing function
+      #   with dependencies. This defaults to `false` if not provided.
       # @return The database response from executing the create statement.
       #
       # @example Update function to a given version
@@ -73,6 +76,14 @@ module Fx
       #     :uppercase_users_name,
       #     version: 3,
       #     revert_to_version: 2,
+      #   )
+      #
+      # @example Replaces function to a given version
+      #   update_function(
+      #     :uppercase_users_name,
+      #     version: 3,
+      #     revert_to_version: 2,
+      #     replace: true,
       #   )
       #
       # @example Update function from provided SQL string
@@ -86,7 +97,7 @@ module Fx
       #     $$ LANGUAGE plpgsql;
       #   SQL
       #
-      def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil)
+      def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil, replace: false)
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
@@ -100,7 +111,7 @@ module Fx
           version: version,
         ).to_sql
 
-        Fx.database.update_function(name, sql_definition)
+        Fx.database.update_function(name, sql_definition, replace: replace)
       end
     end
   end

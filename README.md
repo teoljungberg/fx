@@ -75,6 +75,21 @@ version 1, created a copy of that definition as version 2, and created a
 migration to update to the version 2 schema. All that's left for you to do is
 tweak the schema in the new definition and run the `update_function` migration.
 
+## What about updating functions with existing triggers?
+
+If you try to update a function that already have dependencies such as triggers,
+you must use the replace flag:
+
+```sh
+% rails generate fx:function uppercase_users_name --replace
+      create  db/functions/uppercase_users_name_v02.sql
+      create  db/migrate/[TIMESTAMP]_update_function_uppercase_users_name_to_version_2.rb
+```
+
+While the default behavior allows you to change the function signature, if you
+don't change the function signature, you can replace the existing function
+without recreating its dependencies.
+
 ## I don't need this trigger or function anymore. Make it go away.
 
 F(x) gives you `drop_trigger` and `drop_function` too:
