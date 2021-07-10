@@ -28,12 +28,15 @@ gemfile:
   - gemfiles/rails51.gemfile
   - gemfiles/rails52.gemfile
   - gemfiles/rails60.gemfile
+  - gemfiles/rails61.gemfile
   - gemfiles/rails_edge.gemfile
 matrix:
   allow_failures:
     - gemfile: gemfiles/rails_edge.gemfile
   exclude:
     - rvm: 2.4
-      gemfile: gemfiles/rails_edge.gemfile
-    - rvm: 2.4
       gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails61.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails_edge.gemfile
