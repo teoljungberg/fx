@@ -19,6 +19,7 @@ language:
 notifications:
   email: false
 rvm:
+  - 2.7
   - 2.6
   - 2.5
   - 2.4
@@ -28,12 +29,23 @@ gemfile:
   - gemfiles/rails51.gemfile
   - gemfiles/rails52.gemfile
   - gemfiles/rails60.gemfile
+  - gemfiles/rails61.gemfile
   - gemfiles/rails_edge.gemfile
 matrix:
   allow_failures:
     - gemfile: gemfiles/rails_edge.gemfile
   exclude:
     - rvm: 2.4
-      gemfile: gemfiles/rails_edge.gemfile
-    - rvm: 2.4
       gemfile: gemfiles/rails60.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails61.gemfile
+    - rvm: 2.4
+      gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.5
+      gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.6
+      gemfile: gemfiles/rails42.gemfile
+    - rvm: 2.6
+      gemfile: gemfiles/rails_edge.gemfile
+    - rvm: 2.7
+      gemfile: gemfiles/rails42.gemfile

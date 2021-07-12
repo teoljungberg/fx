@@ -23,27 +23,29 @@ describe Fx::SchemaDumper::Function, :db do
   end
 
   it "dumps a create_function for a function in the database" do
-    Fx.configuration.dump_functions_at_beginning_of_schema = true
-    sql_definition = <<-EOS
-      CREATE OR REPLACE FUNCTION my_function()
-      RETURNS text AS $$
-      BEGIN
-          RETURN 'test';
-      END;
-      $$ LANGUAGE plpgsql;
-    EOS
-    connection.create_function :my_function, sql_definition: sql_definition
-    connection.create_table :my_table
-    stream = StringIO.new
-    output = stream.string
+    begin
+      Fx.configuration.dump_functions_at_beginning_of_schema = true
+      sql_definition = <<-EOS
+        CREATE OR REPLACE FUNCTION my_function()
+        RETURNS text AS $$
+        BEGIN
+            RETURN 'test';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+      connection.create_function :my_function, sql_definition: sql_definition
+      connection.create_table :my_table
+      stream = StringIO.new
+      output = stream.string
 
-    ActiveRecord::SchemaDumper.dump(connection, stream)
+      ActiveRecord::SchemaDumper.dump(connection, stream)
 
-    expect(output).to(
-      match(/function :my_function.*RETURN 'test';.*table "my_table"/m),
-    )
-  ensure
-    Fx.configuration.dump_functions_at_beginning_of_schema = false
+      expect(output).to(
+        match(/function :my_function.*RETURN 'test';.*table "my_table"/m),
+      )
+    ensure
+      Fx.configuration.dump_functions_at_beginning_of_schema = false
+    end
   end
 
   it "does not dump a create_function for aggregates in the database" do
