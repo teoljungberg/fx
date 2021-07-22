@@ -3,10 +3,11 @@ if RUBY_VERSION < "2.6.0"
     gem "activerecord", "~> 4.2.0"
     gem "railties", "~> 4.2.0"
     gem "pg", "~> 0.15.0"
+    gem "bigdecimal", "1.3.5"
   end
 end
 
-if RUBY_VERSION >= "2.2.0"
+if RUBY_VERSION >= "2.2.0" and RUBY_VERSION < "3.0.0"
   appraise "rails50" do
     gem "activerecord", "~> 5.0.0"
     gem "railties", "~> 5.0.0"
