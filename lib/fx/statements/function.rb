@@ -11,7 +11,7 @@ module Fx
       #   find the definition file in `db/functions`. This defaults to `1` if
       #   not provided.
       # @param sql_definition [String] The SQL query for the function schema.
-      #   If both `sql_defintion` and `version` are provided,
+      #   If both `sql_definition` and `version` are provided,
       #   `sql_definition` takes prescedence.
       # @return The database response from executing the create statement.
       #
@@ -68,7 +68,7 @@ module Fx
       #   find the definition file in `db/functions`. This defaults to `1` if
       #   not provided.
       # @param sql_definition [String] The SQL query for the function schema.
-      #   If both `sql_defintion` and `version` are provided,
+      #   If both `sql_definition` and `version` are provided,
       #   `sql_definition` takes prescedence.
       # @return The database response from executing the create statement.
       #
