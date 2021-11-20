@@ -3,7 +3,7 @@ module Fx
     # Methods that are made available in migrations for managing Fx triggers.
     module Trigger
       # @api private
-      DEFINTION_TYPE = "trigger".freeze
+      DEFINITION_TYPE = "trigger".freeze
 
       # Create a new database trigger.
       #
@@ -47,7 +47,7 @@ module Fx
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
-          type: DEFINTION_TYPE,
+          type: DEFINITION_TYPE,
         ).to_sql
 
         Fx.database.create_trigger(sql_definition)
@@ -132,7 +132,7 @@ module Fx
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
-          type: DEFINTION_TYPE,
+          type: DEFINITION_TYPE,
         ).to_sql
 
         Fx.database.update_trigger(

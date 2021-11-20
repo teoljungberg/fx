@@ -7,15 +7,15 @@ module Fx
       it "delegates to `name`" do
         trigger_a = Trigger.new(
           "name" => "name_a",
-          "definition" => "some defintion",
+          "definition" => "some definition",
         )
         trigger_b = Trigger.new(
           "name" => "name_b",
-          "definition" => "some defintion",
+          "definition" => "some definition",
         )
         trigger_c = Trigger.new(
           "name" => "name_c",
-          "definition" => "some defintion",
+          "definition" => "some definition",
         )
 
         expect(trigger_b).to be_between(trigger_a, trigger_c)
@@ -26,11 +26,11 @@ module Fx
       it "compares `name` and `definition`" do
         trigger_a = Trigger.new(
           "name" => "name_a",
-          "definition" => "some defintion",
+          "definition" => "some definition",
         )
         trigger_b = Trigger.new(
           "name" => "name_b",
-          "definition" => "some other defintion",
+          "definition" => "some other definition",
         )
 
         expect(trigger_a).not_to eq(trigger_b)
