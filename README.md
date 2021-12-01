@@ -108,6 +108,10 @@ end
 That's how you tell Rails to use the default as a literal SQL for the default
 column value instead of a plain string.
 
+## Plugins/Adapters
+
+- [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter
+
 ## Contributing
 
 See [contributing](CONTRIBUTING.md) for more details.
