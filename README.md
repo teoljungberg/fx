@@ -110,7 +110,7 @@ column value instead of a plain string.
 
 ## Plugins/Adapters
 
-- [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter
+- [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter)
 
 ## Contributing
 
