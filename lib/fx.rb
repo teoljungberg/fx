@@ -4,6 +4,7 @@ require "fx/command_recorder"
 require "fx/configuration"
 require "fx/definition"
 require "fx/function"
+require "fx/migration"
 require "fx/statements"
 require "fx/schema_dumper"
 require "fx/trigger"
@@ -30,6 +31,11 @@ module Fx
     ActiveRecord::ConnectionAdapters::AbstractAdapter.send(
       :include,
       Fx::Statements,
+    )
+
+    ActiveRecord::Migration.send(
+      :include,
+      Fx::Migration,
     )
   end
 

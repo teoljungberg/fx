@@ -1,9 +1,16 @@
 require "spec_helper"
 
 describe "Trigger migrations", :db do
+  let(:table_name_prefix) { TABLE_NAME_PREFIX }
+  let(:table_name_suffix) { TABLE_NAME_SUFFIX }
+
+  def full_table_name(table_name)
+    "#{table_name_prefix}#{table_name}#{table_name_suffix}"
+  end
+
   around do |example|
     connection.execute <<-EOS
-      CREATE TABLE users (
+      CREATE TABLE "#{full_table_name('users')}" (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
@@ -20,7 +27,7 @@ describe "Trigger migrations", :db do
     EOS
     sql_definition = <<-EOS
       CREATE TRIGGER uppercase_users_name
-          BEFORE INSERT ON users
+          BEFORE INSERT ON "#{full_table_name('users')}"
           FOR EACH ROW
           EXECUTE PROCEDURE uppercase_users_name();
     EOS

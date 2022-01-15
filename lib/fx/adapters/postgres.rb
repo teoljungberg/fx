@@ -142,7 +142,7 @@ module Fx
       #
       # @return [void]
       def drop_trigger(name, on:)
-        execute "DROP TRIGGER #{name} ON #{on};"
+        execute "DROP TRIGGER #{name} ON \"#{on}\";"
       end
 
       private
