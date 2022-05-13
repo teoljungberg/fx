@@ -31,7 +31,9 @@ module Fx
       private
 
       def dumpable_functions_in_database
-        @_dumpable_functions_in_database ||= Fx.database.functions
+        @_dumpable_functions_in_database ||= Fx.database.functions.reject(
+          &Fx.configuration.exclude_function_from_schema_condition
+        )
       end
     end
   end

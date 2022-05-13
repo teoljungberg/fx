@@ -40,9 +40,25 @@ module Fx
     # @return Boolean
     attr_accessor :dump_functions_at_beginning_of_schema
 
+    # A lambda returning a boolean to indicate whether or not a given trigger
+    # should be allowed to be dumped into schema.rb
+    #
+    # Defaults to a lambda which allows all triggers
+    # @return Proc<Boolean>
+    attr_accessor :exclude_trigger_from_schema_condition
+
+    # A lambda returning a boolean to indicate whether or not a given function
+    # should be allowed to be dumped into schema.rb
+    #
+    # Defaults to a lambda which allows all function
+    # @return Proc<Boolean>
+    attr_accessor :exclude_function_from_schema_condition
+
     def initialize
       @database = Fx::Adapters::Postgres.new
       @dump_functions_at_beginning_of_schema = false
+      @exclude_trigger_from_schema_condition = lambda { |trigger| false }
+      @exclude_function_from_schema_condition = lambda { |function| false }
     end
   end
 end

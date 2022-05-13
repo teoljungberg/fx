@@ -77,4 +77,44 @@ describe Fx::SchemaDumper::Function, :db do
     expect(output).to include "RETURN 'test';"
     expect(output).not_to include "aggregate_test"
   end
+
+  it "dumps only included functions" do
+    begin
+      Fx.configuration.exclude_function_from_schema_condition = lambda do |function|
+        function.name == "my_disallowed_function"
+      end
+
+      sql_definition_allowed = <<-EOS
+        CREATE OR REPLACE FUNCTION my_allowed_function()
+        RETURNS text AS $$
+        BEGIN
+            RETURN 'test';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+
+      sql_definition_disallowed = <<-EOS
+        CREATE OR REPLACE FUNCTION my_disallowed_function()
+        RETURNS text AS $$
+        BEGIN
+            RETURN 'test';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+
+      connection.create_function :my_allowed_function, sql_definition: sql_definition_allowed
+      connection.create_function :my_disallowed_function, sql_definition: sql_definition_disallowed
+
+      connection.create_table :my_table
+      stream = StringIO.new
+      output = stream.string
+
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+
+      expect(output).to include "create_function :my_allowed_function, sql_definition: <<-'SQL'"
+      expect(output).not_to include "create_function :my_disallowed_function, sql_definition: <<-'SQL'"
+    ensure
+      Fx.configuration.exclude_function_from_schema_condition = lambda { |function| false }
+    end
+  end
 end
