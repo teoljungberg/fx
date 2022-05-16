@@ -39,10 +39,14 @@ module Fx
     # Defaults to false
     # @return Boolean
     attr_accessor :dump_functions_at_beginning_of_schema
+    attr_accessor :functions_to_dump_at_beginning_of_schema
+    attr_accessor :functions_to_dump_at_end_of_schema
 
     def initialize
       @database = Fx::Adapters::Postgres.new
       @dump_functions_at_beginning_of_schema = false
+      @functions_to_dump_at_beginning_of_schema = []
+      @functions_to_dump_at_end_of_schema = []
     end
   end
 end
