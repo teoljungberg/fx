@@ -49,7 +49,7 @@ In our example, this might look something like this:
 CREATE TRIGGER uppercase_users_name
     BEFORE INSERT ON users
     FOR EACH ROW
-    EXECUTE PROCEDURE uppercase_users_name();
+    EXECUTE FUNCTION uppercase_users_name();
 ```
 
 The generated migrations contains `create_function` and `create_trigger`

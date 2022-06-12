@@ -22,7 +22,7 @@ describe "Trigger migrations", :db do
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
-          EXECUTE PROCEDURE uppercase_users_name();
+          EXECUTE FUNCTION uppercase_users_name();
     EOS
     with_trigger_definition(
       name: :uppercase_users_name,

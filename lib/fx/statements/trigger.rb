@@ -24,7 +24,7 @@ module Fx
       #     CREATE TRIGGER uppercase_users_name
       #         BEFORE INSERT ON users
       #         FOR EACH ROW
-      #         EXECUTE PROCEDURE uppercase_users_name();
+      #         EXECUTE FUNCTION uppercase_users_name();
       #    SQL
       #
       def create_trigger(name, options = {})
@@ -101,7 +101,7 @@ module Fx
       #     CREATE TRIGGER uppercase_users_name
       #         BEFORE INSERT ON users
       #         FOR EACH ROW
-      #         EXECUTE PROCEDURE uppercase_users_name();
+      #         EXECUTE FUNCTION uppercase_users_name();
       #    SQL
       #
       def update_trigger(name, options = {})

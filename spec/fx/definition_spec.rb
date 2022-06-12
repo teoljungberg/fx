@@ -59,7 +59,7 @@ describe Fx::Definition do
           CREATE TRIGGER check_update
           BEFORE UPDATE ON accounts
           FOR EACH ROW
-          EXECUTE PROCEDURE check_account_update();
+          EXECUTE FUNCTION check_account_update();
         EOS
         allow(File).to receive(:read).and_return(sql_definition)
 

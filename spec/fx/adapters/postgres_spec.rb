@@ -44,7 +44,7 @@ module Fx::Adapters
             CREATE TRIGGER uppercase_users_name
                 BEFORE INSERT ON users
                 FOR EACH ROW
-                EXECUTE PROCEDURE uppercase_users_name();
+                EXECUTE FUNCTION uppercase_users_name();
           EOS
         )
 
@@ -135,7 +135,7 @@ module Fx::Adapters
           CREATE TRIGGER uppercase_users_name
               BEFORE INSERT ON users
               FOR EACH ROW
-              EXECUTE PROCEDURE uppercase_users_name()
+              EXECUTE FUNCTION uppercase_users_name()
         EOS
         adapter.create_trigger(sql_definition)
 

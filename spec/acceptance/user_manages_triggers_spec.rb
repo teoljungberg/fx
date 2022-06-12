@@ -18,7 +18,7 @@ describe "User manages triggers" do
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
-          EXECUTE PROCEDURE uppercase_users_name();
+          EXECUTE FUNCTION uppercase_users_name();
     EOS
     successfully "rake db:migrate"
 
@@ -36,7 +36,7 @@ describe "User manages triggers" do
       CREATE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
           FOR EACH ROW
-          EXECUTE PROCEDURE uppercase_users_name();
+          EXECUTE FUNCTION uppercase_users_name();
     EOS
     successfully "rake db:migrate"
     execute <<-EOS
