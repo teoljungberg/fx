@@ -22,7 +22,7 @@ describe Fx::SchemaDumper::Trigger, :db do
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
-          EXECUTE PROCEDURE uppercase_users_name();
+          EXECUTE FUNCTION uppercase_users_name();
     EOS
     connection.create_trigger(
       :uppercase_users_name,
@@ -35,6 +35,6 @@ describe Fx::SchemaDumper::Trigger, :db do
     output = stream.string
     expect(output).to include "create_trigger :uppercase_users_name"
     expect(output).to include "sql_definition: <<-SQL"
-    expect(output).to include "EXECUTE PROCEDURE uppercase_users_name()"
+    expect(output).to include "EXECUTE FUNCTION uppercase_users_name()"
   end
 end
