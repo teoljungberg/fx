@@ -38,6 +38,11 @@ if RUBY_VERSION >= "2.5.0"
 end
 
 if RUBY_VERSION >= "2.7.0"
+  appraise "rails70" do
+    gem "activerecord", "~> 7.0.0"
+    gem "railties", "~> 7.0.0"
+  end
+
   appraise "rails-edge" do
     gem "rails", github: "rails/rails", branch: "main"
     gem "arel", :github => "rails/arel"

@@ -1,5 +1,7 @@
 development: &default
   adapter: postgresql
+  host: 127.0.0.1
+  user: <%= ENV['POSTGRES_USER'] %>
   database: dummy_development
   encoding: unicode
   pool: 5
