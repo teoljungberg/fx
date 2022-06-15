@@ -35,7 +35,7 @@ jobs:
           - ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: postgres-14
         env:
           POSTGRES_USER: postgres
           POSTGRES_HOST_AUTH_METHOD: trust
@@ -60,4 +60,5 @@ jobs:
       - name: Setup environment
         run: bin/setup
       - name: Run tests
-        run: bundle exec rake 
+        run: bundle exec rake
+ 
