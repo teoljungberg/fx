@@ -23,9 +23,11 @@ module Fx
       end
 
       def functions(stream)
+        stream.puts('  execute "SET check_function_bodies=off"')
         dumpable_functions_in_database.each do |function|
           stream.puts(function.to_schema)
         end
+        stream.puts('  execute "SET check_function_bodies=on"')
       end
 
       private
