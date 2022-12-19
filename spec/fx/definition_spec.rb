@@ -29,6 +29,39 @@ describe Fx::Definition do
         )
       end
 
+      it "performs ERB interpolation" do
+        sql_definition = <<-EOS
+          <% %w(test west).each do |function| %>
+            CREATE OR REPLACE FUNCTION <%= function %>()
+            RETURNS text AS $$
+            BEGIN
+                RETURN '<%= function %>';
+            END;
+            $$ LANGUAGE plpgsql;
+          <% end %>
+        EOS
+
+        erb_sql_definition = (<<-EOS).delete("\n").squeeze(' ').strip
+            CREATE OR REPLACE FUNCTION test()
+            RETURNS text AS $$
+            BEGIN
+                RETURN 'test';
+            END;
+            $$ LANGUAGE plpgsql;
+            CREATE OR REPLACE FUNCTION west()
+            RETURNS text AS $$
+            BEGIN
+                RETURN 'west';
+            END;
+            $$ LANGUAGE plpgsql;
+        EOS
+        allow(File).to receive(:read).and_return(sql_definition)
+
+        definition = Fx::Definition.new(name: "test", version: 1)
+
+        expect(definition.to_sql.delete("\n").squeeze(' ').strip).to eq erb_sql_definition
+      end
+
       context "when definition is at Rails engine" do
         it "returns the content of a function definition" do
           sql_definition = <<-EOS

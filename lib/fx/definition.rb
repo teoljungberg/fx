@@ -8,7 +8,7 @@ module Fx
     end
 
     def to_sql
-      File.read(find_file || full_path).tap do |content|
+      ERB.new(File.read(find_file || full_path)).result.tap do |content|
         if content.empty?
           raise "Define #{@type} in #{path} before migrating."
         end
