@@ -22,6 +22,8 @@ jobs:
           - gemfiles/rails70.gemfile
           - gemfiles/rails_edge.gemfile
         exclude:
+          - ruby: 2.7
+            gemfile: gemfiles/rails_edge.gemfile
           - ruby: '3.0'
             gemfile: gemfiles/rails52.gemfile
           - ruby: 3.1
@@ -62,6 +64,7 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
+          rubygems: latest
       - name: Setup environment
         run: bin/setup
       - name: Run tests
