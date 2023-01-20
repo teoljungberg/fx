@@ -69,4 +69,3 @@ jobs:
         run: bin/setup
       - name: Run tests
         run: bundle exec rake
- 
