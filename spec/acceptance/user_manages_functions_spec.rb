@@ -19,7 +19,7 @@ describe "User manages functions" do
     successfully "rails generate fx:function test"
     verify_identical_definitions(
       "db/functions/test_v01.sql",
-      "db/functions/test_v02.sql",
+      "db/functions/test_v02.sql"
     )
     write_function_definition "test_v02", <<-EOS
       CREATE OR REPLACE FUNCTION test()

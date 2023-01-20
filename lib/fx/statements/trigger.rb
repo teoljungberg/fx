@@ -35,7 +35,7 @@ module Fx
         if version.present? && sql_definition.present?
           raise(
             ArgumentError,
-            "sql_definition and version cannot both be set",
+            "sql_definition and version cannot both be set"
           )
         end
 
@@ -47,7 +47,7 @@ module Fx
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
-          type: DEFINITION_TYPE,
+          type: DEFINITION_TYPE
         ).to_sql
 
         Fx.database.create_trigger(sql_definition)
@@ -113,14 +113,14 @@ module Fx
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
-            "version or sql_definition must be specified",
+            "version or sql_definition must be specified"
           )
         end
 
         if version.present? && sql_definition.present?
           raise(
             ArgumentError,
-            "sql_definition and version cannot both be set",
+            "sql_definition and version cannot both be set"
           )
         end
 
@@ -132,13 +132,13 @@ module Fx
         sql_definition ||= Fx::Definition.new(
           name: name,
           version: version,
-          type: DEFINITION_TYPE,
+          type: DEFINITION_TYPE
         ).to_sql
 
         Fx.database.update_trigger(
           name,
           on: on,
-          sql_definition: sql_definition,
+          sql_definition: sql_definition
         )
       end
     end

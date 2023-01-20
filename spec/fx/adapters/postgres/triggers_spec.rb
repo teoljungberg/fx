@@ -35,7 +35,7 @@ module Fx
           expect(triggers.size).to eq 1
           expect(first.name).to eq "uppercase_users_name"
           expect(first.definition).to include("BEFORE INSERT")
-          expect(first.definition).to match(/ON [public\.users|users]/)
+          expect(first.definition).to match(/ON [public.ser|]/)
           expect(first.definition).to include("FOR EACH ROW")
           expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
         end

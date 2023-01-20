@@ -9,10 +9,10 @@ describe Fx::Statements::Trigger, :db do
 
       connection.create_trigger(:test)
 
-      expect(database).to have_received(:create_trigger).
-        with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 1, type: "trigger")
+      expect(database).to have_received(:create_trigger)
+        .with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new)
+        .with(name: :test, version: 1, type: "trigger")
     end
 
     it "allows creating a trigger with a specific version" do
@@ -21,10 +21,10 @@ describe Fx::Statements::Trigger, :db do
 
       connection.create_trigger(:test, version: 2)
 
-      expect(database).to have_received(:create_trigger).
-        with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 2, type: "trigger")
+      expect(database).to have_received(:create_trigger)
+        .with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new)
+        .with(name: :test, version: 2, type: "trigger")
     end
 
     it "raises an error if both arguments are set" do
@@ -34,11 +34,11 @@ describe Fx::Statements::Trigger, :db do
         connection.create_trigger(
           :whatever,
           version: 1,
-          sql_definition: "a definition",
+          sql_definition: "a definition"
         )
       }.to raise_error(
         ArgumentError,
-        /cannot both be set/,
+        /cannot both be set/
       )
     end
   end
@@ -49,8 +49,8 @@ describe Fx::Statements::Trigger, :db do
 
       connection.drop_trigger(:test, on: :users)
 
-      expect(database).to have_received(:drop_trigger).
-        with(:test, on: :users)
+      expect(database).to have_received(:drop_trigger)
+        .with(:test, on: :users)
     end
   end
 
@@ -64,12 +64,12 @@ describe Fx::Statements::Trigger, :db do
       expect(database).to have_received(:update_trigger).with(
         :test,
         on: :users,
-        sql_definition: definition.to_sql,
+        sql_definition: definition.to_sql
       )
       expect(Fx::Definition).to have_received(:new).with(
         name: :test,
         version: 3,
-        type: "trigger",
+        type: "trigger"
       )
     end
 
@@ -79,13 +79,13 @@ describe Fx::Statements::Trigger, :db do
       connection.update_trigger(
         :test,
         on: :users,
-        sql_definition: "a definition",
+        sql_definition: "a definition"
       )
 
       expect(database).to have_received(:update_trigger).with(
         :test,
         on: :users,
-        sql_definition: "a definition",
+        sql_definition: "a definition"
       )
     end
 
@@ -94,11 +94,11 @@ describe Fx::Statements::Trigger, :db do
         connection.update_trigger(
           :whatever,
           version: nil,
-          sql_definition: nil,
+          sql_definition: nil
         )
       }.to raise_error(
         ArgumentError,
-        /version or sql_definition must be specified/,
+        /version or sql_definition must be specified/
       )
     end
 
@@ -109,11 +109,11 @@ describe Fx::Statements::Trigger, :db do
         connection.update_trigger(
           :whatever,
           version: 1,
-          sql_definition: "a definition",
+          sql_definition: "a definition"
         )
       }.to raise_error(
         ArgumentError,
-        /cannot both be set/,
+        /cannot both be set/
       )
     end
   end

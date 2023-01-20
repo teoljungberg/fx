@@ -26,7 +26,7 @@ describe Fx::SchemaDumper::Trigger, :db do
     EOS
     connection.create_trigger(
       :uppercase_users_name,
-      sql_definition: sql_definition,
+      sql_definition: sql_definition
     )
     stream = StringIO.new
 

@@ -42,9 +42,9 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(trigger_definition_path).
-            map { |name| version_regex.match(name).try(:[], "version").to_i }.
-            max
+          @_previous_version ||= Dir.entries(trigger_definition_path)
+            .map { |name| version_regex.match(name).try(:[], "version").to_i }
+            .max
         end
 
         def version
@@ -81,7 +81,7 @@ module Fx
           if name.nil?
             raise(
               ArgumentError,
-              "Either `table_name:NAME` or `on:NAME` must be specified",
+              "Either `table_name:NAME` or `on:NAME` must be specified"
             )
           end
 
@@ -107,12 +107,12 @@ module Fx
         Fx::Definition.new(
           name: file_name,
           version: version,
-          type: "trigger",
+          type: "trigger"
         )
       end
 
       def trigger_definition_path
-        @_trigger_definition_path ||= Rails.root.join(*["db", "triggers"])
+        @_trigger_definition_path ||= Rails.root.join("db", "triggers")
       end
 
       # Skip creating migration file if:

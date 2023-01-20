@@ -29,12 +29,12 @@ module Fx
         if updating_existing_function?
           migration_template(
             "db/migrate/update_function.erb",
-            "db/migrate/update_function_#{file_name}_to_version_#{version}.rb",
+            "db/migrate/update_function_#{file_name}_to_version_#{version}.rb"
           )
         else
           migration_template(
             "db/migrate/create_function.erb",
-            "db/migrate/create_function_#{file_name}.rb",
+            "db/migrate/create_function_#{file_name}.rb"
           )
         end
       end
@@ -45,9 +45,9 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(function_definition_path).
-            map { |name| version_regex.match(name).try(:[], "version").to_i }.
-            max
+          @_previous_version ||= Dir.entries(function_definition_path)
+            .map { |name| version_regex.match(name).try(:[], "version").to_i }
+            .max
         end
 
         def version
@@ -82,7 +82,7 @@ module Fx
       private
 
       def function_definition_path
-        @_function_definition_path ||= Rails.root.join(*%w(db functions))
+        @_function_definition_path ||= Rails.root.join(*%w[db functions])
       end
 
       def version_regex

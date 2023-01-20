@@ -26,7 +26,7 @@ describe "Reverting migrations", :db do
     EOS
     with_trigger_definition(
       name: :uppercase_users_name,
-      sql_definition: sql_definition,
+      sql_definition: sql_definition
     ) do
       example.run
     end
@@ -57,10 +57,10 @@ describe "Reverting migrations", :db do
     end
 
     expect { run_migration(good_migration, [:up, :down]) }.not_to raise_error
-    expect { run_migration(bad_migration, [:up, :down]) }.
-      to raise_error(
+    expect { run_migration(bad_migration, [:up, :down]) }
+      .to raise_error(
         ActiveRecord::IrreversibleMigration,
-        /`create_trigger` is reversible only if given a `revert_to_version`/,
+        /`create_trigger` is reversible only if given a `revert_to_version`/
       )
   end
 
@@ -76,7 +76,7 @@ describe "Reverting migrations", :db do
     with_trigger_definition(
       name: :uppercase_users_name,
       sql_definition: sql_definition,
-      version: 2,
+      version: 2
     ) do
       migration = Class.new(migration_class) do
         def change
@@ -84,7 +84,7 @@ describe "Reverting migrations", :db do
             :uppercase_users_name,
             on: :users,
             version: 2,
-            revert_to_version: 1,
+            revert_to_version: 1
           )
         end
       end

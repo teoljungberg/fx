@@ -51,7 +51,7 @@ describe "Function migrations", :db do
     with_function_definition(
       name: :test,
       version: 2,
-      sql_definition: sql_definition,
+      sql_definition: sql_definition
     ) do
       migration = Class.new(migration_class) do
         def change

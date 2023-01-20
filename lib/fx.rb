@@ -19,17 +19,17 @@ module Fx
   def self.load
     ActiveRecord::Migration::CommandRecorder.send(
       :include,
-      Fx::CommandRecorder,
+      Fx::CommandRecorder
     )
 
     ActiveRecord::SchemaDumper.send(
       :prepend,
-      Fx::SchemaDumper,
+      Fx::SchemaDumper
     )
 
     ActiveRecord::ConnectionAdapters::AbstractAdapter.send(
       :include,
-      Fx::Statements,
+      Fx::Statements
     )
   end
 
