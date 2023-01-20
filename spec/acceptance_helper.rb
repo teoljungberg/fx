@@ -12,7 +12,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     Dir.chdir("spec/dummy") do
       system <<-CMD
-        git init 1>/dev/null &&
+        git init -b master 1>/dev/null &&
         git add -A &&
         git commit --no-gpg-sign --message 'initial' 1>/dev/null
       CMD
