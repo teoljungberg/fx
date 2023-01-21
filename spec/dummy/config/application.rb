@@ -12,8 +12,6 @@ module Dummy
     config.eager_load = false
     config.active_support.deprecation = :stderr
 
-    if Rails.gem_version >= Gem::Version.new("6.1") && Rails.gem_version <= Gem::Version.new("7.0")
-      config.active_record.legacy_connection_handling = false
-    end
+    config.active_record.legacy_connection_handling = false
   end
 end
