@@ -37,8 +37,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     env:
-      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       POSTGRES_USER: postgres
     steps:
       - uses: actions/checkout@v3
