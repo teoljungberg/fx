@@ -40,15 +40,19 @@ jobs:
 
     env:
       POSTGRES_USER: postgres
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
           rubygems: latest
+
       - name: Setup environment
         run: bin/setup
+
       - name: Run tests
         run: bundle exec rake
