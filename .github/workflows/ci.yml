@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby: ["2.7", "3.0", "3.1", "3.2"]
-        rails: ["6.0", "6.1", "7.0", "7.1"]
+        rails: ["6.0", "6.1", "7.0"]
         continue-on-error: [false]
         exclude:
           - ruby: "3.2"
@@ -37,18 +37,22 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
     env:
-      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       POSTGRES_USER: postgres
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
           rubygems: latest
+
       - name: Setup environment
         run: bin/setup
+
       - name: Run tests
         run: bundle exec rake
