@@ -68,7 +68,6 @@ module Fx
       #
       def drop_trigger(name, options = {})
         on = options.fetch(:on)
-        revert_to_version = options[:revert_to_version]
         Fx.database.drop_trigger(name, on: on)
       end
 
@@ -108,7 +107,6 @@ module Fx
         version = options[:version]
         on = options[:on]
         sql_definition = options[:sql_definition]
-        revert_to_version = options[:revert_to_version]
 
         if version.nil? && sql_definition.nil?
           raise(

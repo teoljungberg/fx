@@ -57,7 +57,6 @@ module Fx
       #   drop_function(:uppercase_users_name, revert_to_version: 2)
       #
       def drop_function(name, options = {})
-        revert_to_version = options[:revert_to_version]
         Fx.database.drop_function(name)
       end
 
@@ -93,7 +92,6 @@ module Fx
       def update_function(name, options = {})
         version = options[:version]
         sql_definition = options[:sql_definition]
-        revert_to_version = options[:revert_to_version]
 
         if version.nil? && sql_definition.nil?
           raise(
