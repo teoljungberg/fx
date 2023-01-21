@@ -3,10 +3,8 @@
 1. Fork the repository.
 2. Run `bin/setup`, which will install dependencies and create the dummy
    application database.
-3. Run `bin/appraisal rake` to verify that the tests pass against all
-   supported versions of Rails.
-4. Make your change with new passing tests, following the existing style.
-5. Write a [good commit message], push your fork, and submit a pull request.
+3. Make your change with new passing tests, following the existing style.
+4. Write a [good commit message], push your fork, and submit a pull request.
 
 [good commit message]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
