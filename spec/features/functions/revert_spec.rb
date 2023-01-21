@@ -40,10 +40,10 @@ describe "Reverting migrations", :db do
     end
 
     expect { run_migration(good_migration, [:up, :down]) }.not_to raise_error
-    expect { run_migration(bad_migration, [:up, :down]) }.
-      to raise_error(
+    expect { run_migration(bad_migration, [:up, :down]) }
+      .to raise_error(
         ActiveRecord::IrreversibleMigration,
-        /`create_function` is reversible only if given a `revert_to_version`/,
+        /`create_function` is reversible only if given a `revert_to_version`/
       )
   end
 
@@ -61,7 +61,7 @@ describe "Reverting migrations", :db do
     with_function_definition(
       name: :test,
       version: 2,
-      sql_definition: sql_definition,
+      sql_definition: sql_definition
     ) do
       migration = Class.new(migration_class) do
         def change

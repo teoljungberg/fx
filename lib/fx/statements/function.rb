@@ -36,7 +36,7 @@ module Fx
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
-            "version or sql_definition must be specified",
+            "version or sql_definition must be specified"
           )
         end
         sql_definition = sql_definition.strip_heredoc if sql_definition
@@ -57,7 +57,6 @@ module Fx
       #   drop_function(:uppercase_users_name, revert_to_version: 2)
       #
       def drop_function(name, options = {})
-        revert_to_version = options[:revert_to_version]
         Fx.database.drop_function(name)
       end
 
@@ -93,19 +92,18 @@ module Fx
       def update_function(name, options = {})
         version = options[:version]
         sql_definition = options[:sql_definition]
-        revert_to_version = options[:revert_to_version]
 
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
-            "version or sql_definition must be specified",
+            "version or sql_definition must be specified"
           )
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
         sql_definition ||= Fx::Definition.new(
           name: name,
-          version: version,
+          version: version
         ).to_sql
 
         Fx.database.update_function(name, sql_definition)

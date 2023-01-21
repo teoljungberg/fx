@@ -1,5 +1,6 @@
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
+require "standard/rake"
 
 namespace :dummy do
   require_relative "spec/dummy/config/application"
@@ -20,4 +21,4 @@ RSpec::Core::RakeTask.new("spec:acceptance") do |task|
 end
 
 desc "Run the specs and acceptance tests"
-task default: %w(spec spec:acceptance)
+task default: %w[spec spec:acceptance standard]

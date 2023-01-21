@@ -26,7 +26,7 @@ describe "Trigger migrations", :db do
     EOS
     with_trigger_definition(
       name: :uppercase_users_name,
-      sql_definition: sql_definition,
+      sql_definition: sql_definition
     ) do
       example.run
     end

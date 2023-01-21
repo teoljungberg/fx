@@ -7,15 +7,15 @@ module Fx
       it "delegates to `name`" do
         function_a = Function.new(
           "name" => "name_a",
-          "definition" => "some definition",
+          "definition" => "some definition"
         )
         function_b = Function.new(
           "name" => "name_b",
-          "definition" => "some definition",
+          "definition" => "some definition"
         )
         function_c = Function.new(
           "name" => "name_c",
-          "definition" => "some definition",
+          "definition" => "some definition"
         )
 
         expect(function_b).to be_between(function_a, function_c)
@@ -26,11 +26,11 @@ module Fx
       it "compares `name` and `definition`" do
         function_a = Function.new(
           "name" => "name_a",
-          "definition" => "some definition",
+          "definition" => "some definition"
         )
         function_b = Function.new(
           "name" => "name_b",
-          "definition" => "some other definition",
+          "definition" => "some other definition"
         )
 
         expect(function_a).not_to eq(function_b)
@@ -41,7 +41,7 @@ module Fx
       it "returns a schema compatible version of the function" do
         function = Function.new(
           "name" => "uppercase_users_name",
-          "definition" => "CREATE OR REPLACE TRIGGER uppercase_users_name ...",
+          "definition" => "CREATE OR REPLACE TRIGGER uppercase_users_name ..."
         )
 
         expect(function.to_schema).to eq <<-'EOS'
@@ -54,7 +54,7 @@ module Fx
       it "maintains backslashes" do
         function = Function.new(
           "name" => "regex",
-          "definition" => "CREATE OR REPLACE FUNCTION regex \\1",
+          "definition" => "CREATE OR REPLACE FUNCTION regex \\1"
         )
 
         expect(function.to_schema).to eq <<-'EOS'
