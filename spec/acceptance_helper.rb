@@ -12,6 +12,9 @@ RSpec.configure do |config|
   config.before(:suite) do
     Dir.chdir("spec/dummy") do
       system <<-CMD
+        git config user.email "fx@example.com"
+        git config user.name "Fx"
+
         git init -b master 1>/dev/null &&
         git add -A &&
         git commit --no-gpg-sign --message 'initial' 1>/dev/null
