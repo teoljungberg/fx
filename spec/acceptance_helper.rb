@@ -26,7 +26,7 @@ RSpec.configure do |config|
       ActiveRecord::Base.connection.disconnect!
       system <<-CMD
         echo &&
-        rake db:environment:set db:drop db:create &&
+        rake db:environment:set db:drop db:create 1>/dev/null &&
         git add -A &&
         git reset --hard HEAD 1>/dev/null &&
         rm -rf .git/ 1>/dev/null
