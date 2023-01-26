@@ -1,4 +1,5 @@
 require "spec_helper"
+require "acceptance_helper"
 
 describe Fx::Definition do
   describe "#to_sql" do
@@ -41,7 +42,7 @@ describe Fx::Definition do
           <% end %>
         EOS
 
-        erb_sql_definition = (<<-EOS).delete("\n").squeeze(' ').strip
+        erb_sql_definition = <<-EOS.delete("\n").squeeze(" ").strip
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
@@ -59,7 +60,7 @@ describe Fx::Definition do
 
         definition = Fx::Definition.new(name: "test", version: 1)
 
-        expect(definition.to_sql.delete("\n").squeeze(' ').strip).to eq erb_sql_definition
+        expect(definition.to_sql.delete("\n").squeeze(" ").strip).to eq erb_sql_definition
       end
 
       context "when definition is at Rails engine" do
@@ -162,6 +163,17 @@ describe Fx::Definition do
       definition = Fx::Definition.new(name: :_, version: 15)
 
       expect(definition.version).to eq "15"
+    end
+
+    it "returns latest version" do
+      successfully "rails generate fx:function adder"
+      write_function_definition "adder_v01", "select 1;"
+      successfully "rails generate fx:function adder"
+      write_function_definition "adder_v02", "select 5;"
+
+      definition = Fx::Definition.new(name: :adder, version: :latest)
+
+      expect(definition.version).to eq "02"
     end
   end
 end

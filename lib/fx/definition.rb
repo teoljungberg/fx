@@ -3,7 +3,7 @@ module Fx
   class Definition
     def initialize(name:, version:, type: "function")
       @name = name
-      @version = version.to_i
+      @version = version
       @type = type
     end
 
@@ -24,7 +24,8 @@ module Fx
     end
 
     def version
-      @version.to_s.rjust(2, "0")
+      @version = latest_version if @version == :latest
+      @version.to_i.to_s.rjust(2, "0")
     end
 
     private
@@ -41,6 +42,11 @@ module Fx
 
     def migration_paths
       Rails.application.config.paths["db/migrate"].expanded
+    end
+
+    def latest_version
+      Dir.glob(Rails.root.join("db", @type.pluralize, "#{@name}*.sql")).max =~ /#{@name}_v(\d*).sql/i
+      $1
     end
   end
 end
