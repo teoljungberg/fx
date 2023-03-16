@@ -11,6 +11,7 @@ describe Fx::Generators::FunctionGenerator, :generator do
     expect(function_definition).to exist
     expect(migration).to be_a_migration
     expect(migration_file(migration)).to contain "CreateFunctionTest"
+    expect(migration_file(migration)).to contain "create_function :test"
   end
 
   context "when passed --no-migration" do
@@ -41,6 +42,39 @@ describe Fx::Generators::FunctionGenerator, :generator do
       expect(migration).to be_a_migration
       expect(migration_file(migration))
         .to contain("UpdateFunctionTestToVersion2")
+      expect(migration_file(migration)).to contain "update_function :test, version: 2, revert_to_version: 1"
+    end
+  end
+
+  it "creates a schema-specified function" do
+    migration = file("db/migrate/create_function_foo_test.rb")
+    function_definition = file("db/functions/foo_test_v01.sql")
+
+    run_generator ["foo.test"]
+
+    expect(function_definition).to exist
+    expect(migration).to be_a_migration
+    expect(migration_file(migration)).to contain "CreateFunctionFooTest"
+    expect(migration_file(migration)).to contain 'create_function "foo.test"'
+  end
+
+  it "updates an existing schema-specified function" do
+    with_function_definition(
+      name: "foo_test",
+      version: 1,
+      sql_definition: "hello"
+    ) do
+      allow(Dir).to receive(:entries).and_return(["foo_test_v01.sql"])
+      migration = file("db/migrate/update_function_foo_test_to_version_2.rb")
+      function_definition = file("db/functions/foo_test_v02.sql")
+
+      run_generator ["foo.test"]
+
+      expect(function_definition).to exist
+      expect(migration).to be_a_migration
+      expect(migration_file(migration))
+        .to contain("UpdateFunctionFooTestToVersion2")
+      expect(migration_file(migration)).to contain 'update_function "foo.test", version: 2, revert_to_version: 1'
     end
   end
 end

@@ -87,6 +87,12 @@ describe Fx::Definition do
 
         expect(definition.path).to eq "db/functions/test_v01.sql"
       end
+
+      it "uses underscores for schema-specified names" do
+        definition = Fx::Definition.new(name: "foo.test", version: 15)
+
+        expect(definition.path).to eq "db/functions/foo_test_v15.sql"
+      end
     end
 
     context "representing a trigger definition" do

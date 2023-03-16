@@ -54,6 +54,15 @@ module Fx
           @_version ||= previous_version.next
         end
 
+        alias_method :original_file_name, :file_name
+        def file_name
+          super.tr(".", "_")
+        end
+
+        def singular_name
+          original_file_name
+        end
+
         def migration_class_name
           if updating_existing_function?
             "UpdateFunction#{class_name}ToVersion#{version}"
