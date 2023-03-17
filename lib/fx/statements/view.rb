@@ -27,7 +27,10 @@ module Fx
       #     SELECT * users WHERE active = true;
       #   SQL
       #
-      def create_view(name, version: 1, sql_definition: nil, materialized: false)
+      def create_view(name, options = {})
+        version = options.fetch(:version, 1)
+        sql_definition = options[:sql_definition]
+
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
@@ -56,7 +59,9 @@ module Fx
       # @example Drop a view, rolling back to version 2 on rollback
       #   drop_view(:active_users, revert_to_version: 2)
       #
-      def drop_view(name, revert_to_version: nil, materialized: false)
+      def drop_view(name, options = {})
+        materialized = options.fetch(:materialized, false)
+
         Fx.database.drop_view(name, materialized: materialized)
       end
 
@@ -86,7 +91,11 @@ module Fx
       #     SELECT * users WHERE active = true;
       #   SQL
       #
-      def update_view(name, version: nil, sql_definition: nil, revert_to_version: nil, materialized: false)
+      def update_view(name, options = {})
+        version = options.fetch(:version, 1)
+        sql_definition = options[:sql_definition]
+        materialized = options.fetch(:materialized, false)
+
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
