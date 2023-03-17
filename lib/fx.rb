@@ -7,6 +7,7 @@ require "fx/function"
 require "fx/statements"
 require "fx/schema_dumper"
 require "fx/trigger"
+require "fx/view"
 require "fx/railtie"
 
 # F(x) adds methods `ActiveRecord::Migration` to create and manage database

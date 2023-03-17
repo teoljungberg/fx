@@ -47,6 +47,10 @@ RSpec.configure do |config|
     write_definition(file, contents, "triggers")
   end
 
+  def write_view_definition(file, contents)
+    write_definition(file, contents, "views")
+  end
+
   def write_definition(file, contents, directory)
     File.open("db/#{directory}/#{file}.sql", File::WRONLY) do |definition|
       definition.truncate(0)

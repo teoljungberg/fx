@@ -1,0 +1,5 @@
+class <%= migration_class_name %> < <%= activerecord_migration_class %>
+  def change
+    create_view <%= formatted_name %><%= ', materialized: true' if materialized? %>
+  end
+end

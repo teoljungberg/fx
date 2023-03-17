@@ -1,0 +1,12 @@
+Description:
+  Create a new database view for your application. This will create a new
+  function definition file and the accompanying migration.
+
+  When --materialized is passe, it generates a materialized view definition.
+  When --no-migration is passed, skips generating a migration.
+
+Examples:
+    rails generate fx:view test
+
+      create: db/views/test_v01.sql
+      create: db/migrate/[TIMESTAMP]_create_test.rb

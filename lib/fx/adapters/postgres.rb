@@ -1,6 +1,7 @@
 require "fx/adapters/postgres/connection"
 require "fx/adapters/postgres/functions"
 require "fx/adapters/postgres/triggers"
+require "fx/adapters/postgres/views"
 
 module Fx
   # F(x) database adapters.
@@ -60,6 +61,16 @@ module Fx
         Triggers.all(connection)
       end
 
+      # Returns an array of views in the database.
+      #
+      # This collection of views is used by the [Fx::SchemaDumper] to
+      # populate the `schema.rb` file.
+      #
+      # @return [Array<Fx::View>]
+      def views
+        Views.all(connection)
+      end
+
       # Creates a function in the database.
       #
       # This is typically called in a migration via
@@ -81,6 +92,18 @@ module Fx
       #
       # @return [void]
       def create_trigger(sql_definition)
+        execute sql_definition
+      end
+
+      # Creates a view in the database.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::View#create_view}.
+      #
+      # @param sql_definition The SQL schema for the view.
+      #
+      # @return [void]
+      def create_view(sql_definition)
         execute sql_definition
       end
 
@@ -116,6 +139,21 @@ module Fx
         create_trigger(sql_definition)
       end
 
+      # Updates a view in the database.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::View#update_view}.
+      #
+      # @param name The name of the view.
+      # @param sql_definition The SQL schema for the view.
+      # @param materialized [Boolean] defines if the view is materialized or not.
+      #
+      # @return [void]
+      def update_view(name, sql_definition, materialized: false)
+        drop_view(name, materialized: materialized)
+        create_view(sql_definition)
+      end
+
       # Drops the function from the database
       #
       # This is typically called in a migration via
@@ -143,6 +181,20 @@ module Fx
       # @return [void]
       def drop_trigger(name, on:)
         execute "DROP TRIGGER #{name} ON #{on};"
+      end
+
+      # Drops the view from the database
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::View#drop_view}.
+      #
+      # @param name The name of the view to drop
+      # @param materialized [Boolean] defines if the view is materialized or not.
+      #
+      # @return [void]
+      def drop_view(name, materialized: false)
+        type = materialized ? "MATERIALIZED VIEW" : "VIEW"
+        execute "DROP #{type} #{name};"
       end
 
       private
