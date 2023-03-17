@@ -7,15 +7,15 @@ module Fx
       it "delegates to `name`" do
         view_a = View.new(
           "name" => "name_a",
-          "definition" => "some defintion",
+          "definition" => "some defintion"
         )
         view_b = View.new(
           "name" => "name_b",
-          "definition" => "some defintion",
+          "definition" => "some defintion"
         )
         view_c = View.new(
           "name" => "name_c",
-          "definition" => "some defintion",
+          "definition" => "some defintion"
         )
 
         expect(view_b).to be_between(view_a, view_c)
@@ -26,11 +26,11 @@ module Fx
       it "compares `name` and `definition`" do
         view_a = View.new(
           "name" => "name_a",
-          "definition" => "some defintion",
+          "definition" => "some defintion"
         )
         view_b = View.new(
           "name" => "name_b",
-          "definition" => "some other defintion",
+          "definition" => "some other defintion"
         )
 
         expect(view_a).not_to eq(view_b)
@@ -38,7 +38,7 @@ module Fx
     end
 
     describe "#to_schema" do
-      context 'when it is a materialized view' do
+      context "when it is a materialized view" do
         it "returns a schema compatible version of the materialized view" do
           view = View.new(
             "name" => "active_users",
@@ -55,11 +55,11 @@ module Fx
         end
       end
 
-      context 'when it is not a materialized view' do
+      context "when it is not a materialized view" do
         it "returns a schema compatible version of the view" do
           view = View.new(
             "name" => "active_users",
-            "definition" => "SELECT * FROM users ...",
+            "definition" => "SELECT * FROM users ..."
           )
 
           expect(view.to_schema).to eq <<-EOS

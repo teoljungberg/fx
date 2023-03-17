@@ -98,7 +98,7 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "view",
+          type: "view"
         )
 
         expect(definition.to_sql).to eq sql_definition
@@ -109,12 +109,12 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "view",
+          type: "view"
         )
 
         expect { definition.to_sql }.to raise_error(
           RuntimeError,
-          %r(Define view in db/views/test_v01.sql before migrating),
+          %r{Define view in db/views/test_v01.sql before migrating}
         )
       end
     end
@@ -146,7 +146,7 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "view",
+          type: "view"
         )
 
         expect(definition.path).to eq "db/views/test_v01.sql"

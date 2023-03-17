@@ -9,10 +9,10 @@ describe Fx::Statements::View, :db do
 
       connection.create_view(:test)
 
-      expect(database).to have_received(:create_view).
-        with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 1, type: "view")
+      expect(database).to have_received(:create_view)
+        .with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new)
+        .with(name: :test, version: 1, type: "view")
     end
 
     it "allows creating a view with a specific version" do
@@ -21,10 +21,10 @@ describe Fx::Statements::View, :db do
 
       connection.create_view(:test, version: 2)
 
-      expect(database).to have_received(:create_view).
-        with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 2, type: "view")
+      expect(database).to have_received(:create_view)
+        .with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new)
+        .with(name: :test, version: 2, type: "view")
     end
 
     it "raises an error if both arguments are nil" do
@@ -32,11 +32,11 @@ describe Fx::Statements::View, :db do
         connection.create_view(
           :whatever,
           version: nil,
-          sql_definition: nil,
+          sql_definition: nil
         )
       }.to raise_error(
         ArgumentError,
-        /version or sql_definition must be specified/,
+        /version or sql_definition must be specified/
       )
     end
   end
@@ -66,10 +66,10 @@ describe Fx::Statements::View, :db do
 
       connection.update_view(:test, version: 3)
 
-      expect(database).to have_received(:update_view).
-        with(:test, definition.to_sql, materialized: false)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 3, type: "view")
+      expect(database).to have_received(:update_view)
+        .with(:test, definition.to_sql, materialized: false)
+      expect(Fx::Definition).to have_received(:new)
+        .with(name: :test, version: 3, type: "view")
     end
 
     it "updates a materialized view" do
@@ -78,10 +78,10 @@ describe Fx::Statements::View, :db do
 
       connection.update_view(:test, version: 3, materialized: true)
 
-      expect(database).to have_received(:update_view).
-        with(:test, definition.to_sql, materialized: true)
-      expect(Fx::Definition).to have_received(:new).
-        with(name: :test, version: 3, type: "view")
+      expect(database).to have_received(:update_view)
+        .with(:test, definition.to_sql, materialized: true)
+      expect(Fx::Definition).to have_received(:new)
+        .with(name: :test, version: 3, type: "view")
     end
 
     it "updates a view from a text definition" do
@@ -101,11 +101,11 @@ describe Fx::Statements::View, :db do
         connection.update_view(
           :whatever,
           version: nil,
-          sql_definition: nil,
+          sql_definition: nil
         )
       }.to raise_error(
         ArgumentError,
-        /version or sql_definition must be specified/,
+        /version or sql_definition must be specified/
       )
     end
   end

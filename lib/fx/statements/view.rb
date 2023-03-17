@@ -31,7 +31,7 @@ module Fx
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
-            "version or sql_definition must be specified",
+            "version or sql_definition must be specified"
           )
         end
         sql_definition = sql_definition.strip_heredoc if sql_definition
@@ -90,7 +90,7 @@ module Fx
         if version.nil? && sql_definition.nil?
           raise(
             ArgumentError,
-            "version or sql_definition must be specified",
+            "version or sql_definition must be specified"
           )
         end
 

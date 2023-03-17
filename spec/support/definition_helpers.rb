@@ -27,13 +27,13 @@ module DefinitionHelpers
     definition = Fx::Definition.new(
       name: name,
       version: version,
-      type: "view",
+      type: "view"
     )
 
     with_definition(
       definition: definition,
       sql_definition: sql_definition,
-      block: block,
+      block: block
     )
   end
 

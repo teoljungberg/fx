@@ -44,7 +44,7 @@ module Fx
           "definition" => "CREATE OR REPLACE TRIGGER uppercase_users_name ..."
         )
 
-        expect(function.to_schema).to eq <<-'EOS'
+        expect(function.to_schema).to eq <<-EOS
   create_function :uppercase_users_name, sql_definition: <<-'SQL'
       CREATE OR REPLACE TRIGGER uppercase_users_name ...
   SQL

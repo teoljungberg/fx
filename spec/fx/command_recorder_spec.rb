@@ -206,8 +206,8 @@ describe Fx::CommandRecorder, :db do
 
     it "reverts to create_view with specified revert_to_version" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, { revert_to_version: 3 }]
-      revert_args = [:test, { version: 3 }]
+      args = [:test, {revert_to_version: 3}]
+      revert_args = [:test, {version: 3}]
 
       recorder.revert { recorder.drop_view(*args) }
 
@@ -216,17 +216,17 @@ describe Fx::CommandRecorder, :db do
 
     it "raises when reverting without revert_to_version set" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, { another_argument: 1 }]
+      args = [:test, {another_argument: 1}]
 
-      expect { recorder.revert { recorder.drop_view(*args) } }.
-        to raise_error(ActiveRecord::IrreversibleMigration)
+      expect { recorder.revert { recorder.drop_view(*args) } }
+        .to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 
   describe "#update_view" do
     it "records the updated view" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, { version: 2 }]
+      args = [:test, {version: 2}]
 
       recorder.update_view(*args)
 
@@ -235,8 +235,8 @@ describe Fx::CommandRecorder, :db do
 
     it "reverts to update_view with the specified revert_to_version" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, { version: 2, revert_to_version: 1 }]
-      revert_args = [:test, { version: 1 }]
+      args = [:test, {version: 2, revert_to_version: 1}]
+      revert_args = [:test, {version: 1}]
 
       recorder.revert { recorder.update_view(*args) }
 
@@ -245,10 +245,10 @@ describe Fx::CommandRecorder, :db do
 
     it "raises when reverting without revert_to_version set" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, { version: 42, another_argument: 1 }]
+      args = [:test, {version: 42, another_argument: 1}]
 
-      expect { recorder.revert { recorder.update_view(*args) } }.
-        to raise_error(ActiveRecord::IrreversibleMigration)
+      expect { recorder.revert { recorder.update_view(*args) } }
+        .to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 end

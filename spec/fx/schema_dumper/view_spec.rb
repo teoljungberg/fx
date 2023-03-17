@@ -20,7 +20,6 @@ describe Fx::SchemaDumper::View, :db do
 
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
-    output = stream.string
     expect(output).to include "create_view :active_users"
     expect(output).to include "sql_definition: <<-SQL"
     expect(output).to include "SELECT users.id"
@@ -49,7 +48,6 @@ describe Fx::SchemaDumper::View, :db do
 
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
-    output = stream.string
     expect(output).to include "create_view :active_users"
     expect(output).to include "sql_definition: <<-SQL"
     expect(output).to include "SELECT users.id"

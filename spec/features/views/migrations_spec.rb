@@ -16,7 +16,7 @@ describe "View migrations", :db do
     EOS
     with_view_definition(
       name: :active_users,
-      sql_definition: sql_definition,
+      sql_definition: sql_definition
     ) do
       example.run
     end
