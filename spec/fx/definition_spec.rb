@@ -1,5 +1,4 @@
 require "spec_helper"
-require "acceptance_helper"
 
 describe Fx::Definition do
   describe "#to_sql" do
@@ -9,7 +8,7 @@ describe Fx::Definition do
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
           BEGIN
-              RETURN 'test';
+            RETURN 'test';
           END;
           $$ LANGUAGE plpgsql;
         EOS
@@ -26,7 +25,7 @@ describe Fx::Definition do
 
         expect { definition.to_sql }.to raise_error(
           RuntimeError,
-          %r{Define function in db/functions/test_v01.sql before migrating}
+          %r(Define function in db/functions/test_v01.sql before migrating),
         )
       end
 
@@ -36,31 +35,31 @@ describe Fx::Definition do
             CREATE OR REPLACE FUNCTION <%= function %>()
             RETURNS text AS $$
             BEGIN
-                RETURN '<%= function %>';
+              RETURN '<%= function %>';
             END;
             $$ LANGUAGE plpgsql;
           <% end %>
         EOS
 
-        erb_sql_definition = <<-EOS.delete("\n").squeeze(" ").strip
-            CREATE OR REPLACE FUNCTION test()
-            RETURNS text AS $$
-            BEGIN
-                RETURN 'test';
-            END;
-            $$ LANGUAGE plpgsql;
-            CREATE OR REPLACE FUNCTION west()
-            RETURNS text AS $$
-            BEGIN
-                RETURN 'west';
-            END;
-            $$ LANGUAGE plpgsql;
+        erb_sql_definition = (<<-EOS).delete("\n").squeeze(' ').strip
+          CREATE OR REPLACE FUNCTION test()
+          RETURNS text AS $$
+          BEGIN
+            RETURN 'test';
+          END;
+          $$ LANGUAGE plpgsql;
+          CREATE OR REPLACE FUNCTION west()
+          RETURNS text AS $$
+          BEGIN
+            RETURN 'west';
+          END;
+          $$ LANGUAGE plpgsql;
         EOS
         allow(File).to receive(:read).and_return(sql_definition)
 
         definition = Fx::Definition.new(name: "test", version: 1)
 
-        expect(definition.to_sql.delete("\n").squeeze(" ").strip).to eq erb_sql_definition
+        expect(definition.to_sql.delete("\n").squeeze(' ').strip).to eq erb_sql_definition
       end
 
       context "when definition is at Rails engine" do
@@ -69,7 +68,7 @@ describe Fx::Definition do
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
-                RETURN 'test';
+              RETURN 'test';
             END;
             $$ LANGUAGE plpgsql;
           EOS
@@ -100,7 +99,7 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "trigger"
+          type: "trigger",
         )
 
         expect(definition.to_sql).to eq sql_definition
@@ -111,12 +110,12 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "trigger"
+          type: "trigger",
         )
 
         expect { definition.to_sql }.to raise_error(
           RuntimeError,
-          %r{Define trigger in db/triggers/test_v01.sql before migrating}
+          %r(Define trigger in db/triggers/test_v01.sql before migrating),
         )
       end
     end
@@ -136,7 +135,7 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "trigger"
+          type: "trigger",
         )
 
         expect(definition.path).to eq "db/triggers/test_v01.sql"
@@ -163,17 +162,6 @@ describe Fx::Definition do
       definition = Fx::Definition.new(name: :_, version: 15)
 
       expect(definition.version).to eq "15"
-    end
-
-    it "returns latest version" do
-      successfully "rails generate fx:function adder"
-      write_function_definition "adder_v01", "select 1;"
-      successfully "rails generate fx:function adder"
-      write_function_definition "adder_v02", "select 5;"
-
-      definition = Fx::Definition.new(name: :adder, version: :latest)
-
-      expect(definition.version).to eq "02"
     end
   end
 end

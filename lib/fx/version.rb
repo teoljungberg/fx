@@ -1,4 +1,4 @@
 module Fx
   # @api private
-  VERSION = "1.7.2"
+  VERSION = "0.7.0"
 end
