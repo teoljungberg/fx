@@ -104,11 +104,7 @@ module Fx
       end
 
       def definition
-        Fx::Definition.new(
-          name: file_name,
-          version: version,
-          type: "trigger"
-        )
+        Fx::Definition.trigger(name: file_name, version: version)
       end
 
       def trigger_definition_path

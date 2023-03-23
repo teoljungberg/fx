@@ -1,7 +1,18 @@
 module Fx
   # @api private
   class Definition
-    def initialize(name:, version:, type: "function")
+    FUNCTION = "function".freeze
+    TRIGGER = "trigger".freeze
+
+    def self.function(name:, version:)
+      new(name: name, version: version, type: FUNCTION)
+    end
+
+    def self.trigger(name:, version:)
+      new(name: name, version: version, type: TRIGGER)
+    end
+
+    def initialize(name:, version:, type:)
       @name = name
       @version = version.to_i
       @type = type
