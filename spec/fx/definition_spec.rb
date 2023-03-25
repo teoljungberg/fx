@@ -41,7 +41,7 @@ describe Fx::Definition do
           <% end %>
         EOS
 
-        erb_sql_definition = (<<-EOS).delete("\n").squeeze(' ').strip
+        erb_sql_definition = <<-EOS.delete("\n").squeeze(" ").strip
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
           BEGIN
@@ -59,7 +59,7 @@ describe Fx::Definition do
 
         definition = Fx::Definition.new(name: "test", version: 1)
 
-        expect(definition.to_sql.delete("\n").squeeze(' ').strip).to eq erb_sql_definition
+        expect(definition.to_sql.delete("\n").squeeze(" ").strip).to eq erb_sql_definition
       end
 
       context "when definition is at Rails engine" do
