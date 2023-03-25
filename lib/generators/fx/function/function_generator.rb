@@ -98,11 +98,11 @@ module Fx
       end
 
       def definition
-        Fx::Definition.new(name: file_name, version: version)
+        Fx::Definition.function(name: file_name, version: version)
       end
 
       def previous_definition
-        Fx::Definition.new(name: file_name, version: previous_version)
+        Fx::Definition.function(name: file_name, version: previous_version)
       end
 
       # Skip creating migration file if:

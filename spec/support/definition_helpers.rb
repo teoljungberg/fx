@@ -1,6 +1,6 @@
 module DefinitionHelpers
   def with_function_definition(name:, sql_definition:, version: 1, &block)
-    definition = Fx::Definition.new(name: name, version: version)
+    definition = Fx::Definition.function(name: name, version: version)
 
     with_definition(
       definition: definition,
@@ -10,11 +10,7 @@ module DefinitionHelpers
   end
 
   def with_trigger_definition(name:, sql_definition:, version: 1, &block)
-    definition = Fx::Definition.new(
-      name: name,
-      version: version,
-      type: "trigger"
-    )
+    definition = Fx::Definition.trigger(name: name, version: version)
 
     with_definition(
       definition: definition,

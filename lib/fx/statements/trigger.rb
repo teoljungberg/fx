@@ -2,9 +2,6 @@ module Fx
   module Statements
     # Methods that are made available in migrations for managing Fx triggers.
     module Trigger
-      # @api private
-      DEFINITION_TYPE = "trigger".freeze
-
       # Create a new database trigger.
       #
       # @param name [String, Symbol] The name of the database trigger.
@@ -44,11 +41,7 @@ module Fx
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.new(
-          name: name,
-          version: version,
-          type: DEFINITION_TYPE
-        ).to_sql
+        sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
 
         Fx.database.create_trigger(sql_definition)
       end
@@ -127,11 +120,7 @@ module Fx
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.new(
-          name: name,
-          version: version,
-          type: DEFINITION_TYPE
-        ).to_sql
+        sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
 
         Fx.database.update_trigger(
           name,
