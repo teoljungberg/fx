@@ -25,7 +25,7 @@ describe Fx::Definition do
 
         expect { definition.to_sql }.to raise_error(
           RuntimeError,
-          %r(Define function in db/functions/test_v01.sql before migrating),
+          %r{Define function in db/functions/test_v01.sql before migrating}
         )
       end
 
@@ -99,7 +99,7 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "trigger",
+          type: "trigger"
         )
 
         expect(definition.to_sql).to eq sql_definition
@@ -110,12 +110,12 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "trigger",
+          type: "trigger"
         )
 
         expect { definition.to_sql }.to raise_error(
           RuntimeError,
-          %r(Define trigger in db/triggers/test_v01.sql before migrating),
+          %r{Define trigger in db/triggers/test_v01.sql before migrating}
         )
       end
     end
@@ -135,7 +135,7 @@ describe Fx::Definition do
         definition = Fx::Definition.new(
           name: "test",
           version: 1,
-          type: "trigger",
+          type: "trigger"
         )
 
         expect(definition.path).to eq "db/triggers/test_v01.sql"
