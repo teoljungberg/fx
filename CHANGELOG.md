@@ -5,6 +5,12 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
+## [Unreleased]
+
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.8.0..HEAD
+
+- Add `Fx::Definition.{function,trigger}` (#119)
+
 ## [0.8.0]
 
 [0.8.0]: https://github.com/teoljungberg/fx/compare/v0.7.0...v0.8.0
