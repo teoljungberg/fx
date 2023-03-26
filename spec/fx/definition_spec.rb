@@ -57,7 +57,7 @@ describe Fx::Definition do
         EOS
         allow(File).to receive(:read).and_return(sql_definition)
 
-        definition = Fx::Definition.new(name: "test", version: 1)
+        definition = Fx::Definition.function(name: "test", version: 1)
 
         expect(definition.to_sql.delete("\n").squeeze(" ").strip).to eq erb_sql_definition
       end
