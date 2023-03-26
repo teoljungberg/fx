@@ -40,7 +40,6 @@ describe Fx::Definition do
             $$ LANGUAGE plpgsql;
           <% end %>
         EOS
-
         erb_sql_definition = <<-EOS.delete("\n").squeeze(" ").strip
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
