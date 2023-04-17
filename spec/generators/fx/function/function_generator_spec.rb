@@ -1,7 +1,7 @@
 require "spec_helper"
 require "generators/fx/function/function_generator"
 
-describe Fx::Generators::FunctionGenerator, :generator do
+RSpec.describe Fx::Generators::FunctionGenerator, :generator do
   it "creates a function definition file, and a migration" do
     migration = file("db/migrate/create_function_test.rb")
     function_definition = file("db/functions/test_v01.sql")

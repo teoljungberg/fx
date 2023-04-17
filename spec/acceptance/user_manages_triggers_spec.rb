@@ -1,6 +1,6 @@
 require "acceptance_helper"
 
-describe "User manages triggers" do
+RSpec.describe "User manages triggers" do
   it "handles simple triggers" do
     successfully "rails generate model user name:string upper_name:string"
     successfully "rails generate fx:function uppercase_users_name"

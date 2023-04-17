@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Fx::SchemaDumper::Trigger, :db do
+RSpec.describe Fx::SchemaDumper::Trigger, :db do
   it "dumps a create_trigger for a trigger in the database" do
     connection.execute <<-EOS
       CREATE TABLE users (

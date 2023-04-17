@@ -1,7 +1,7 @@
 require "spec_helper"
 require "generators/fx/trigger/trigger_generator"
 
-describe Fx::Generators::TriggerGenerator, :generator do
+RSpec.describe Fx::Generators::TriggerGenerator, :generator do
   it "creates a trigger definition file, and a migration" do
     migration = file("db/migrate/create_trigger_test.rb")
     trigger_definition = file("db/triggers/test_v01.sql")

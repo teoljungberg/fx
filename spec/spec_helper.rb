@@ -6,6 +6,8 @@ Dir["spec/support/**/*.rb"].sort.each { |file| load file }
 
 RSpec.configure do |config|
   config.order = "random"
+  config.disable_monkey_patching!
+
   DatabaseCleaner.strategy = :transaction
 
   config.around(:each, db: true) do |example|

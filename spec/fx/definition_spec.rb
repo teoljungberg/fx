@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Fx::Definition do
+RSpec.describe Fx::Definition do
   describe "#to_sql" do
     context "representing a function definition" do
       it "returns the content of a function definition" do

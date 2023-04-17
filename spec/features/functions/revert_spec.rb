@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Reverting migrations", :db do
+RSpec.describe "Reverting migrations", :db do
   around do |example|
     sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION test()
