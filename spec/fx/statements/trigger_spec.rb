@@ -1,5 +1,4 @@
 require "spec_helper"
-require "fx/statements/trigger"
 
 RSpec.describe Fx::Statements::Trigger, :db do
   describe "#create_trigger" do

@@ -1,5 +1,4 @@
 require "spec_helper"
-require "fx/function"
 
 RSpec.describe Fx::Function do
   describe "#<=>" do

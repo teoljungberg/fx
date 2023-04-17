@@ -1,5 +1,4 @@
 require "spec_helper"
-require "fx/trigger"
 
 RSpec.describe Fx::Trigger do
   describe "#<=>" do

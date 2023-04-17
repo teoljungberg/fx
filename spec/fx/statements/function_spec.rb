@@ -1,5 +1,4 @@
 require "spec_helper"
-require "fx/statements/function"
 
 RSpec.describe Fx::Statements::Function, :db do
   describe "#create_function" do
