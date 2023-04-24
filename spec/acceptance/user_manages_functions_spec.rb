@@ -1,6 +1,6 @@
 require "acceptance_helper"
 
-describe "User manages functions" do
+RSpec.describe "User manages functions" do
   it "handles simple functions" do
     successfully "rails generate fx:function test"
     write_function_definition "test_v01", <<-EOS

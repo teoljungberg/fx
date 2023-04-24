@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Trigger migrations", :db do
+RSpec.describe "Trigger migrations", :db do
   around do |example|
     connection.execute <<-EOS
       CREATE TABLE users (

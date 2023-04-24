@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Fx::SchemaDumper::Function, :db do
+RSpec.describe Fx::SchemaDumper::Function, :db do
   it "dumps a create_function for a function in the database" do
     sql_definition = <<-EOS
       CREATE OR REPLACE FUNCTION my_function()

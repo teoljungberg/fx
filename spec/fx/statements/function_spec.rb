@@ -1,7 +1,6 @@
 require "spec_helper"
-require "fx/statements/function"
 
-describe Fx::Statements::Function, :db do
+RSpec.describe Fx::Statements::Function, :db do
   describe "#create_function" do
     it "creates a function from a file" do
       database = stubbed_database
