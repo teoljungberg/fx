@@ -33,6 +33,31 @@ module Fx
     )
   end
 
+  # @return [Fx::Configuration] F(x)'s current configuration
+  def self.configuration
+    @_configuration ||= Configuration.new
+  end
+
+  # Set F(x)'s configuration
+  #
+  # @param config [Fx::Configuration]
+  def self.configuration=(config)
+    @_configuration = config
+  end
+
+  # Modify F(x)'s current configuration
+  #
+  # @yieldparam [Fx::Configuration] config current F(x) config
+  # ```
+  # Fx.configure do |config|
+  #   config.database = Fx::Adapters::Postgres
+  #   config.dump_functions_at_beginning_of_schema = true
+  # end
+  # ```
+  def self.configure
+    yield configuration
+  end
+
   # The current database adapter used by F(x).
   #
   # This defaults to {Fx::Adapters::Postgres} but can be overridden
