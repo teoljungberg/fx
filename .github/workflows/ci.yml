@@ -19,8 +19,6 @@ jobs:
         continue-on-error: [false]
         exclude:
           - ruby: "3.2"
-            rails: "6.0"
-          - ruby: "3.2"
             rails: "6.1"
 
     services:
