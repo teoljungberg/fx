@@ -10,6 +10,10 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.8.0..HEAD
 
 - Add `Fx::Definition.{function,trigger}` (#119)
+- Disable RSpec's monkey patching (#121)
+- Raise on warnings (#124)
+- Require Ruby >= 3.0 (#128)
+- Require Rails >= 6.1 (#127)
 
 ## [0.8.0]
 
