@@ -110,6 +110,8 @@ column value instead of a plain string.
 
 ## Plugins/Adapters
 
+- [MySQL](https://github.com/f-mer/fx-adapters-mysql/)
+- [Oracle](https://github.com/zygotecnologia/fx-oracle-adapter)
 - [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter)
 
 ## Contributing
