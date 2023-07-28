@@ -3,23 +3,15 @@ require "bundler"
 ENV["RAILS_ENV"] = "test"
 
 RSpec.configure do |config|
-  config.around(:each) do |example|
-    Dir.chdir("spec/dummy") do
-      example.run
-    end
-  end
+  config.around(:each) { |example| Dir.chdir("spec/dummy") { example.run } }
 
-  config.before(:suite) do
-    Dir.chdir("spec/dummy") do
-      system <<-CMD
+  config.before(:suite) { Dir.chdir("spec/dummy") { system <<-CMD } }
         git init -b master 1>/dev/null &&
         git config user.email "fx@example.com"
         git config user.name "Fx"
         git add -A &&
         git commit --no-gpg-sign --message 'initial' 1>/dev/null
       CMD
-    end
-  end
 
   config.after(:suite) do
     Dir.chdir("spec/dummy") do

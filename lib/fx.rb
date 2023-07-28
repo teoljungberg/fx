@@ -17,15 +17,9 @@ module Fx
   # Enables fx migration methods, migration reversability, and `schema.rb`
   # dumping.
   def self.load
-    ActiveRecord::Migration::CommandRecorder.send(
-      :include,
-      Fx::CommandRecorder
-    )
+    ActiveRecord::Migration::CommandRecorder.send(:include, Fx::CommandRecorder)
 
-    ActiveRecord::SchemaDumper.send(
-      :prepend,
-      Fx::SchemaDumper
-    )
+    ActiveRecord::SchemaDumper.send(:prepend, Fx::SchemaDumper)
 
     ActiveRecord::ConnectionAdapters::AbstractAdapter.send(
       :include,

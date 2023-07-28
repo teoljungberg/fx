@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "redcarpet"
   spec.add_development_dependency "rspec", ">= 3.3"
-  spec.add_development_dependency "standardrb"
+  spec.add_development_dependency "syntax_tree"
   spec.add_development_dependency "yard"
   spec.add_development_dependency "warning"
 

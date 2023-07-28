@@ -28,6 +28,4 @@ module DefinitionHelpers
   end
 end
 
-RSpec.configure do |config|
-  config.include DefinitionHelpers
-end
+RSpec.configure { |config| config.include DefinitionHelpers }

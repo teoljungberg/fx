@@ -19,7 +19,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
       migration = file("db/migrate/create_trigger_test.rb")
       trigger_definition = file("db/triggers/test_v01.sql")
 
-      run_generator ["test", {"table_name" => "some_table"}, "--no-migration"]
+      run_generator ["test", { "table_name" => "some_table" }, "--no-migration"]
 
       expect(trigger_definition).to exist
       expect(migration_file(migration)).not_to exist

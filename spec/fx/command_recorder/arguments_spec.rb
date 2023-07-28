@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Fx::CommandRecorder::Arguments do
   describe "#function" do
     it "returns the function name" do
-      raw_args = [:spaceships, {foo: :bar}]
+      raw_args = [:spaceships, { foo: :bar }]
       args = Fx::CommandRecorder::Arguments.new(raw_args)
 
       expect(args.function).to eq :spaceships
@@ -12,14 +12,14 @@ RSpec.describe Fx::CommandRecorder::Arguments do
 
   describe "#revert_to_version" do
     it "is the revert_to_version from the keyword arguments" do
-      raw_args = [:spaceships, {revert_to_version: 42}]
+      raw_args = [:spaceships, { revert_to_version: 42 }]
       args = Fx::CommandRecorder::Arguments.new(raw_args)
 
       expect(args.revert_to_version).to eq 42
     end
 
     it "is nil if the revert_to_version was not supplied" do
-      raw_args = [:spaceships, {foo: :bar}]
+      raw_args = [:spaceships, { foo: :bar }]
       args = Fx::CommandRecorder::Arguments.new(raw_args)
 
       expect(args.revert_to_version).to be nil
@@ -28,9 +28,10 @@ RSpec.describe Fx::CommandRecorder::Arguments do
 
   describe "#invert_version" do
     it "returns object with version set to revert_to_version" do
-      raw_args = [:meatballs, {version: 42, revert_to_version: 15}]
+      raw_args = [:meatballs, { version: 42, revert_to_version: 15 }]
 
-      inverted_args = Fx::CommandRecorder::Arguments.new(raw_args).invert_version
+      inverted_args =
+        Fx::CommandRecorder::Arguments.new(raw_args).invert_version
 
       expect(inverted_args.version).to eq 15
       expect(inverted_args.revert_to_version).to be nil

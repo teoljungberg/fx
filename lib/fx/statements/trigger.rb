@@ -30,18 +30,14 @@ module Fx
         sql_definition = options[:sql_definition]
 
         if version.present? && sql_definition.present?
-          raise(
-            ArgumentError,
-            "sql_definition and version cannot both be set"
-          )
+          raise(ArgumentError, "sql_definition and version cannot both be set")
         end
 
-        if version.nil?
-          version = 1
-        end
+        version = 1 if version.nil?
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
+        sql_definition ||=
+          Fx::Definition.trigger(name: name, version: version).to_sql
 
         Fx.database.create_trigger(sql_definition)
       end
@@ -102,31 +98,20 @@ module Fx
         sql_definition = options[:sql_definition]
 
         if version.nil? && sql_definition.nil?
-          raise(
-            ArgumentError,
-            "version or sql_definition must be specified"
-          )
+          raise(ArgumentError, "version or sql_definition must be specified")
         end
 
         if version.present? && sql_definition.present?
-          raise(
-            ArgumentError,
-            "sql_definition and version cannot both be set"
-          )
+          raise(ArgumentError, "sql_definition and version cannot both be set")
         end
 
-        if on.nil?
-          raise ArgumentError, "on is required"
-        end
+        raise ArgumentError, "on is required" if on.nil?
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
+        sql_definition ||=
+          Fx::Definition.trigger(name: name, version: version).to_sql
 
-        Fx.database.update_trigger(
-          name,
-          on: on,
-          sql_definition: sql_definition
-        )
+        Fx.database.update_trigger(name, on: on, sql_definition: sql_definition)
       end
     end
   end

@@ -34,13 +34,11 @@ module Fx
         sql_definition = options[:sql_definition]
 
         if version.nil? && sql_definition.nil?
-          raise(
-            ArgumentError,
-            "version or sql_definition must be specified"
-          )
+          raise(ArgumentError, "version or sql_definition must be specified")
         end
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.function(name: name, version: version).to_sql
+        sql_definition ||=
+          Fx::Definition.function(name: name, version: version).to_sql
 
         Fx.database.create_function(sql_definition)
       end
@@ -94,14 +92,12 @@ module Fx
         sql_definition = options[:sql_definition]
 
         if version.nil? && sql_definition.nil?
-          raise(
-            ArgumentError,
-            "version or sql_definition must be specified"
-          )
+          raise(ArgumentError, "version or sql_definition must be specified")
         end
 
         sql_definition = sql_definition.strip_heredoc if sql_definition
-        sql_definition ||= Fx::Definition.function(name: name, version: version).to_sql
+        sql_definition ||=
+          Fx::Definition.function(name: name, version: version).to_sql
 
         Fx.database.update_function(name, sql_definition)
       end

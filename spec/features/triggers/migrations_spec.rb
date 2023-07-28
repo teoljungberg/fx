@@ -27,17 +27,16 @@ RSpec.describe "Trigger migrations", :db do
     with_trigger_definition(
       name: :uppercase_users_name,
       sql_definition: sql_definition
-    ) do
-      example.run
-    end
+    ) { example.run }
   end
 
   it "can run migrations that create triggers" do
-    migration = Class.new(migration_class) do
-      def up
-        create_trigger :uppercase_users_name
+    migration =
+      Class.new(migration_class) do
+        def up
+          create_trigger :uppercase_users_name
+        end
       end
-    end
 
     expect { run_migration(migration, :up) }.not_to raise_error
   end
@@ -45,11 +44,12 @@ RSpec.describe "Trigger migrations", :db do
   it "can run migrations that drop triggers" do
     connection.create_trigger(:uppercase_users_name)
 
-    migration = Class.new(migration_class) do
-      def up
-        drop_trigger :uppercase_users_name, on: :users
+    migration =
+      Class.new(migration_class) do
+        def up
+          drop_trigger :uppercase_users_name, on: :users
+        end
       end
-    end
 
     expect { run_migration(migration, :up) }.not_to raise_error
   end

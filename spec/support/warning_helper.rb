@@ -1,5 +1,3 @@
 require "warning"
 
-Warning.process do |_|
-  :raise
-end
+Warning.process { |_| :raise }

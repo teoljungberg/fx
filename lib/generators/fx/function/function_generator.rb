@@ -45,9 +45,11 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(function_definition_path)
-            .map { |name| version_regex.match(name).try(:[], "version").to_i }
-            .max
+          @_previous_version ||=
+            Dir
+              .entries(function_definition_path)
+              .map { |name| version_regex.match(name).try(:[], "version").to_i }
+              .max
         end
 
         def version

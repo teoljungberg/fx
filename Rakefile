@@ -1,6 +1,6 @@
 require "bundler/gem_tasks"
 require "rspec/core/rake_task"
-require "standard/rake"
+require "syntax_tree/rake_tasks"
 
 namespace :dummy do
   require_relative "spec/dummy/config/application"
@@ -20,5 +20,10 @@ RSpec::Core::RakeTask.new("spec:acceptance") do |task|
   task.verbose = false
 end
 
+desc "Check syntax with syntax_tree"
+SyntaxTree::Rake::CheckTask.new do |task|
+  task.source_files = "{lib,spec}/**/*.rb"
+end
+
 desc "Run the specs and acceptance tests"
-task default: %w[spec spec:acceptance standard]
+task default: %w[spec spec:acceptance stree:check]

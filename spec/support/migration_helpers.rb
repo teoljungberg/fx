@@ -1,9 +1,7 @@
 module MigrationsHelper
   def run_migration(migration, directions)
     silence_stream($stdout) do
-      Array.wrap(directions).each do |direction|
-        migration.migrate(direction)
-      end
+      Array.wrap(directions).each { |direction| migration.migrate(direction) }
     end
   end
 
@@ -20,6 +18,4 @@ module MigrationsHelper
   end
 end
 
-RSpec.configure do |config|
-  config.include MigrationsHelper
-end
+RSpec.configure { |config| config.include MigrationsHelper }

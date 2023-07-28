@@ -14,6 +14,7 @@ changelog, see the [commits] for each version via the version links.
 - Raise on warnings (#124)
 - Require Ruby >= 3.0 (#128)
 - Require Rails >= 6.1 (#127)
+- Replace standard.rb with `syntax_tree`
 
 ## [0.8.0]
 

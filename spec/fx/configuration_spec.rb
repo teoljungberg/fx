@@ -9,9 +9,7 @@ RSpec.describe Fx::Configuration do
   it "allows the database adapter to be set" do
     adapter = double("Fx Adapter")
 
-    Fx.configure do |config|
-      config.database = adapter
-    end
+    Fx.configure { |config| config.database = adapter }
 
     expect(Fx.configuration.database).to eq adapter
     expect(Fx.database).to eq adapter

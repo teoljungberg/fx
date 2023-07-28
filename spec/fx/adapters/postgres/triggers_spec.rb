@@ -35,7 +35,9 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       expect(first.definition).to include("BEFORE INSERT")
       expect(first.definition).to match(/ON [public.ser|]/)
       expect(first.definition).to include("FOR EACH ROW")
-      expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
+      expect(first.definition).to include(
+        "EXECUTE FUNCTION uppercase_users_name()"
+      )
     end
   end
 end

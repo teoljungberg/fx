@@ -19,11 +19,11 @@ module Fx
     end
 
     def to_sql
-      File.read(find_file || full_path).tap do |content|
-        if content.empty?
-          raise "Define #{@type} in #{path} before migrating."
+      File
+        .read(find_file || full_path)
+        .tap do |content|
+          raise "Define #{@type} in #{path} before migrating." if content.empty?
         end
-      end
     end
 
     def full_path
@@ -45,8 +45,11 @@ module Fx
     end
 
     def find_file
-      migration_paths.lazy
-        .map { |migration_path| File.expand_path(File.join("..", "..", path), migration_path) }
+      migration_paths
+        .lazy
+        .map do |migration_path|
+          File.expand_path(File.join("..", "..", path), migration_path)
+        end
         .find { |definition_path| File.exist?(definition_path) }
     end
 

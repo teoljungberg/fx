@@ -14,7 +14,8 @@ module Fx
       arguments = Arguments.new(args)
 
       if arguments.revert_to_version.nil?
-        message = "`#{method}` is reversible only if given a `revert_to_version`"
+        message =
+          "`#{method}` is reversible only if given a `revert_to_version`"
         raise ActiveRecord::IrreversibleMigration, message
       end
 

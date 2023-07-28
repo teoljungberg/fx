@@ -4,8 +4,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
   describe "#create_function" do
     it "successfully creates a function" do
       adapter = Fx::Adapters::Postgres.new
-      adapter.create_function(
-        <<-EOS
+      adapter.create_function(<<-EOS)
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
           BEGIN
@@ -13,7 +12,6 @@ RSpec.describe Fx::Adapters::Postgres, :db do
           END;
           $$ LANGUAGE plpgsql;
         EOS
-      )
 
       expect(adapter.functions.map(&:name)).to include("test")
     end
@@ -38,14 +36,12 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      adapter.create_trigger(
-        <<-EOS
+      adapter.create_trigger(<<-EOS)
           CREATE TRIGGER uppercase_users_name
               BEFORE INSERT ON users
               FOR EACH ROW
               EXECUTE FUNCTION uppercase_users_name();
         EOS
-      )
 
       expect(adapter.triggers.map(&:name)).to include("uppercase_users_name")
     end
@@ -55,8 +51,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
     context "when the function has arguments" do
       it "successfully drops a function with the entire function signature" do
         adapter = Fx::Adapters::Postgres.new
-        adapter.create_function(
-          <<-EOS
+        adapter.create_function(<<-EOS)
             CREATE FUNCTION adder(x int, y int)
             RETURNS int AS $$
             BEGIN
@@ -64,7 +59,6 @@ RSpec.describe Fx::Adapters::Postgres, :db do
             END;
             $$ LANGUAGE plpgsql;
           EOS
-        )
 
         adapter.drop_function(:adder)
 
@@ -75,8 +69,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
     context "when the function does not have arguments" do
       it "successfully drops a function" do
         adapter = Fx::Adapters::Postgres.new
-        adapter.create_function(
-          <<-EOS
+        adapter.create_function(<<-EOS)
             CREATE OR REPLACE FUNCTION test()
             RETURNS text AS $$
             BEGIN
@@ -84,7 +77,6 @@ RSpec.describe Fx::Adapters::Postgres, :db do
             END;
             $$ LANGUAGE plpgsql;
           EOS
-        )
 
         adapter.drop_function(:test)
 
@@ -96,8 +88,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
   describe "#functions" do
     it "finds functions and builds Fx::Function objects" do
       adapter = Fx::Adapters::Postgres.new
-      adapter.create_function(
-        <<-EOS
+      adapter.create_function(<<-EOS)
           CREATE OR REPLACE FUNCTION test()
           RETURNS text AS $$
           BEGIN
@@ -105,7 +96,6 @@ RSpec.describe Fx::Adapters::Postgres, :db do
           END;
           $$ LANGUAGE plpgsql;
         EOS
-      )
 
       expect(adapter.functions.map(&:name)).to eq ["test"]
     end

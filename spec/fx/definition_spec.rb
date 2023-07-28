@@ -41,8 +41,13 @@ RSpec.describe Fx::Definition do
           EOS
           engine_path = Rails.root.join("tmp", "engine")
           FileUtils.mkdir_p(engine_path.join("db", "functions"))
-          File.write(engine_path.join("db", "functions", "custom_test_v01.sql"), sql_definition)
-          Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
+          File.write(
+            engine_path.join("db", "functions", "custom_test_v01.sql"),
+            sql_definition
+          )
+          Rails.application.config.paths["db/migrate"].push(
+            engine_path.join("db", "migrate")
+          )
 
           definition = Fx::Definition.function(name: "custom_test", version: 1)
 

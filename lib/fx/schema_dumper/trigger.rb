@@ -10,9 +10,7 @@ module Fx
       end
 
       def triggers(stream)
-        if dumpable_triggers_in_database.any?
-          stream.puts
-        end
+        stream.puts if dumpable_triggers_in_database.any?
 
         dumpable_triggers_in_database.each do |trigger|
           stream.puts(trigger.to_schema)

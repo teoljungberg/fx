@@ -8,10 +8,12 @@ RSpec.describe Fx::Statements::Trigger, :db do
 
       connection.create_trigger(:test)
 
-      expect(database).to have_received(:create_trigger)
-        .with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new)
-        .with(name: :test, version: 1, type: "trigger")
+      expect(database).to have_received(:create_trigger).with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new).with(
+        name: :test,
+        version: 1,
+        type: "trigger"
+      )
     end
 
     it "allows creating a trigger with a specific version" do
@@ -20,10 +22,12 @@ RSpec.describe Fx::Statements::Trigger, :db do
 
       connection.create_trigger(:test, version: 2)
 
-      expect(database).to have_received(:create_trigger)
-        .with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:new)
-        .with(name: :test, version: 2, type: "trigger")
+      expect(database).to have_received(:create_trigger).with(definition.to_sql)
+      expect(Fx::Definition).to have_received(:new).with(
+        name: :test,
+        version: 2,
+        type: "trigger"
+      )
     end
 
     it "raises an error if both arguments are set" do
@@ -35,10 +39,7 @@ RSpec.describe Fx::Statements::Trigger, :db do
           version: 1,
           sql_definition: "a definition"
         )
-      }.to raise_error(
-        ArgumentError,
-        /cannot both be set/
-      )
+      }.to raise_error(ArgumentError, /cannot both be set/)
     end
   end
 
@@ -48,8 +49,7 @@ RSpec.describe Fx::Statements::Trigger, :db do
 
       connection.drop_trigger(:test, on: :users)
 
-      expect(database).to have_received(:drop_trigger)
-        .with(:test, on: :users)
+      expect(database).to have_received(:drop_trigger).with(:test, on: :users)
     end
   end
 
@@ -90,11 +90,7 @@ RSpec.describe Fx::Statements::Trigger, :db do
 
     it "raises an error if not supplied a version" do
       expect {
-        connection.update_trigger(
-          :whatever,
-          version: nil,
-          sql_definition: nil
-        )
+        connection.update_trigger(:whatever, version: nil, sql_definition: nil)
       }.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/
@@ -110,10 +106,7 @@ RSpec.describe Fx::Statements::Trigger, :db do
           version: 1,
           sql_definition: "a definition"
         )
-      }.to raise_error(
-        ArgumentError,
-        /cannot both be set/
-      )
+      }.to raise_error(ArgumentError, /cannot both be set/)
     end
   end
 

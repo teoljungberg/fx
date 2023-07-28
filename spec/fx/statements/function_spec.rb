@@ -8,10 +8,13 @@ RSpec.describe Fx::Statements::Function, :db do
 
       connection.create_function(:test)
 
-      expect(database).to have_received(:create_function)
-        .with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:function)
-        .with(name: :test, version: 1)
+      expect(database).to have_received(:create_function).with(
+        definition.to_sql
+      )
+      expect(Fx::Definition).to have_received(:function).with(
+        name: :test,
+        version: 1
+      )
     end
 
     it "allows creating a function with a specific version" do
@@ -20,19 +23,18 @@ RSpec.describe Fx::Statements::Function, :db do
 
       connection.create_function(:test, version: 2)
 
-      expect(database).to have_received(:create_function)
-        .with(definition.to_sql)
-      expect(Fx::Definition).to have_received(:function)
-        .with(name: :test, version: 2)
+      expect(database).to have_received(:create_function).with(
+        definition.to_sql
+      )
+      expect(Fx::Definition).to have_received(:function).with(
+        name: :test,
+        version: 2
+      )
     end
 
     it "raises an error if both arguments are nil" do
       expect {
-        connection.create_function(
-          :whatever,
-          version: nil,
-          sql_definition: nil
-        )
+        connection.create_function(:whatever, version: nil, sql_definition: nil)
       }.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/
@@ -57,10 +59,14 @@ RSpec.describe Fx::Statements::Function, :db do
 
       connection.update_function(:test, version: 3)
 
-      expect(database).to have_received(:update_function)
-        .with(:test, definition.to_sql)
-      expect(Fx::Definition).to have_received(:function)
-        .with(name: :test, version: 3)
+      expect(database).to have_received(:update_function).with(
+        :test,
+        definition.to_sql
+      )
+      expect(Fx::Definition).to have_received(:function).with(
+        name: :test,
+        version: 3
+      )
     end
 
     it "updates a function from a text definition" do
@@ -76,11 +82,7 @@ RSpec.describe Fx::Statements::Function, :db do
 
     it "raises an error if not supplied a version" do
       expect {
-        connection.update_function(
-          :whatever,
-          version: nil,
-          sql_definition: nil
-        )
+        connection.update_function(:whatever, version: nil, sql_definition: nil)
       }.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/

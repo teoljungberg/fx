@@ -18,7 +18,7 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
       migration = file("db/migrate/create_function_test.rb")
       function_definition = file("db/functions/test_v01.sql")
 
-      run_generator ["test", "--no-migration"]
+      run_generator %w[test --no-migration]
 
       expect(function_definition).to exist
       expect(migration_file(migration)).not_to exist
@@ -39,8 +39,9 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
 
       expect(function_definition).to exist
       expect(migration).to be_a_migration
-      expect(migration_file(migration))
-        .to contain("UpdateFunctionTestToVersion2")
+      expect(migration_file(migration)).to contain(
+        "UpdateFunctionTestToVersion2"
+      )
     end
   end
 end

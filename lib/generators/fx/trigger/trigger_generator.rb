@@ -42,9 +42,11 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(trigger_definition_path)
-            .map { |name| version_regex.match(name).try(:[], "version").to_i }
-            .max
+          @_previous_version ||=
+            Dir
+              .entries(trigger_definition_path)
+              .map { |name| version_regex.match(name).try(:[], "version").to_i }
+              .max
         end
 
         def version
@@ -85,11 +87,7 @@ module Fx
             )
           end
 
-          if name.include?(".")
-            "\"#{name}\""
-          else
-            ":#{name}"
-          end
+          name.include?(".") ? "\"#{name}\"" : ":#{name}"
         end
       end
 
