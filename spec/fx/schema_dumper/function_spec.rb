@@ -65,12 +65,11 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
       output = stream.string
 
       ActiveRecord::SchemaDumper.dump(connection, stream)
-
-      expect(output).to match(
-        /BEGIN;\n*SET LOCAL check_function_bodies TO false;.*\n*.*create_function/
+      expect(output.gsub(/^ +/, '')).to match(
+        /BEGIN;\n*SET LOCAL check_function_bodies TO false;\n*CREATE OR REPLACE FUNCTION/
       )
 
-      expect(output).to match(/\$function\$\n+\s*SQL\n*.*COMMIT;/)
+      expect(output.gsub(/^ +/, '')).to match(/\$function\$;\n+.*COMMIT;\n+SQL/)
     end
   ensure
     Fx.configuration.check_function_bodies = true
@@ -94,11 +93,11 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
 
       ActiveRecord::SchemaDumper.dump(connection, stream)
 
-      expect(output).to match(
-        /BEGIN;\n*SET LOCAL check_function_bodies TO true;.*\n*.*create_function/
+      expect(output.gsub(/^ +/, '')).to match(
+        /BEGIN;\n*SET LOCAL check_function_bodies TO true;\n*CREATE OR REPLACE FUNCTION/
       )
 
-      expect(output).to match(/\$function\$\n+\s*SQL\n*.*COMMIT;/)
+      expect(output.gsub(/^ +/, '')).to match(/\$function\$;\n+.*COMMIT;\n+SQL/)
     end
   ensure
     Fx.configuration.check_function_bodies = true

@@ -42,6 +42,8 @@ RSpec.describe Fx::Function do
         "definition" => "CREATE OR REPLACE TRIGGER uppercase_users_name ..."
       )
 
+      Fx.configuration.check_function_bodies = nil
+
       expect(function.to_schema).to eq <<-EOS
   create_function :uppercase_users_name, sql_definition: <<-'SQL'
       CREATE OR REPLACE TRIGGER uppercase_users_name ...
@@ -54,6 +56,8 @@ RSpec.describe Fx::Function do
         "name" => "regex",
         "definition" => "CREATE OR REPLACE FUNCTION regex \\1"
       )
+
+      Fx.configuration.check_function_bodies = nil
 
       expect(function.to_schema).to eq <<-'EOS'
   create_function :regex, sql_definition: <<-'SQL'
