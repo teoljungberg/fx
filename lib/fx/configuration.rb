@@ -40,9 +40,25 @@ module Fx
     # @return Boolean
     attr_accessor :dump_functions_at_beginning_of_schema
 
+    # Check function bodies during creation by issuing
+    # `SET LOCAL check_function_bodies TO <<value>>;` before creating functions.
+    #
+    # This is only useful with the Postgresql adapter.
+    #
+    # See https://stackoverflow.com/a/36983831 and
+    # https://www.postgresql.org/docs/9.5/runtime-config-client.html#GUC-CHECK-FUNCTION-BODIES
+    #
+    # Set to `nil` to use the database default configuration.
+    # The default and recommended value is `false` to mimic pg_dump's behavior.
+    #
+    # Defaults to false
+    # @return Boolean, nil
+    attr_accessor :check_function_bodies
+
     def initialize
       @database = Fx::Adapters::Postgres.new
       @dump_functions_at_beginning_of_schema = false
+      @check_function_bodies = false
     end
   end
 end
