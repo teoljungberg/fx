@@ -12,6 +12,8 @@ module Dummy
     config.eager_load = false
     config.active_support.deprecation = :stderr
 
-    config.active_record.legacy_connection_handling = false
+    if Rails.version <= "7.0.0"
+      config.active_record.legacy_connection_handling = false
+    end
   end
 end
