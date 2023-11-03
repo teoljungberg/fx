@@ -27,8 +27,8 @@ module Fx
         # Wraps #all as a static facade.
         #
         # @return [Array<Fx::Function>]
-        def self.all(*args)
-          new(*args).all
+        def self.all(...)
+          new(...).all
         end
 
         def initialize(connection)
