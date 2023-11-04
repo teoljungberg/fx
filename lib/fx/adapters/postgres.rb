@@ -69,7 +69,7 @@ module Fx
       #
       # @return [void]
       def create_function(sql_definition)
-        execute sql_definition
+        execute with_check_function_bodies(sql_definition)
       end
 
       # Creates a trigger in the database.
@@ -161,6 +161,18 @@ module Fx
 
         pg_connection = connectable.connection.raw_connection
         pg_connection.server_version >= 10_00_00
+      end
+
+      def with_check_function_bodies(sql_definition)
+        should_wrap = [true, false].include?(Fx.configuration.check_function_bodies)
+        return sql_definition unless should_wrap
+
+        <<-SQL
+          BEGIN;
+          SET LOCAL check_function_bodies TO #{Fx.configuration.check_function_bodies};
+          #{sql_definition}
+          COMMIT;
+        SQL
       end
     end
   end
