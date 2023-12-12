@@ -7,35 +7,51 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       connection.execute <<-EOS.strip_heredoc
         CREATE TABLE users (
             id int PRIMARY KEY,
-            name varchar(256),
-            upper_name varchar(256)
+            first_name varchar(256),
+            last_name varchar(256),
+            upper_first_name varchar(256),
+            upper_last_name varchar(256)
         );
       EOS
       connection.execute <<-EOS.strip_heredoc
-        CREATE OR REPLACE FUNCTION uppercase_users_name()
+        CREATE OR REPLACE FUNCTION uppercase_users_first_name()
         RETURNS trigger AS $$
         BEGIN
-          NEW.upper_name = UPPER(NEW.name);
+          NEW.upper_first_name = UPPER(NEW.first_name);
           RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
       EOS
       connection.execute <<-EOS.strip_heredoc
-        CREATE TRIGGER uppercase_users_name
+        CREATE OR REPLACE FUNCTION uppercase_users_last_name()
+        RETURNS trigger AS $$
+        BEGIN
+          NEW.upper_last_name = UPPER(NEW.last_name);
+          RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+      connection.execute <<-EOS.strip_heredoc
+        CREATE TRIGGER uppercase_users_first_name
             BEFORE INSERT ON users
             FOR EACH ROW
-            EXECUTE FUNCTION uppercase_users_name();
+            EXECUTE FUNCTION uppercase_users_first_name();
+      EOS
+      connection.execute <<-EOS.strip_heredoc
+        CREATE TRIGGER uppercase_users_last_name
+            BEFORE INSERT ON users
+            FOR EACH ROW
+            EXECUTE FUNCTION uppercase_users_last_name();
       EOS
 
       triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
 
-      first = triggers.first
-      expect(triggers.size).to eq 1
-      expect(first.name).to eq "uppercase_users_name"
-      expect(first.definition).to include("BEFORE INSERT")
-      expect(first.definition).to match(/ON [public.ser|]/)
-      expect(first.definition).to include("FOR EACH ROW")
-      expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
+      expect(triggers).to match(
+        [
+          an_object_having_attributes(name: "uppercase_users_first_name", definition: a_string_matching(/EXECUTE FUNCTION uppercase_users_first_name()/)),
+          an_object_having_attributes(name: "uppercase_users_last_name", definition: a_string_matching(/EXECUTE FUNCTION uppercase_users_last_name()/))
+        ]
+      )
     end
   end
 end

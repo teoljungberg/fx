@@ -13,21 +13,23 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
         $$ LANGUAGE plpgsql;
       EOS
 
+      connection.execute <<-EOS.strip_heredoc
+        CREATE OR REPLACE FUNCTION foo()
+        RETURNS text AS $$
+        BEGIN
+            RETURN 'foo';
+        END;
+        $$ LANGUAGE plpgsql;
+      EOS
+
       functions = Fx::Adapters::Postgres::Functions.new(connection).all
 
-      first = functions.first
-      expect(functions.size).to eq 1
-      expect(first.name).to eq "test"
-      expect(first.definition).to eq <<-EOS.strip_heredoc
-        CREATE OR REPLACE FUNCTION public.test()
-         RETURNS text
-         LANGUAGE plpgsql
-        AS $function$
-        BEGIN
-            RETURN 'test';
-        END;
-        $function$
-      EOS
+      expect(functions).to match(
+        [
+          an_object_having_attributes(name: "foo", definition: a_string_matching(/CREATE OR REPLACE FUNCTION public.foo()/)),
+          an_object_having_attributes(name: "test", definition: a_string_matching(/CREATE OR REPLACE FUNCTION public.test()/))
+        ]
+      )
     end
   end
 end

@@ -21,7 +21,7 @@ module Fx
               ON pa.aggfnoid = pp.oid
           WHERE pn.nspname = 'public' AND pd.objid IS NULL
               AND pa.aggfnoid IS NULL
-          ORDER BY pp.oid;
+          ORDER BY pp.proname;
         EOS
 
         # Wraps #all as a static facade.

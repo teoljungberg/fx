@@ -19,7 +19,7 @@ module Fx
               ON (pp.oid = pt.tgfoid)
           WHERE pt.tgname
           NOT ILIKE '%constraint%' AND pt.tgname NOT ILIKE 'pg%'
-          ORDER BY pc.oid;
+          ORDER BY pt.tgname;
         EOS
 
         # Wraps #all as a static facade.
