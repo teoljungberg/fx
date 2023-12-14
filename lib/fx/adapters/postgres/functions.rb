@@ -19,7 +19,17 @@ module Fx
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           LEFT JOIN pg_aggregate pa
               ON pa.aggfnoid = pp.oid
-          WHERE pn.nspname = 'public' AND pd.objid IS NULL
+          WHERE pn.nspname
+              IN (
+                  SELECT replace(
+                      unnest(string_to_array(setting, ', ')),
+                      '"$user"',
+                      current_user
+                  )
+                  FROM pg_settings
+                  WHERE name = 'search_path'
+              )
+              AND pd.objid IS NULL
               AND pa.aggfnoid IS NULL
           ORDER BY pp.oid;
         EOS
