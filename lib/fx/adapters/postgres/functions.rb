@@ -10,7 +10,11 @@ module Fx
         # dumpable into `db/schema.rb`.
         FUNCTIONS_WITH_DEFINITIONS_QUERY = <<-EOS.freeze
           SELECT
-              pp.proname AS name,
+              CASE WHEN pn.nspname = current_schema() THEN
+                pp.proname
+              ELSE
+                CONCAT_WS('.', pn.nspname, pp.proname)
+              END AS name,
               pg_get_functiondef(pp.oid) AS definition
           FROM pg_proc pp
           JOIN pg_namespace pn
@@ -19,16 +23,7 @@ module Fx
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           LEFT JOIN pg_aggregate pa
               ON pa.aggfnoid = pp.oid
-          WHERE pn.nspname
-              IN (
-                  SELECT replace(
-                      unnest(string_to_array(setting, ', ')),
-                      '"$user"',
-                      current_user
-                  )
-                  FROM pg_settings
-                  WHERE name = 'search_path'
-              )
+          WHERE pn.nspname NOT IN ('pg_catalog', 'information_schema')
               AND pd.objid IS NULL
               AND pa.aggfnoid IS NULL
           ORDER BY pp.oid;
