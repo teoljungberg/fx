@@ -75,4 +75,33 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
     expect(output).to include "RETURN 'test';"
     expect(output).not_to include "aggregate_test"
   end
+
+  context "with a schema defined other than public" do
+    it "dumps a create_function for a function in the database" do
+      schema = "other_schema"
+      original_search_path = connection.schema_search_path
+      connection.schema_search_path = [schema, original_search_path].join(",")
+      sql_definition = <<-SQL
+          CREATE SCHEMA #{schema};
+          CREATE OR REPLACE FUNCTION #{schema}.my_function()
+          RETURNS text AS $$
+          BEGIN
+              RETURN 'test';
+          END;
+          $$ LANGUAGE plpgsql;
+      SQL
+      connection.create_function :my_function, sql_definition: sql_definition
+      stream = StringIO.new
+      output = stream.string
+
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+
+      expect(output).to(
+        match(/create_function :my_function.*#{schema}.my_function\(\)/m)
+      )
+    ensure
+      connection.schema_search_path = original_search_path
+      connection.execute "DROP SCHEMA #{schema} CASCADE"
+    end
+  end
 end
