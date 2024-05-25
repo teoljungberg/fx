@@ -68,10 +68,8 @@ RSpec.describe Fx::Statements::Function, :db do
 
       connection.update_function(:test, sql_definition: "a definition")
 
-      expect(database).to have_received(:update_function).with(
-        :test,
-        "a definition"
-      )
+      expect(database).to have_received(:update_function)
+        .with(:test, "a definition")
     end
 
     it "raises an error if not supplied a version" do

@@ -17,8 +17,8 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
 
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
-    expect(output).to(
-      match(/table "my_table".*function :my_function.*RETURN 'test';/m)
+    expect(output).to match(
+      /table "my_table".*function :my_function.*RETURN 'test';/m,
     )
   end
 
@@ -40,9 +40,9 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
     expect(output).to(
-      match(/function :my_function.*RETURN 'test';.*table "my_table"/m)
+      match(/function :my_function.*RETURN 'test';.*table "my_table"/m),
     )
-  ensure
+
     Fx.configuration.dump_functions_at_beginning_of_schema = false
   end
 
