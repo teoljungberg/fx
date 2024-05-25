@@ -100,5 +100,6 @@ module Fx
         end
       end
     end
+    private_constant :Arguments
   end
 end
