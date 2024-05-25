@@ -19,11 +19,10 @@ module Fx
     end
 
     def to_sql
-      File.read(find_file || full_path).tap do |content|
-        if content.empty?
-          raise "Define #{@type} in #{path} before migrating."
-        end
-      end
+      content = File.read(find_file || full_path)
+      raise "Define #{@type} in #{path} before migrating." if content.empty?
+
+      content
     end
 
     def full_path

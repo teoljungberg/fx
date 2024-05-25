@@ -209,8 +209,9 @@ RSpec.describe Fx::Statements, :db do
   end
 
   def stubbed_database
-    instance_spy("StubbedDatabase").tap do |stubbed_database|
-      allow(Fx).to receive(:database).and_return(stubbed_database)
-    end
+    database = instance_spy("StubbedDatabase")
+    allow(Fx).to receive(:database).and_return(database)
+
+    database
   end
 end
