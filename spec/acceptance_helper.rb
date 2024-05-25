@@ -11,7 +11,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     Dir.chdir("spec/dummy") do
-      system <<-CMD
+      system <<~CMD
         git init -b master 1>/dev/null &&
         git config user.email "fx@example.com"
         git config user.name "Fx"
@@ -24,7 +24,7 @@ RSpec.configure do |config|
   config.after(:suite) do
     Dir.chdir("spec/dummy") do
       ActiveRecord::Base.connection.disconnect!
-      system <<-CMD
+      system <<~CMD
         echo &&
         rake db:environment:set db:drop db:create 1>/dev/null &&
         git add -A &&

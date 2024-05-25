@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Teo Ljungberg"]
   spec.email = ["teo@teoljungberg.com"]
   spec.summary = "Support for database functions and triggers in Rails migrations"
-  spec.description = <<-DESCRIPTION
+  spec.description = <<~DESCRIPTION
     Adds methods to ActiveRecord::Migration to create and manage database functions
     and triggers in Rails
   DESCRIPTION

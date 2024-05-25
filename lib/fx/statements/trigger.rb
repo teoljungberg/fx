@@ -17,7 +17,7 @@ module Fx
       #   create_trigger(:uppercase_users_name, version: 1)
       #
       # @example Create trigger from provided SQL string
-      #   create_trigger(:uppercase_users_name, sql_definition: <<-SQL)
+      #   create_trigger(:uppercase_users_name, sql_definition: <<~SQL)
       #     CREATE TRIGGER uppercase_users_name
       #         BEFORE INSERT ON users
       #         FOR EACH ROW
@@ -89,7 +89,7 @@ module Fx
       #   )
       #
       # @example Update trigger from provided SQL string
-      #   update_trigger(:uppercase_users_name, sql_definition: <<-SQL)
+      #   update_trigger(:uppercase_users_name, sql_definition: <<~SQL)
       #     CREATE TRIGGER uppercase_users_name
       #         BEFORE INSERT ON users
       #         FOR EACH ROW

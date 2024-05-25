@@ -4,7 +4,7 @@ RSpec.describe "User manages triggers" do
   it "handles simple triggers" do
     successfully "rails generate model user name:string upper_name:string"
     successfully "rails generate fx:function uppercase_users_name"
-    write_function_definition "uppercase_users_name_v01", <<-EOS
+    write_function_definition "uppercase_users_name_v01", <<~EOS
       CREATE OR REPLACE FUNCTION uppercase_users_name()
       RETURNS trigger AS $$
       BEGIN
@@ -14,7 +14,7 @@ RSpec.describe "User manages triggers" do
       $$ LANGUAGE plpgsql;
     EOS
     successfully "rails generate fx:trigger uppercase_users_name table_name:users"
-    write_trigger_definition "uppercase_users_name_v01", <<-EOS
+    write_trigger_definition "uppercase_users_name_v01", <<~EOS
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
@@ -22,7 +22,7 @@ RSpec.describe "User manages triggers" do
     EOS
     successfully "rake db:migrate"
 
-    execute <<-EOS
+    execute <<~EOS
       INSERT INTO users
       (name, created_at, updated_at)
       VALUES
@@ -32,14 +32,14 @@ RSpec.describe "User manages triggers" do
     expect(result).to eq("upper_name" => "BOB")
 
     successfully "rails generate fx:trigger uppercase_users_name table_name:users"
-    write_trigger_definition "uppercase_users_name_v02", <<-EOS
+    write_trigger_definition "uppercase_users_name_v02", <<~EOS
       CREATE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();
     EOS
     successfully "rake db:migrate"
-    execute <<-EOS
+    execute <<~EOS
       UPDATE users
       SET name = 'Alice'
       WHERE id = 1;

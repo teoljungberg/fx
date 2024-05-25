@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe "Reverting migrations", :db do
   around do |example|
-    sql_definition = <<-EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN
@@ -50,7 +50,7 @@ RSpec.describe "Reverting migrations", :db do
   it "can run reversible migrations for updating functions" do
     connection.create_function(:test)
 
-    sql_definition = <<-EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test()
       RETURNS text AS $$
       BEGIN

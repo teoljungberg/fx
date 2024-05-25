@@ -4,7 +4,7 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
   describe ".all" do
     it "returns `Function` objects" do
       connection = ActiveRecord::Base.connection
-      connection.execute <<-EOS.strip_heredoc
+      connection.execute <<~EOS
         CREATE OR REPLACE FUNCTION test()
         RETURNS text AS $$
         BEGIN
@@ -16,9 +16,9 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
       functions = Fx::Adapters::Postgres::Functions.new(connection).all
 
       first = functions.first
-      expect(functions.size).to eq 1
-      expect(first.name).to eq "test"
-      expect(first.definition).to eq <<-EOS.strip_heredoc
+      expect(functions.size).to eq(1)
+      expect(first.name).to eq("test")
+      expect(first.definition).to eq(<<~EOS)
         CREATE OR REPLACE FUNCTION public.test()
          RETURNS text
          LANGUAGE plpgsql

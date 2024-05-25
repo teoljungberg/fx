@@ -19,7 +19,7 @@ module Fx
       #   create_function(:uppercase_users_name, version: 2)
       #
       # @example Create from provided SQL string
-      #   create_function(:uppercase_users_name, sql_definition: <<-SQL)
+      #   create_function(:uppercase_users_name, sql_definition: <<~SQL)
       #     CREATE OR REPLACE FUNCTION uppercase_users_name()
       #     RETURNS trigger AS $$
       #     BEGIN
@@ -79,7 +79,7 @@ module Fx
       #   )
       #
       # @example Update function from provided SQL string
-      #   update_function(:uppercase_users_name, sql_definition: <<-SQL)
+      #   update_function(:uppercase_users_name, sql_definition: <<~SQL)
       #     CREATE OR REPLACE FUNCTION uppercase_users_name()
       #     RETURNS trigger AS $$
       #     BEGIN

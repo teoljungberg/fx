@@ -4,14 +4,14 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
   describe ".all" do
     it "returns `Trigger` objects" do
       connection = ActiveRecord::Base.connection
-      connection.execute <<-EOS.strip_heredoc
+      connection.execute <<~EOS
         CREATE TABLE users (
             id int PRIMARY KEY,
             name varchar(256),
             upper_name varchar(256)
         );
       EOS
-      connection.execute <<-EOS.strip_heredoc
+      connection.execute <<~EOS
         CREATE OR REPLACE FUNCTION uppercase_users_name()
         RETURNS trigger AS $$
         BEGIN
@@ -20,7 +20,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
         END;
         $$ LANGUAGE plpgsql;
       EOS
-      connection.execute <<-EOS.strip_heredoc
+      connection.execute <<~EOS
         CREATE TRIGGER uppercase_users_name
             BEFORE INSERT ON users
             FOR EACH ROW
@@ -30,8 +30,8 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
 
       first = triggers.first
-      expect(triggers.size).to eq 1
-      expect(first.name).to eq "uppercase_users_name"
+      expect(triggers.size).to eq(1)
+      expect(first.name).to eq("uppercase_users_name")
       expect(first.definition).to include("BEFORE INSERT")
       expect(first.definition).to match(/ON [public.ser|]/)
       expect(first.definition).to include("FOR EACH ROW")

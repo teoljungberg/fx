@@ -2,7 +2,7 @@ require "spec_helper"
 
 RSpec.describe Fx::SchemaDumper::Function, :db do
   it "dumps a create_function for a function in the database" do
-    sql_definition = <<-EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION my_function()
       RETURNS text AS $$
       BEGIN
@@ -18,19 +18,19 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
     expect(output).to match(
-      /table "my_table".*function :my_function.*RETURN 'test';/m,
+      /table "my_table".*function :my_function.*RETURN 'test';/m
     )
   end
 
   it "dumps a create_function for a function in the database" do
     Fx.configuration.dump_functions_at_beginning_of_schema = true
-    sql_definition = <<-EOS
-        CREATE OR REPLACE FUNCTION my_function()
-        RETURNS text AS $$
-        BEGIN
-            RETURN 'test';
-        END;
-        $$ LANGUAGE plpgsql;
+    sql_definition = <<~EOS
+      CREATE OR REPLACE FUNCTION my_function()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'test';
+      END;
+      $$ LANGUAGE plpgsql;
     EOS
     connection.create_function :my_function, sql_definition: sql_definition
     connection.create_table :my_table
@@ -40,14 +40,14 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
     expect(output).to(
-      match(/function :my_function.*RETURN 'test';.*table "my_table"/m),
+      match(/function :my_function.*RETURN 'test';.*table "my_table"/m)
     )
 
     Fx.configuration.dump_functions_at_beginning_of_schema = false
   end
 
   it "does not dump a create_function for aggregates in the database" do
-    sql_definition = <<-EOS
+    sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test(text, text)
       RETURNS text AS $$
       BEGIN
@@ -56,7 +56,7 @@ RSpec.describe Fx::SchemaDumper::Function, :db do
       $$ LANGUAGE plpgsql;
     EOS
 
-    aggregate_sql_definition = <<-EOS
+    aggregate_sql_definition = <<~EOS
       CREATE AGGREGATE aggregate_test(text)
       (
           sfunc = test,
