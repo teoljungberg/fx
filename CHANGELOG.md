@@ -9,7 +9,15 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.8.0..HEAD
 
+- Add Ruby 3.3 to the test matrix (#144)
+- Internal refactorings:
+  - Move development dependencies to Gemfile (#145)
+  - Inline `Fx::CommandRecorder::Arguments`
+  - Inline `Fx::{CommandRecorder,SchemaDumper,Statements}::{Function,Trigger}`
+  - Move configuration methods to `Fx`
 - Add `Fx::Definition.{function,trigger}` (#119)
+- Add Rails 7.1 to the test matrix (#136)
+- Add Rubygems metadata to gemspec (#132)
 - Disable RSpec's monkey patching (#121)
 - Raise on warnings (#124)
 - Require Ruby >= 3.0 (#128)
