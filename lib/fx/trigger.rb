@@ -6,9 +6,9 @@ module Fx
     attr_reader :name, :definition
     delegate :<=>, to: :name
 
-    def initialize(function_row)
-      @name = function_row.fetch("name")
-      @definition = function_row.fetch("definition")
+    def initialize(row)
+      @name = row.fetch("name")
+      @definition = row.fetch("definition")
     end
 
     def ==(other)
