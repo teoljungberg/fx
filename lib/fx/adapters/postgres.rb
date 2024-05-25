@@ -69,7 +69,7 @@ module Fx
       #
       # @return [void]
       def create_function(sql_definition)
-        execute sql_definition
+        execute(sql_definition)
       end
 
       # Creates a trigger in the database.
@@ -81,7 +81,7 @@ module Fx
       #
       # @return [void]
       def create_trigger(sql_definition)
-        execute sql_definition
+        execute(sql_definition)
       end
 
       # Updates a function in the database.
@@ -126,9 +126,9 @@ module Fx
       # @return [void]
       def drop_function(name)
         if support_drop_function_without_args
-          execute "DROP FUNCTION #{name};"
+          execute("DROP FUNCTION #{name};")
         else
-          execute "DROP FUNCTION #{name}();"
+          execute("DROP FUNCTION #{name}();")
         end
       end
 
@@ -142,7 +142,7 @@ module Fx
       #
       # @return [void]
       def drop_trigger(name, on:)
-        execute "DROP TRIGGER #{name} ON #{on};"
+        execute("DROP TRIGGER #{name} ON #{on};")
       end
 
       private
