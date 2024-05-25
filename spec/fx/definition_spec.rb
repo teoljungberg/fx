@@ -16,7 +16,7 @@ RSpec.describe Fx::Definition do
 
         definition = Fx::Definition.function(name: "test", version: 1)
 
-        expect(definition.to_sql).to eq sql_definition
+        expect(definition.to_sql).to eq(sql_definition)
       end
 
       it "raises an error if the file is empty" do
@@ -46,7 +46,7 @@ RSpec.describe Fx::Definition do
 
           definition = Fx::Definition.function(name: "custom_test", version: 1)
 
-          expect(definition.to_sql).to eq sql_definition
+          expect(definition.to_sql).to eq(sql_definition)
 
           FileUtils.rm_rf(engine_path)
         end
@@ -65,7 +65,7 @@ RSpec.describe Fx::Definition do
 
         definition = Fx::Definition.trigger(name: "test", version: 1)
 
-        expect(definition.to_sql).to eq sql_definition
+        expect(definition.to_sql).to eq(sql_definition)
       end
 
       it "raises an error if the file is empty" do
@@ -85,7 +85,7 @@ RSpec.describe Fx::Definition do
       it "returns a sql file with padded version and function name" do
         definition = Fx::Definition.function(name: "test", version: 1)
 
-        expect(definition.path).to eq "db/functions/test_v01.sql"
+        expect(definition.path).to eq("db/functions/test_v01.sql")
       end
     end
 
@@ -93,7 +93,7 @@ RSpec.describe Fx::Definition do
       it "returns a sql file with padded version and trigger name" do
         definition = Fx::Definition.trigger(name: "test", version: 1)
 
-        expect(definition.path).to eq "db/triggers/test_v01.sql"
+        expect(definition.path).to eq("db/triggers/test_v01.sql")
       end
     end
   end
@@ -102,7 +102,7 @@ RSpec.describe Fx::Definition do
     it "joins the path with Rails.root" do
       definition = Fx::Definition.function(name: "test", version: 15)
 
-      expect(definition.full_path).to eq Rails.root.join(definition.path)
+      expect(definition.full_path).to eq(Rails.root.join(definition.path))
     end
   end
 
@@ -110,13 +110,13 @@ RSpec.describe Fx::Definition do
     it "pads the version number with 0" do
       definition = Fx::Definition.function(name: :_, version: 1)
 
-      expect(definition.version).to eq "01"
+      expect(definition.version).to eq("01")
     end
 
     it "does not pad more than 2 characters" do
       definition = Fx::Definition.function(name: :_, version: 15)
 
-      expect(definition.version).to eq "15"
+      expect(definition.version).to eq("15")
     end
   end
 end

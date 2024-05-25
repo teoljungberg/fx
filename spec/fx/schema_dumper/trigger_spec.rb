@@ -33,8 +33,8 @@ RSpec.describe Fx::SchemaDumper::Trigger, :db do
     ActiveRecord::SchemaDumper.dump(connection, stream)
 
     output = stream.string
-    expect(output).to include "create_trigger :uppercase_users_name"
-    expect(output).to include "sql_definition: <<-SQL"
-    expect(output).to include "EXECUTE FUNCTION uppercase_users_name()"
+    expect(output).to include("create_trigger :uppercase_users_name")
+    expect(output).to include("sql_definition: <<-SQL")
+    expect(output).to include("EXECUTE FUNCTION uppercase_users_name()")
   end
 end

@@ -42,7 +42,7 @@ RSpec.describe Fx::Trigger do
         "definition" => "CREATE TRIGGER uppercase_users_name ..."
       )
 
-      expect(trigger.to_schema).to eq <<-EOS
+      expect(trigger.to_schema).to eq(<<-EOS)
   create_trigger :uppercase_users_name, sql_definition: <<-\SQL
       CREATE TRIGGER uppercase_users_name ...
   SQL

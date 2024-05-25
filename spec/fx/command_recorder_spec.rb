@@ -7,7 +7,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.create_function :test
 
-      expect(recorder.commands).to eq [[:create_function, [:test], nil]]
+      expect(recorder.commands).to eq([[:create_function, [:test], nil]])
     end
 
     it "reverts to drop_function" do
@@ -15,7 +15,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.create_function :test
 
-      expect(recorder.commands).to eq [[:create_function, [:test], nil]]
+      expect(recorder.commands).to eq([[:create_function, [:test], nil]])
     end
 
     it "reverts to drop_function" do
@@ -23,7 +23,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.revert { recorder.create_function :test }
 
-      expect(recorder.commands).to eq [[:drop_function, [:test]]]
+      expect(recorder.commands).to eq([[:drop_function, [:test]]])
     end
   end
 
@@ -33,7 +33,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.drop_function :test
 
-      expect(recorder.commands).to eq [[:drop_function, [:test], nil]]
+      expect(recorder.commands).to eq([[:drop_function, [:test], nil]])
     end
 
     it "reverts to create_function with specified revert_to_version" do
@@ -43,7 +43,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.revert { recorder.drop_function(*args) }
 
-      expect(recorder.commands).to eq [[:create_function, revert_args]]
+      expect(recorder.commands).to eq([[:create_function, revert_args]])
     end
 
     it "raises when reverting without revert_to_version set" do
@@ -62,7 +62,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.update_function(*args)
 
-      expect(recorder.commands).to eq [[:update_function, args, nil]]
+      expect(recorder.commands).to eq([[:update_function, args, nil]])
     end
 
     it "reverts to update_function with the specified revert_to_version" do
@@ -72,7 +72,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.revert { recorder.update_function(*args) }
 
-      expect(recorder.commands).to eq [[:update_function, revert_args]]
+      expect(recorder.commands).to eq([[:update_function, revert_args]])
     end
 
     it "raises when reverting without revert_to_version set" do
@@ -90,7 +90,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.create_trigger :greetings
 
-      expect(recorder.commands).to eq [[:create_trigger, [:greetings], nil]]
+      expect(recorder.commands).to eq([[:create_trigger, [:greetings], nil]])
     end
 
     it "reverts to drop_trigger" do
@@ -98,9 +98,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.create_trigger :greetings
 
-      expect(recorder.commands).to eq [
-        [:create_trigger, [:greetings], nil]
-      ]
+      expect(recorder.commands).to eq([[:create_trigger, [:greetings], nil]])
     end
 
     it "reverts to drop_trigger" do
@@ -108,7 +106,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.revert { recorder.create_trigger :greetings }
 
-      expect(recorder.commands).to eq [[:drop_trigger, [:greetings]]]
+      expect(recorder.commands).to eq([[:drop_trigger, [:greetings]]])
     end
   end
 
@@ -118,7 +116,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.drop_trigger :users
 
-      expect(recorder.commands).to eq [[:drop_trigger, [:users], nil]]
+      expect(recorder.commands).to eq([[:drop_trigger, [:users], nil]])
     end
 
     it "reverts to create_trigger with specified revert_to_version" do
@@ -128,7 +126,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.revert { recorder.drop_trigger(*args) }
 
-      expect(recorder.commands).to eq [[:create_trigger, revert_args]]
+      expect(recorder.commands).to eq([[:create_trigger, revert_args]])
     end
 
     it "raises when reverting without revert_to_version set" do
@@ -147,7 +145,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.update_trigger(*args)
 
-      expect(recorder.commands).to eq [[:update_trigger, args, nil]]
+      expect(recorder.commands).to eq([[:update_trigger, args, nil]])
     end
 
     it "reverts to update_trigger with the specified revert_to_version" do
@@ -157,7 +155,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       recorder.revert { recorder.update_trigger(*args) }
 
-      expect(recorder.commands).to eq [[:update_trigger, revert_args]]
+      expect(recorder.commands).to eq([[:update_trigger, revert_args]])
     end
 
     it "raises when reverting without revert_to_version set" do

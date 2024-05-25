@@ -10,7 +10,7 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
 
     expect(function_definition).to exist
     expect(migration).to be_a_migration
-    expect(migration_file(migration)).to contain "CreateFunctionTest"
+    expect(migration_file(migration)).to contain("CreateFunctionTest")
   end
 
   context "when passed --no-migration" do
