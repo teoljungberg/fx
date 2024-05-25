@@ -125,7 +125,7 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        if support_drop_function_without_args
+        if connection.support_drop_function_without_args
           execute("DROP FUNCTION #{name};")
         else
           execute("DROP FUNCTION #{name}();")
@@ -153,14 +153,6 @@ module Fx
 
       def connection
         Connection.new(connectable.connection)
-      end
-
-      def support_drop_function_without_args
-        # https://www.postgresql.org/docs/9.6/sql-dropfunction.html
-        # https://www.postgresql.org/docs/10/sql-dropfunction.html
-
-        pg_connection = connectable.connection.raw_connection
-        pg_connection.server_version >= 10_00_00
       end
     end
   end
