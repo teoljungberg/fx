@@ -1,3 +1,5 @@
+require "rails"
+
 require "fx/version"
 require "fx/adapters/postgres"
 require "fx/command_recorder"
