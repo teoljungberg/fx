@@ -41,7 +41,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
   it "requires `table_name` or `on` to be specified" do
     expect do
       run_generator ["test", "foo" => "some_table"]
-    do.to raise_error ArgumentError
+    end.to raise_error(ArgumentError)
   end
 
   it "updates an existing trigger" do

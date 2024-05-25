@@ -23,7 +23,9 @@ RSpec.describe Fx::Definition do
         allow(File).to receive(:read).and_return("")
         definition = Fx::Definition.function(name: "test", version: 1)
 
-        expect { definition.to_sql }.to raise_error(
+        expect do
+          definition.to_sql
+        end.to raise_error(
           RuntimeError,
           %r{Define function in db/functions/test_v01.sql before migrating}
         )
@@ -72,7 +74,9 @@ RSpec.describe Fx::Definition do
         allow(File).to receive(:read).and_return("")
         definition = Fx::Definition.trigger(name: "test", version: 1)
 
-        expect { definition.to_sql }.to raise_error(
+        expect do
+          definition.to_sql
+        end.to raise_error(
           RuntimeError,
           %r{Define trigger in db/triggers/test_v01.sql before migrating}
         )

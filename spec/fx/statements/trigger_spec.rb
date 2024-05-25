@@ -29,13 +29,13 @@ RSpec.describe Fx::Statements::Trigger, :db do
     it "raises an error if both arguments are set" do
       stubbed_database
 
-      expect {
+      expect do
         connection.create_trigger(
           :whatever,
           version: 1,
           sql_definition: "a definition"
         )
-      }.to raise_error(
+      end.to raise_error(
         ArgumentError,
         /cannot both be set/
       )
@@ -89,13 +89,13 @@ RSpec.describe Fx::Statements::Trigger, :db do
     end
 
     it "raises an error if not supplied a version" do
-      expect {
+      expect do
         connection.update_trigger(
           :whatever,
           version: nil,
           sql_definition: nil
         )
-      }.to raise_error(
+      end.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/
       )
@@ -104,13 +104,13 @@ RSpec.describe Fx::Statements::Trigger, :db do
     it "raises an error if both arguments are set" do
       stubbed_database
 
-      expect {
+      expect do
         connection.update_trigger(
           :whatever,
           version: 1,
           sql_definition: "a definition"
         )
-      }.to raise_error(
+      end.to raise_error(
         ArgumentError,
         /cannot both be set/
       )

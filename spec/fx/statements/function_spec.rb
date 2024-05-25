@@ -27,13 +27,13 @@ RSpec.describe Fx::Statements::Function, :db do
     end
 
     it "raises an error if both arguments are nil" do
-      expect {
+      expect do
         connection.create_function(
           :whatever,
           version: nil,
           sql_definition: nil
         )
-      }.to raise_error(
+      end.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/
       )
@@ -75,13 +75,13 @@ RSpec.describe Fx::Statements::Function, :db do
     end
 
     it "raises an error if not supplied a version" do
-      expect {
+      expect do
         connection.update_function(
           :whatever,
           version: nil,
           sql_definition: nil
         )
-      }.to raise_error(
+      end.to raise_error(
         ArgumentError,
         /version or sql_definition must be specified/
       )

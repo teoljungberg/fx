@@ -50,8 +50,9 @@ RSpec.describe Fx::CommandRecorder, :db do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:test, {another_argument: 1}]
 
-      expect { recorder.revert { recorder.drop_function(*args) } }
-        .to raise_error(ActiveRecord::IrreversibleMigration)
+      expect do
+        recorder.revert { recorder.drop_function(*args) }
+      end.to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 
@@ -79,8 +80,9 @@ RSpec.describe Fx::CommandRecorder, :db do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:test, {version: 42, another_argument: 1}]
 
-      expect { recorder.revert { recorder.update_function(*args) } }
-        .to raise_error(ActiveRecord::IrreversibleMigration)
+      expect do
+        recorder.revert { recorder.update_function(*args) }
+      end.to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 
@@ -133,8 +135,9 @@ RSpec.describe Fx::CommandRecorder, :db do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:users, {another_argument: 1}]
 
-      expect { recorder.revert { recorder.drop_trigger(*args) } }
-        .to raise_error(ActiveRecord::IrreversibleMigration)
+      expect do
+        recorder.revert { recorder.drop_trigger(*args) }
+      end.to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 
@@ -162,8 +165,9 @@ RSpec.describe Fx::CommandRecorder, :db do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:users, {version: 42, another_argument: 1}]
 
-      expect { recorder.revert { recorder.update_trigger(*args) } }
-        .to raise_error(ActiveRecord::IrreversibleMigration)
+      expect do
+        recorder.revert { recorder.update_trigger(*args) }
+      end.to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 end
