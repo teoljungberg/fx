@@ -22,7 +22,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
       run_generator ["test", {"table_name" => "some_table"}, "--no-migration"]
 
       expect(trigger_definition).to exist
-      expect(migration_file(migration)).not_to exist
+      expect(Pathname.new(migration_file(migration))).not_to exist
     end
   end
 

@@ -21,7 +21,7 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
       run_generator ["test", "--no-migration"]
 
       expect(function_definition).to exist
-      expect(migration_file(migration)).not_to exist
+      expect(Pathname.new(migration_file(migration))).not_to exist
     end
   end
 
