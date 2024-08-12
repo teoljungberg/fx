@@ -15,7 +15,7 @@ RSpec.describe Fx::SchemaDumper, :db do
     stream = StringIO.new
     output = stream.string
 
-    ActiveRecord::SchemaDumper.dump(connection, stream)
+    dump(connection: connection, stream: stream)
 
     expect(output).to match(
       /table "my_table".*function :my_function.*RETURN 'test';/m
@@ -37,7 +37,7 @@ RSpec.describe Fx::SchemaDumper, :db do
     stream = StringIO.new
     output = stream.string
 
-    ActiveRecord::SchemaDumper.dump(connection, stream)
+    dump(connection: connection, stream: stream)
 
     expect(output).to(
       match(/function :my_function.*RETURN 'test';.*table "my_table"/m)
@@ -68,7 +68,7 @@ RSpec.describe Fx::SchemaDumper, :db do
     connection.execute aggregate_sql_definition
     stream = StringIO.new
 
-    ActiveRecord::SchemaDumper.dump(connection, stream)
+    dump(connection: connection, stream: stream)
 
     output = stream.string
     expect(output).to include("create_function :test, sql_definition: <<-'SQL'")
@@ -105,11 +105,19 @@ RSpec.describe Fx::SchemaDumper, :db do
     )
     stream = StringIO.new
 
-    ActiveRecord::SchemaDumper.dump(connection, stream)
+    dump(connection: connection, stream: stream)
 
     output = stream.string
     expect(output).to include("create_trigger :uppercase_users_name")
     expect(output).to include("sql_definition: <<-SQL")
     expect(output).to include("EXECUTE FUNCTION uppercase_users_name()")
+  end
+
+  def dump(connection:, stream:)
+    if Rails.version >= "7.2"
+      ActiveRecord::SchemaDumper.dump(connection.pool, stream)
+    else
+      ActiveRecord::SchemaDumper.dump(connection, stream)
+    end
   end
 end
