@@ -22,5 +22,7 @@ RSpec.describe Fx do
 
     expect(Fx.configuration.database).to eq(adapter)
     expect(Fx.configuration.dump_functions_at_beginning_of_schema).to eq(true)
+
+    Fx.configuration = nil
   end
 end
