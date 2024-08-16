@@ -22,6 +22,8 @@ module Fx
     ActiveRecord::Migration::CommandRecorder.include(Fx::CommandRecorder)
     ActiveRecord::ConnectionAdapters::AbstractAdapter.include(Fx::Statements)
     ActiveRecord::SchemaDumper.prepend(Fx::SchemaDumper)
+
+    true
   end
 
   # @return [Fx::Configuration] F(x)'s current configuration
