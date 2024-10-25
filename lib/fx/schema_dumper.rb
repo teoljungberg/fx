@@ -40,11 +40,15 @@ module Fx
     end
 
     def dumpable_functions_in_database
-      @_dumpable_functions_in_database ||= Fx.database.functions
+      @_dumpable_functions_in_database ||= dumpables_order(Fx.database.functions)
     end
 
     def dumpable_triggers_in_database
-      @_dumpable_triggers_in_database ||= Fx.database.triggers
+      @_dumpable_triggers_in_database ||= dumpables_order(Fx.database.triggers)
+    end
+
+    def dumpables_order(list)
+      Fx.configuration.dump_functions_and_triggers_alphabetically ? list.sort : list
     end
   end
 end
