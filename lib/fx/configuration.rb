@@ -15,9 +15,18 @@ module Fx
     # @return Boolean
     attr_accessor :dump_functions_at_beginning_of_schema
 
+    # Orders functions and triggers alphabetically in the schema dump.
+    # When set to true, functions and triggers will appear in alphabetical
+    # order within the schema.rb file.
+    #
+    # Defaults to false
+    # @return Boolean
+    attr_accessor :dump_functions_and_triggers_alphabetically
+
     def initialize
       @database = Fx::Adapters::Postgres.new
       @dump_functions_at_beginning_of_schema = false
+      @dump_functions_and_triggers_alphabetically = false
     end
   end
 end

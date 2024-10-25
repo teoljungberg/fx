@@ -46,6 +46,39 @@ RSpec.describe Fx::SchemaDumper, :db do
     Fx.configuration.dump_functions_at_beginning_of_schema = false
   end
 
+  it "dumps functions in alphabetical order" do
+    Fx.configuration.dump_functions_and_triggers_alphabetically = true
+    a_sql_definition = <<~EOS
+      CREATE OR REPLACE FUNCTION a_function()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'test_a';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    z_sql_definition = <<~EOS
+      CREATE OR REPLACE FUNCTION z_function()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'test_z';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    connection.create_function :z_function, sql_definition: z_sql_definition
+    connection.create_function :a_function, sql_definition: a_sql_definition
+    connection.create_table :my_table
+    stream = StringIO.new
+    output = stream.string
+
+    dump(connection: connection, stream: stream)
+
+    expect(output).to(
+      match(/function :a_function.*RETURN 'test_a';.*function :z_function.*RETURN 'test_z';/m)
+    )
+
+    Fx.configuration.dump_functions_and_triggers_alphabetically = false
+  end
+
   it "does not dump a create_function for aggregates in the database" do
     sql_definition = <<~EOS
       CREATE OR REPLACE FUNCTION test(text, text)
@@ -111,6 +144,57 @@ RSpec.describe Fx::SchemaDumper, :db do
     expect(output).to include("create_trigger :uppercase_users_name")
     expect(output).to include("sql_definition: <<-SQL")
     expect(output).to include("EXECUTE FUNCTION uppercase_users_name()")
+  end
+
+  it "dumps triggers in alphabetical order" do
+    Fx.configuration.dump_functions_and_triggers_alphabetically = true
+    connection.execute <<~EOS
+      CREATE TABLE users (
+          id int PRIMARY KEY,
+          name varchar(256),
+          upper_name varchar(256)
+      );
+    EOS
+    Fx.database.create_function <<~EOS
+      CREATE OR REPLACE FUNCTION uppercase_users_name()
+      RETURNS trigger AS $$
+      BEGIN
+        NEW.upper_name = UPPER(NEW.name);
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    sql_definition_a = <<~EOS
+      CREATE TRIGGER trigger_a
+          BEFORE INSERT ON users
+          FOR EACH ROW
+          EXECUTE FUNCTION uppercase_users_name();
+    EOS
+    sql_definition_z = <<~EOS
+      CREATE TRIGGER trigger_z
+          BEFORE INSERT ON users
+          FOR EACH ROW
+          EXECUTE FUNCTION uppercase_users_name();
+    EOS
+    connection.create_trigger(
+      :trigger_z,
+      sql_definition: sql_definition_z
+    )
+    connection.create_trigger(
+      :trigger_a,
+      sql_definition: sql_definition_a
+    )
+
+    stream = StringIO.new
+    output = stream.string
+
+    dump(connection: connection, stream: stream)
+
+    expect(output).to(
+      match(/create_trigger :trigger_a.*create_trigger :trigger_z/m)
+    )
+
+    Fx.configuration.dump_functions_and_triggers_alphabetically = false
   end
 
   def dump(connection:, stream:)
