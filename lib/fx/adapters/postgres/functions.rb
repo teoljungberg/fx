@@ -11,7 +11,8 @@ module Fx
         FUNCTIONS_WITH_DEFINITIONS_QUERY = <<~EOS.freeze
           SELECT
               pp.proname AS name,
-              pg_get_functiondef(pp.oid) AS definition
+              pg_get_functiondef(pp.oid) AS definition,
+              current_schema() AS current_schema
           FROM pg_proc pp
           JOIN pg_namespace pn
               ON pn.oid = pp.pronamespace
@@ -19,7 +20,7 @@ module Fx
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           LEFT JOIN pg_aggregate pa
               ON pa.aggfnoid = pp.oid
-          WHERE pn.nspname = 'public' AND pd.objid IS NULL
+          WHERE pn.nspname = current_schema AND pd.objid IS NULL
               AND pa.aggfnoid IS NULL
           ORDER BY pp.oid;
         EOS
