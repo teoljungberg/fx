@@ -9,7 +9,11 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.8.0..HEAD
 
-- Drop EOL Rails versions (6.2).
+## [0.9.0]
+
+[0.9.0]: https://github.com/teoljungberg/fx/compare/v0.8.0...v0.9.0
+
+- Drop EOL Rails versions (6.2)
 - Add Ruby 3.4.0 preview's to the test matrix (#152)
 - Add Rails 8.0.0 to the test matrix (#152)
 - Add Rails 7.2 to the test matrix (#150)
