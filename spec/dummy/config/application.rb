@@ -13,5 +13,9 @@ module Dummy
     config.active_support.deprecation = :stderr
 
     config.load_defaults 7.0
+
+    if Rails.version >= "8.0"
+      config.active_support.to_time_preserves_timezone = :zone
+    end
   end
 end
