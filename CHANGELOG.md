@@ -9,6 +9,12 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.8.0..HEAD
 
+- Drop EOL Rails versions (6.2).
+- Add Ruby 3.4.0 preview's to the test matrix (#152)
+- Add Rails 8.0.0 to the test matrix (#152)
+- Add Rails 7.2 to the test matrix (#150)
+- Fix deprecation warnings in Rails (#148)
+- Mark `Fx::CommandRecorder::Arguments` as private.
 - Add Ruby 3.3 to the test matrix (#144)
 - Internal refactorings:
   - Move development dependencies to Gemfile (#145)
