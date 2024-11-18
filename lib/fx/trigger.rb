@@ -16,10 +16,13 @@ module Fx
     end
 
     def to_schema
+      definition = self.definition.gsub('public.', '')
+      function_name = definition.split('FUNCTION ')[-1].split(".")[-1]
+      definition.gsub!(function_name, "public.#{function_name}")
       <<-SCHEMA
-  create_trigger :#{name}, sql_definition: <<-\SQL
-      #{definition}
-  SQL
+        create_trigger :#{name}, sql_definition: <<-\SQL
+          #{definition}
+        SQL
       SCHEMA
     end
   end
