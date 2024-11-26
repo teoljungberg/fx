@@ -21,7 +21,7 @@ module Fx
   def self.load
     ActiveRecord::Migration::CommandRecorder.include(Fx::CommandRecorder)
     ActiveRecord::ConnectionAdapters::AbstractAdapter.include(Fx::Statements)
-    ActiveRecord::SchemaDumper.prepend(Fx::SchemaDumper)
+    ActiveRecord::ConnectionAdapters::PostgreSQL::SchemaDumper.prepend(Fx::SchemaDumper)
 
     true
   end

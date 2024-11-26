@@ -7,5 +7,10 @@ development: &default
   pool: 5
 
 test:
-  <<: *default
-  database: dummy_test
+  primary:
+    <<: *default
+    database: dummy_test
+  sqlite:
+    adapter: sqlite3
+    database: ":memory:"
+    migrations_paths: db/migrate/sqlite

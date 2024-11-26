@@ -113,6 +113,22 @@ RSpec.describe Fx::SchemaDumper, :db do
     expect(output).to include("EXECUTE FUNCTION uppercase_users_name()")
   end
 
+  context "with a sqlite adapter" do
+    before(:each) { ActiveRecord::Base.establish_connection(:sqlite) }
+    after(:each) { ActiveRecord::Base.establish_connection(:primary) }
+
+    it "does not dump functions or triggers for SQLite connections" do
+      connection.create_table :my_table
+
+      stream = StringIO.new
+      dump(connection: connection, stream: stream)
+
+      output = stream.string
+
+      expect(output).to include('create_table "my_table"')
+    end
+  end
+
   def dump(connection:, stream:)
     if Rails.version >= "7.2"
       ActiveRecord::SchemaDumper.dump(connection.pool, stream)
