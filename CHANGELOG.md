@@ -9,6 +9,11 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.9.0..HEAD
 
+- Add Ruby 3.4 to the test matrix (#161)
+- Require Ruby >= 3.1 (#162)
+- Drop EOL Ruby versions (3.0) (#162)
+- Drop EOL Rails versions (7.0) (#162)
+
 ## [0.9.0]
 
 [0.9.0]: https://github.com/teoljungberg/fx/compare/v0.8.0...v0.9.0
