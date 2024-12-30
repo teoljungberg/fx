@@ -7,7 +7,7 @@ changelog, see the [commits] for each version via the version links.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.8.0..HEAD
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.9.0..HEAD
 
 ## [0.9.0]
 
