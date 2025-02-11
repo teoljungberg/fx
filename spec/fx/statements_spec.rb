@@ -46,7 +46,7 @@ RSpec.describe Fx::Statements, :db do
 
       connection.drop_function(:test)
 
-      expect(database).to have_received(:drop_function).with(:test)
+      expect(database).to have_received(:drop_function).with(:test, if_exists: false)
     end
 
     it "drops the function with if_exists" do
@@ -142,7 +142,7 @@ RSpec.describe Fx::Statements, :db do
       connection.drop_trigger(:test, on: :users)
 
       expect(database).to have_received(:drop_trigger)
-        .with(:test, on: :users)
+        .with(:test, on: :users, if_exists: false)
     end
 
     it "drops the trigger with if_exists" do
