@@ -57,7 +57,7 @@ module Fx
     #   drop_function(:uppercase_users_name, if_exists: true)
     #
     def drop_function(name, options = {})
-      if_exists = options.fetch(:if_exists)
+      if_exists = options.fetch(:if_exists, false)
       Fx.database.drop_function(name, if_exists: if_exists)
     end
 
@@ -169,7 +169,7 @@ module Fx
     #
     def drop_trigger(name, options = {})
       on = options.fetch(:on)
-      if_exists = options.fetch(:if_exists)
+      if_exists = options.fetch(:if_exists, false)
       Fx.database.drop_trigger(name, on: on, if_exists: if_exists)
     end
 
