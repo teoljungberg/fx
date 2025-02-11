@@ -48,15 +48,13 @@ RSpec.describe Fx::Statements, :db do
 
       expect(database).to have_received(:drop_function).with(:test)
     end
-  end
 
-  describe "#drop_function_if_exists" do
-    it "drops the function if it exists" do
+    it "drops the function with if_exists" do
       database = stubbed_database
 
-      connection.drop_function_if_exists(:test)
+      connection.drop_function(:test, if_exists: true)
 
-      expect(database).to have_received(:drop_function_if_exists).with(:test)
+      expect(database).to have_received(:drop_function).with(:test, if_exists: true)
     end
   end
 
@@ -145,6 +143,15 @@ RSpec.describe Fx::Statements, :db do
 
       expect(database).to have_received(:drop_trigger)
         .with(:test, on: :users)
+    end
+
+    it "drops the trigger with if_exists" do
+      database = stubbed_database
+
+      connection.drop_trigger(:test, on: :users, if_exists: true)
+
+      expect(database).to have_received(:drop_trigger)
+        .with(:test, on: :users, if_exists: true)
     end
   end
 

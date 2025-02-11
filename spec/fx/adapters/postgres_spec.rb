@@ -91,53 +91,11 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         expect(adapter.functions.map(&:name)).not_to include("test")
       end
     end
-  end
 
-  describe "#drop_function_if_exists" do
-    context "when the function has arguments" do
-      it "successfully drops a function with the entire function signature" do
+    context "when the function does not exist" do
+      it "successfully drops a function with if_exists = true" do
         adapter = Fx::Adapters::Postgres.new
-        adapter.create_function(
-          <<~EOS
-            CREATE FUNCTION adder(x int, y int)
-            RETURNS int AS $$
-            BEGIN
-                RETURN $1 + $2;
-            END;
-            $$ LANGUAGE plpgsql;
-          EOS
-        )
-
-        adapter.drop_function_if_exists(:adder)
-
-        expect(adapter.functions.map(&:name)).not_to include("adder")
-      end
-    end
-
-    context "when the function does not have arguments" do
-      it "successfully drops a function" do
-        adapter = Fx::Adapters::Postgres.new
-        adapter.create_function(
-          <<~EOS
-            CREATE OR REPLACE FUNCTION test()
-            RETURNS text AS $$
-            BEGIN
-                RETURN 'test';
-            END;
-            $$ LANGUAGE plpgsql;
-          EOS
-        )
-
-        adapter.drop_function_if_exists(:test)
-
-        expect(adapter.functions.map(&:name)).not_to include("test")
-      end
-    end
-
-    context "when function does not exists" do
-      it "does not raise an error" do
-        adapter = Fx::Adapters::Postgres.new
-        adapter.drop_function_if_exists(:test)
+        adapter.drop_function(:test, if_exists: true)
 
         expect(adapter.functions.map(&:name)).not_to include("test")
       end

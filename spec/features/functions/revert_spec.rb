@@ -47,6 +47,18 @@ RSpec.describe "Reverting migrations", :db do
       )
   end
 
+  it "can run reversible migrations for dropping functions with if_exists" do
+    connection.create_function(:test)
+
+    good_migration = Class.new(migration_class) do
+      def change
+        drop_function :test, revert_to_version: 1, if_exists: true
+      end
+    end
+
+    expect { run_migration(good_migration, [:up, :down]) }.not_to raise_error
+  end
+
   it "can run reversible migrations for updating functions" do
     connection.create_function(:test)
 

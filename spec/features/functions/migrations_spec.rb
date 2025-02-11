@@ -40,7 +40,7 @@ RSpec.describe "Function migrations", :db do
   it "can run migrations that drop functions without raising an error" do
     migration = Class.new(migration_class) do
       def up
-        drop_function_if_exists :test # test has not been created
+        drop_function :test, if_exists: true # test has not been created
       end
     end
 

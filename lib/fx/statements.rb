@@ -53,24 +53,12 @@ module Fx
     # @example Drop a function, rolling back to version 2 on rollback
     #   drop_function(:uppercase_users_name, revert_to_version: 2)
     #
+    # @example Drop a function only if it exists
+    #   drop_function(:uppercase_users_name, if_exists: true)
+    #
     def drop_function(name, options = {})
-      Fx.database.drop_function(name)
-    end
-
-    # Drop a database function by name if it exists. This will NOT raise an error
-    # if the function does not exist in postgres allowing future migrations to succeed.
-    #
-    # @param name [String, Symbol] The name of the database function.
-    # @param revert_to_version [Fixnum] Used to reverse the `drop_function`
-    #   command on `rake db:rollback`. The provided version will be passed as
-    #   the `version` argument to {#create_function}.
-    # @return The database response from executing the drop statement.
-    #
-    # @example Drop a function, rolling back to version 2 on rollback
-    #   drop_function_if_exists(:uppercase_users_name, revert_to_version: 2)
-    #
-    def drop_function_if_exists(name, options = {})
-      Fx.database.drop_function_if_exists(name)
+      if_exists = options.fetch(:if_exists)
+      Fx.database.drop_function(name, if_exists: if_exists)
     end
 
     # Update a database function.
@@ -176,9 +164,13 @@ module Fx
     # @example Drop a trigger, rolling back to version 3 on rollback
     #   drop_trigger(:log_inserts, on: :users, revert_to_version: 3)
     #
+    # @example Drop a trigger only if it exists
+    #   drop_trigger(:log_inserts, on: :users, if_exists: true)
+    #
     def drop_trigger(name, options = {})
       on = options.fetch(:on)
-      Fx.database.drop_trigger(name, on: on)
+      if_exists = options.fetch(:if_exists)
+      Fx.database.drop_trigger(name, on: on, if_exists: if_exists)
     end
 
     # Update a database trigger to a new version.

@@ -9,10 +9,6 @@ module Fx
       record(:drop_function, args)
     end
 
-    def drop_function_if_exists(*args)
-      record(:drop_function_if_exists, args)
-    end
-
     def update_function(*args)
       record(:update_function, args)
     end
@@ -22,10 +18,6 @@ module Fx
     end
 
     def invert_drop_function(args)
-      perform_inversion(:create_function, args)
-    end
-
-    def invert_drop_function_if_exists(args)
       perform_inversion(:create_function, args)
     end
 
