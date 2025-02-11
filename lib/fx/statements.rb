@@ -57,6 +57,22 @@ module Fx
       Fx.database.drop_function(name)
     end
 
+    # Drop a database function by name if it exists. This will NOT raise an error
+    # if the function does not exist in postgres allowing future migrations to succeed.
+    #
+    # @param name [String, Symbol] The name of the database function.
+    # @param revert_to_version [Fixnum] Used to reverse the `drop_function`
+    #   command on `rake db:rollback`. The provided version will be passed as
+    #   the `version` argument to {#create_function}.
+    # @return The database response from executing the drop statement.
+    #
+    # @example Drop a function, rolling back to version 2 on rollback
+    #   drop_function_if_exists(:uppercase_users_name, revert_to_version: 2)
+    #
+    def drop_function_if_exists(name, options = {})
+      Fx.database.drop_function_if_exists(name)
+    end
+
     # Update a database function.
     #
     # @param name [String, Symbol] The name of the database function.

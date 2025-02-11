@@ -132,6 +132,23 @@ module Fx
         end
       end
 
+      # Drops the function from the database if it exists.
+      # Does NOT raise an error if the function doesn't exist.
+      #
+      # This is typically called in a migration via
+      # {Fx::Statements::Function#drop_function_if_exists}.
+      #
+      # @param name The name of the function to drop
+      #
+      # @return [void]
+      def drop_function_if_exists(name)
+        if connection.support_drop_function_without_args
+          execute("DROP FUNCTION IF EXISTS #{name};")
+        else
+          execute("DROP FUNCTION IF EXISTS #{name}();")
+        end
+      end
+
       # Drops the trigger from the database
       #
       # This is typically called in a migration via

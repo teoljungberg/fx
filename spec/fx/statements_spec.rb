@@ -50,6 +50,16 @@ RSpec.describe Fx::Statements, :db do
     end
   end
 
+  describe "#drop_function_if_exists" do
+    it "drops the function if it exists" do
+      database = stubbed_database
+
+      connection.drop_function_if_exists(:test)
+
+      expect(database).to have_received(:drop_function_if_exists).with(:test)
+    end
+  end
+
   describe "#update_function" do
     it "updates the function" do
       database = stubbed_database

@@ -77,11 +77,17 @@ tweak the schema in the new definition and run the `update_function` migration.
 
 ## I don't need this trigger or function anymore. Make it go away.
 
-F(x) gives you `drop_trigger` and `drop_function` too:
+F(x) gives you `drop_trigger`, `drop_function`, and `drop_function_if_exists` too:
 
 ```ruby
 def change
   drop_function :uppercase_users_name, revert_to_version: 2
+end
+```
+
+```ruby
+def up
+  drop_function_if_exists :uppercase_users_name, revert_to_version: 2
 end
 ```
 

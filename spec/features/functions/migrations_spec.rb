@@ -37,6 +37,16 @@ RSpec.describe "Function migrations", :db do
     expect { run_migration(migration, :up) }.not_to raise_error
   end
 
+  it "can run migrations that drop functions without raising an error" do
+    migration = Class.new(migration_class) do
+      def up
+        drop_function_if_exists :test # test has not been created
+      end
+    end
+
+    expect { run_migration(migration, :up) }.not_to raise_error
+  end
+
   it "can run migrations that updates functions" do
     connection.create_function(:test)
 
