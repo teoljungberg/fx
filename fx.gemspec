@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activerecord", ">= 7.0"
   spec.add_dependency "railties", ">= 7.0"
 
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.2"
 end
