@@ -77,11 +77,15 @@ tweak the schema in the new definition and run the `update_function` migration.
 
 ## I don't need this trigger or function anymore. Make it go away.
 
-F(x) gives you `drop_trigger` and `drop_function` too:
+F(x) gives you `drop_trigger` and `drop_function` too. These support the Rails 6.1 `if_exists: true` flags
 
 ```ruby
 def change
   drop_function :uppercase_users_name, revert_to_version: 2
+end
+
+def up
+  drop_function :users_first_name, revert_to_version: 2, if_exists: true
 end
 ```
 
