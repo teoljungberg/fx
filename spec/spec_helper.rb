@@ -14,6 +14,8 @@ RSpec.configure do |config|
   DatabaseCleaner.strategy = :transaction
 
   config.around(:each, db: true) do |example|
+    ActiveRecord::Base.connection.execute("SET search_path TO DEFAULT;")
+
     DatabaseCleaner.start
     example.run
     DatabaseCleaner.clean
