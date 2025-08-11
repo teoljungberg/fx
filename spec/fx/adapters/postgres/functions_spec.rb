@@ -37,6 +37,7 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
       expect(functions).to be_empty
 
       connection.execute "SET search_path = 'public';"
+      connection.execute "DROP SCHEMA IF EXISTS other CASCADE;"
     end
   end
 end
