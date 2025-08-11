@@ -43,8 +43,6 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
 
       expect(triggers).to be_empty
-
-      connection.execute "SET search_path TO DEFAULT;"
     end
   end
 end

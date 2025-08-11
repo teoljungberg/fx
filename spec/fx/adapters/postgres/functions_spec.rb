@@ -35,8 +35,6 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
       functions = Fx::Adapters::Postgres::Functions.new(connection).all
 
       expect(functions).to be_empty
-
-      connection.execute "SET search_path = '$user,public';"
     end
   end
 end
