@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe "Trigger migrations", :db do
   around do |example|
     connection.execute <<~EOS
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
@@ -19,7 +19,7 @@ RSpec.describe "Trigger migrations", :db do
       $$ LANGUAGE plpgsql;
     EOS
     sql_definition = <<~EOS
-      CREATE TRIGGER uppercase_users_name
+      CREATE OR REPLACE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();

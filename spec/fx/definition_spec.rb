@@ -58,7 +58,7 @@ RSpec.describe Fx::Definition do
     context "representing a trigger definition" do
       it "returns the content of a trigger definition" do
         sql_definition = <<~EOS
-          CREATE TRIGGER check_update
+          CREATE OR REPLACE TRIGGER check_update
           BEFORE UPDATE ON accounts
           FOR EACH ROW
           EXECUTE FUNCTION check_account_update();

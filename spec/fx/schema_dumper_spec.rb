@@ -11,7 +11,7 @@ RSpec.describe Fx::SchemaDumper, :db do
       $$ LANGUAGE plpgsql;
     EOS
     connection.create_function :my_function, sql_definition: sql_definition
-    connection.create_table :my_table
+    connection.create_table :my_table, if_not_exists: true
     stream = StringIO.new
     output = stream.string
 
@@ -33,7 +33,7 @@ RSpec.describe Fx::SchemaDumper, :db do
       $$ LANGUAGE plpgsql;
     EOS
     connection.create_function :my_function, sql_definition: sql_definition
-    connection.create_table :my_table
+    connection.create_table :my_table, if_not_exists: true
     stream = StringIO.new
     output = stream.string
 
@@ -48,7 +48,7 @@ RSpec.describe Fx::SchemaDumper, :db do
 
   it "does not dump a create_function for aggregates in the database" do
     sql_definition = <<~EOS
-      CREATE OR REPLACE FUNCTION test(text, text)
+      CREATE OR REPLACE FUNCTION test_with_args(text, text)
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
@@ -57,9 +57,9 @@ RSpec.describe Fx::SchemaDumper, :db do
     EOS
 
     aggregate_sql_definition = <<~EOS
-      CREATE AGGREGATE aggregate_test(text)
+      CREATE OR REPLACE AGGREGATE aggregate_test(text)
       (
-          sfunc = test,
+          sfunc = test_with_args,
           stype = text
       );
     EOS
@@ -71,14 +71,14 @@ RSpec.describe Fx::SchemaDumper, :db do
     dump(connection: connection, stream: stream)
 
     output = stream.string
-    expect(output).to include("create_function :test, sql_definition: <<-'SQL'")
+    expect(output).to include("create_function :test_with_args, sql_definition: <<-'SQL'")
     expect(output).to include("RETURN 'test';")
     expect(output).not_to include("aggregate_test")
   end
 
   it "dumps a create_trigger for a trigger in the database" do
     connection.execute <<~EOS
-      CREATE TABLE users (
+      CREATE TABLE IF NOT EXISTS users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
@@ -94,7 +94,7 @@ RSpec.describe Fx::SchemaDumper, :db do
       $$ LANGUAGE plpgsql;
     EOS
     sql_definition = <<~EOS
-      CREATE TRIGGER uppercase_users_name
+      CREATE OR REPLACE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();

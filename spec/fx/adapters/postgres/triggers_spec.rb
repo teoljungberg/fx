@@ -5,7 +5,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
     it "returns `Trigger` objects" do
       connection = ActiveRecord::Base.connection
       connection.execute <<~EOS
-        CREATE TABLE users (
+        CREATE TABLE IF NOT EXISTS users (
             id int PRIMARY KEY,
             name varchar(256),
             upper_name varchar(256)
@@ -21,7 +21,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
         $$ LANGUAGE plpgsql;
       EOS
       connection.execute <<~EOS
-        CREATE TRIGGER uppercase_users_name
+        CREATE OR REPLACE TRIGGER uppercase_users_name
             BEFORE INSERT ON users
             FOR EACH ROW
             EXECUTE FUNCTION uppercase_users_name();
@@ -38,13 +38,12 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
 
       connection.execute "CREATE SCHEMA IF NOT EXISTS other;"
-      connection.execute "SET search_path = 'other';"
 
-      triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
+      connection.with schema_search_path: "other" do
+        triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
 
-      expect(triggers).to be_empty
-
-      connection.execute "SET search_path TO DEFAULT;"
+        expect(triggers).to be_empty
+      end
     end
   end
 end

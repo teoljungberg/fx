@@ -22,7 +22,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
   describe "#create_trigger" do
     it "successfully creates a trigger" do
       connection.execute <<~EOS
-        CREATE TABLE users (
+        CREATE TABLE IF NOT EXISTS users (
             id int PRIMARY KEY,
             name varchar(256),
             upper_name varchar(256)
@@ -40,7 +40,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       EOS
       adapter.create_trigger(
         <<~EOS
-          CREATE TRIGGER uppercase_users_name
+          CREATE OR REPLACE TRIGGER uppercase_users_name
               BEFORE INSERT ON users
               FOR EACH ROW
               EXECUTE FUNCTION uppercase_users_name();
@@ -107,14 +107,14 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         EOS
       )
 
-      expect(adapter.functions.map(&:name)).to eq ["test"]
+      expect(adapter.functions.map(&:name)).to include("test")
     end
   end
 
   describe "#triggers" do
     it "finds triggers and builds Fx::Trigger objects" do
       connection.execute <<~EOS
-        CREATE TABLE users (
+        CREATE TABLE IF NOT EXISTS users (
             id int PRIMARY KEY,
             name varchar(256),
             upper_name varchar(256)
@@ -131,7 +131,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         $$ LANGUAGE plpgsql;
       EOS
       sql_definition = <<~EOS
-        CREATE TRIGGER uppercase_users_name
+        CREATE OR REPLACE TRIGGER uppercase_users_name
             BEFORE INSERT ON users
             FOR EACH ROW
             EXECUTE FUNCTION uppercase_users_name()

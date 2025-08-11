@@ -1,6 +1,11 @@
 require "acceptance_helper"
 
 RSpec.describe "User manages triggers" do
+  before do
+    connection = ActiveRecord::Base.connection
+    connection.execute "DROP TABLE IF EXISTS users;"
+  end
+
   it "handles simple triggers" do
     successfully "rails generate model user name:string upper_name:string"
     successfully "rails generate fx:function uppercase_users_name"
@@ -15,7 +20,7 @@ RSpec.describe "User manages triggers" do
     EOS
     successfully "rails generate fx:trigger uppercase_users_name table_name:users"
     write_trigger_definition "uppercase_users_name_v01", <<~EOS
-      CREATE TRIGGER uppercase_users_name
+      CREATE OR REPLACE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();
@@ -33,7 +38,7 @@ RSpec.describe "User manages triggers" do
 
     successfully "rails generate fx:trigger uppercase_users_name table_name:users"
     write_trigger_definition "uppercase_users_name_v02", <<~EOS
-      CREATE TRIGGER uppercase_users_name
+      CREATE OR REPLACE TRIGGER uppercase_users_name
           BEFORE UPDATE ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();
