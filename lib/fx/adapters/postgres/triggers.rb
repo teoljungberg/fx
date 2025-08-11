@@ -17,8 +17,11 @@ module Fx
               ON (pc.oid = pt.tgrelid)
           JOIN pg_proc pp
               ON (pp.oid = pt.tgfoid)
-          WHERE pt.tgname
-          NOT ILIKE '%constraint%' AND pt.tgname NOT ILIKE 'pg%'
+          JOIN pg_namespace pn
+              ON pn.oid = pc.relnamespace
+          WHERE pn.nspname = ANY (current_schemas(false))
+              AND pt.tgname NOT ILIKE '%constraint%'
+              AND pt.tgname NOT ILIKE 'pg%'
           ORDER BY pc.oid;
         EOS
 

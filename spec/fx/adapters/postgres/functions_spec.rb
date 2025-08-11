@@ -28,6 +28,15 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
         END;
         $function$
       EOS
+
+      connection.execute "CREATE SCHEMA IF NOT EXISTS other;"
+      connection.execute "SET search_path = 'other';"
+
+      functions = Fx::Adapters::Postgres::Functions.new(connection).all
+
+      expect(functions).to be_empty
+
+      connection.execute "SET search_path = 'public';"
     end
   end
 end
