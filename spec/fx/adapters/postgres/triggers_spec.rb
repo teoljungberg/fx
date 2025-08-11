@@ -36,6 +36,15 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       expect(first.definition).to match(/ON [public.ser|]/)
       expect(first.definition).to include("FOR EACH ROW")
       expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
+
+      connection.execute "CREATE SCHEMA IF NOT EXISTS other;"
+      connection.execute "SET search_path = 'other';"
+
+      triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
+
+      expect(triggers).to be_empty
+
+      connection.execute "SET search_path = 'public';"
     end
   end
 end

@@ -19,7 +19,8 @@ module Fx
               ON pd.objid = pp.oid AND pd.deptype = 'e'
           LEFT JOIN pg_aggregate pa
               ON pa.aggfnoid = pp.oid
-          WHERE pn.nspname = 'public' AND pd.objid IS NULL
+          WHERE pn.nspname = ANY (current_schemas(false))
+              AND pd.objid IS NULL
               AND pa.aggfnoid IS NULL
           ORDER BY pp.oid;
         EOS
