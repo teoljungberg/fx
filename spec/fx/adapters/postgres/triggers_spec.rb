@@ -44,7 +44,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
 
       expect(triggers).to be_empty
 
-      connection.execute "SET search_path = 'public';"
+      connection.execute "SET search_path TO DEFAULT;"
     end
   end
 end
