@@ -6,10 +6,10 @@ RSpec.describe Fx do
   end
 
   it "loads fx into ActiveRecord" do
+    expect(Fx.load).to eq(true)
     expect(ActiveRecord::Migration::CommandRecorder).to include(Fx::CommandRecorder)
     expect(ActiveRecord::ConnectionAdapters::AbstractAdapter).to include(Fx::Statements)
     expect(ActiveRecord::SchemaDumper).to include(Fx::SchemaDumper)
-    expect(Fx.load).to eq(true)
   end
 
   it "allows configuration" do
