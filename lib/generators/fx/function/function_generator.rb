@@ -46,9 +46,9 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(function_definition_path)
-            .map { |name| version_regex.match(name).try(:[], "version").to_i }
-            .max
+          @_previous_version ||= Dir.glob(version_glob_pattern, base: function_definition_path)
+            .map { |filename| filename[version_regex, "version"].to_i }
+            .max || 0
         end
 
         def version
@@ -88,6 +88,10 @@ module Fx
 
       def version_regex
         /\A#{file_name}_v(?<version>\d+)\.sql\z/
+      end
+
+      def version_glob_pattern
+        "#{file_name}_v*.sql"
       end
 
       def updating_existing_function?

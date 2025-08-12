@@ -58,18 +58,23 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
   end
 
   it "updates an existing trigger" do
-    allow(Dir).to receive(:entries).and_return(["test_v01.sql"])
-    migration = file("db/migrate/update_trigger_test_to_version_2.rb")
-    trigger_definition = file("db/triggers/test_v02.sql")
+    with_trigger_definition(
+      name: "test",
+      version: 1,
+      sql_definition: "hello"
+    ) do
+      migration = file("db/migrate/update_trigger_test_to_version_2.rb")
+      trigger_definition = file("db/triggers/test_v02.sql")
 
-    run_generator(
-      described_class,
-      ["test", {"table_name" => "some_table"}]
-    )
+      run_generator(
+        described_class,
+        ["test", {"table_name" => "some_table"}]
+      )
 
-    expect(trigger_definition).to exist
-    expect_to_be_a_migration(migration)
-    expect(migration_content(migration)).to include("UpdateTriggerTestToVersion2")
-    expect(migration_content(migration)).to include("on: :some_table")
+      expect(trigger_definition).to exist
+      expect_to_be_a_migration(migration)
+      expect(migration_content(migration)).to include("UpdateTriggerTestToVersion2")
+      expect(migration_content(migration)).to include("on: :some_table")
+    end
   end
 end
