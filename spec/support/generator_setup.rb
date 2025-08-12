@@ -3,10 +3,10 @@ module GeneratorSetup
   MIGRATION_TIMESTAMP_PATTERN = /\d+_/
 
   def run_generator(generator_class, args = [], options = {})
-    silence_stream($stdout) do
-      allow(Rails).to receive(:root).and_return(Pathname.new(RAILS_ROOT))
-      generator = generator_class.new(args, options, destination_root: RAILS_ROOT)
+    allow(Rails).to receive(:root).and_return(Pathname.new(RAILS_ROOT))
+    generator = generator_class.new(args, options, destination_root: RAILS_ROOT)
 
+    silence_stream($stdout) do
       generator.invoke_all
     end
   end
