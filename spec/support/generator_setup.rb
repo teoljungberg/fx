@@ -17,7 +17,9 @@ module GeneratorSetup
 
   def migration_content(file_path)
     migration_path = find_migration_files(file_path).first
-    migration_path ? Pathname.new(migration_path).read : nil
+    return if migration_path.nil?
+
+    Pathname.new(migration_path).read
   end
 
   def find_migration_files(file_path)
