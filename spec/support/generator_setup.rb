@@ -1,6 +1,6 @@
 module GeneratorSetup
   RAILS_ROOT = Pathname.new(File.expand_path("../../../tmp/dummy", __dir__)).freeze
-  MIGRATION_TIMESTAMP_PATTERN = /\d+_/
+  MIGRATION_TIMESTAMP_PATTERN = /\A\d{14}_/
 
   def run_generator(generator_class, args = [], options = {})
     allow(Rails).to receive(:root).and_return(RAILS_ROOT)
@@ -34,8 +34,9 @@ module GeneratorSetup
     expect(migration_files).to be_present,
       "expected #{pathname} to be a migration file"
     first_migration = migration_files.first
-    expect(first_migration).to match(MIGRATION_TIMESTAMP_PATTERN),
-      "expected #{first_migration} to have timestamp prefix (format: YYYYMMDDHHMMSS_)"
+    migration_basename = File.basename(first_migration)
+    expect(migration_basename).to match(MIGRATION_TIMESTAMP_PATTERN),
+      "expected #{migration_basename} to have timestamp prefix (format: YYYYMMDDHHMMSS_)"
   end
 end
 
