@@ -1,9 +1,9 @@
 module GeneratorSetup
-  RAILS_ROOT = File.expand_path("../../../tmp/dummy", __dir__)
+  RAILS_ROOT = Pathname.new(File.expand_path("../../../tmp/dummy", __dir__)).freeze
   MIGRATION_TIMESTAMP_PATTERN = /\d+_/
 
   def run_generator(generator_class, args = [], options = {})
-    allow(Rails).to receive(:root).and_return(Pathname.new(RAILS_ROOT))
+    allow(Rails).to receive(:root).and_return(RAILS_ROOT)
     generator = generator_class.new(args, options, destination_root: RAILS_ROOT)
 
     silence_stream($stdout) do
@@ -12,7 +12,7 @@ module GeneratorSetup
   end
 
   def file(relative_path)
-    Pathname.new(File.join(RAILS_ROOT, relative_path))
+    RAILS_ROOT.join(relative_path)
   end
 
   def migration_content(file_path)
