@@ -6,12 +6,15 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     migration = file("db/migrate/create_trigger_test.rb")
     trigger_definition = file("db/triggers/test_v01.sql")
 
-    run_generator ["test", "table_name" => "some_table"]
+    run_generator(
+      Fx::Generators::TriggerGenerator,
+      ["test", {"table_name" => "some_table"}]
+    )
 
     expect(trigger_definition).to exist
-    expect(migration).to be_a_migration
-    expect(migration_file(migration)).to contain("CreateTriggerTest")
-    expect(migration_file(migration)).to contain("on: :some_table")
+    expect_to_be_a_migration(migration)
+    expect(migration_content(migration)).to include("CreateTriggerTest")
+    expect(migration_content(migration)).to include("on: :some_table")
   end
 
   context "when passed --no-migration" do
@@ -19,10 +22,14 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
       migration = file("db/migrate/create_trigger_test.rb")
       trigger_definition = file("db/triggers/test_v01.sql")
 
-      run_generator ["test", {"table_name" => "some_table"}, "--no-migration"]
+      run_generator(
+        Fx::Generators::TriggerGenerator,
+        ["test", {"table_name" => "some_table"}],
+        {migration: false}
+      )
 
       expect(trigger_definition).to exist
-      expect(Pathname.new(migration_file(migration))).not_to exist
+      expect(migration).not_to exist
     end
   end
 
@@ -30,17 +37,23 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     migration = file("db/migrate/create_trigger_test.rb")
     trigger_definition = file("db/triggers/test_v01.sql")
 
-    run_generator ["test", "on" => "some_table"]
+    run_generator(
+      Fx::Generators::TriggerGenerator,
+      ["test", {"on" => "some_table"}]
+    )
 
     expect(trigger_definition).to exist
-    expect(migration).to be_a_migration
-    expect(migration_file(migration)).to contain("CreateTriggerTest")
-    expect(migration_file(migration)).to contain("on: :some_table")
+    expect_to_be_a_migration(migration)
+    expect(migration_content(migration)).to include("CreateTriggerTest")
+    expect(migration_content(migration)).to include("on: :some_table")
   end
 
   it "requires `table_name` or `on` to be specified" do
     expect do
-      run_generator ["test", "foo" => "some_table"]
+      run_generator(
+        Fx::Generators::TriggerGenerator,
+        ["test", {"foo" => "some_table"}]
+      )
     end.to raise_error(ArgumentError)
   end
 
@@ -49,11 +62,14 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     migration = file("db/migrate/update_trigger_test_to_version_2.rb")
     trigger_definition = file("db/triggers/test_v02.sql")
 
-    run_generator ["test", "table_name" => "some_table"]
+    run_generator(
+      Fx::Generators::TriggerGenerator,
+      ["test", {"table_name" => "some_table"}]
+    )
 
     expect(trigger_definition).to exist
-    expect(migration).to be_a_migration
-    expect(migration_file(migration)).to contain("UpdateTriggerTestToVersion2")
-    expect(migration_file(migration)).to contain("on: :some_table")
+    expect_to_be_a_migration(migration)
+    expect(migration_content(migration)).to include("UpdateTriggerTestToVersion2")
+    expect(migration_content(migration)).to include("on: :some_table")
   end
 end

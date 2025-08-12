@@ -2,7 +2,6 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "ammeter", ">= 1.1.3"
 gem "bundler", ">= 1.5"
 gem "database_cleaner"
 gem "pg"
