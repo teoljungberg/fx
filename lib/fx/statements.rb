@@ -127,7 +127,6 @@ module Fx
     #
     def create_trigger(name, options = {})
       version = options[:version]
-      _on = options[:on]
       sql_definition = options[:sql_definition]
 
       if version.present? && sql_definition.present?
