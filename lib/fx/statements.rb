@@ -31,8 +31,7 @@ module Fx
       sql_definition = options[:sql_definition]
 
       validate_version_or_sql_definition_present!(version, sql_definition)
-      sql_definition = process_sql_definition(sql_definition)
-      sql_definition ||= Fx::Definition.function(name: name, version: version).to_sql
+      sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
 
       Fx.database.create_function(sql_definition)
     end
@@ -87,8 +86,7 @@ module Fx
 
       validate_version_or_sql_definition_present!(version, sql_definition)
 
-      sql_definition = process_sql_definition(sql_definition)
-      sql_definition ||= Fx::Definition.function(name: name, version: version).to_sql
+      sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
 
       Fx.database.update_function(name, sql_definition)
     end
@@ -123,8 +121,7 @@ module Fx
 
       version ||= 1
 
-      sql_definition = process_sql_definition(sql_definition)
-      sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
+      sql_definition = resolve_sql_definition(sql_definition, name, version, :trigger)
 
       Fx.database.create_trigger(sql_definition)
     end
@@ -191,8 +188,7 @@ module Fx
         raise ArgumentError, "on is required"
       end
 
-      sql_definition = process_sql_definition(sql_definition)
-      sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
+      sql_definition = resolve_sql_definition(sql_definition, name, version, :trigger)
 
       Fx.database.update_trigger(
         name,
@@ -209,10 +205,6 @@ module Fx
     VERSION_AND_SQL_DEFINITION_EXCLUSIVE = "sql_definition and version cannot both be set".freeze
     private_constant :VERSION_AND_SQL_DEFINITION_EXCLUSIVE
 
-    def process_sql_definition(sql_definition)
-      sql_definition&.strip_heredoc
-    end
-
     def validate_version_or_sql_definition_present!(version, sql_definition)
       if version.nil? && sql_definition.nil?
         raise ArgumentError, VERSION_OR_SQL_DEFINITION_REQUIRED, caller
@@ -222,6 +214,19 @@ module Fx
     def validate_version_and_sql_definition_exclusive!(version, sql_definition)
       if version.present? && sql_definition.present?
         raise ArgumentError, VERSION_AND_SQL_DEFINITION_EXCLUSIVE, caller
+      end
+    end
+
+    def resolve_sql_definition(sql_definition, name, version, type)
+      return sql_definition.strip_heredoc if sql_definition
+
+      case type
+      when :function
+        Fx::Definition.function(name: name, version: version).to_sql
+      when :trigger
+        Fx::Definition.trigger(name: name, version: version).to_sql
+      else
+        raise ArgumentError, "Unknown type: #{type}. Must be :function or :trigger"
       end
     end
   end
