@@ -121,9 +121,7 @@ module Fx
 
       validate_version_and_sql_definition_exclusive!(version, sql_definition)
 
-      if version.nil?
-        version = 1
-      end
+      version ||= 1
 
       sql_definition = process_sql_definition(sql_definition)
       sql_definition ||= Fx::Definition.trigger(name: name, version: version).to_sql
