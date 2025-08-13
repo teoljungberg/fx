@@ -109,15 +109,12 @@ module Fx
         Fx::Definition.function(name: file_name, version: previous_version)
       end
 
-      # Skip creating migration file if:
-      #   - migrations option is nil or false
       def skip_migration_creation?
         !migration
       end
 
-      # True unless explicitly false
       def migration
-        options[:migration] != false
+        options.fetch(:migration, true)
       end
     end
   end
