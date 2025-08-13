@@ -30,12 +30,7 @@ module Fx
       version = options.fetch(:version, 1)
       sql_definition = options[:sql_definition]
 
-      if version.nil? && sql_definition.nil?
-        raise(
-          ArgumentError,
-          "version or sql_definition must be specified"
-        )
-      end
+      validate_version_or_sql_definition_present!(version, sql_definition)
       sql_definition = process_sql_definition(sql_definition)
       sql_definition ||= Fx::Definition.function(name: name, version: version).to_sql
 
@@ -90,12 +85,7 @@ module Fx
       version = options[:version]
       sql_definition = options[:sql_definition]
 
-      if version.nil? && sql_definition.nil?
-        raise(
-          ArgumentError,
-          "version or sql_definition must be specified"
-        )
-      end
+      validate_version_or_sql_definition_present!(version, sql_definition)
 
       sql_definition = process_sql_definition(sql_definition)
       sql_definition ||= Fx::Definition.function(name: name, version: version).to_sql
@@ -129,12 +119,7 @@ module Fx
       version = options[:version]
       sql_definition = options[:sql_definition]
 
-      if version.present? && sql_definition.present?
-        raise(
-          ArgumentError,
-          "sql_definition and version cannot both be set"
-        )
-      end
+      validate_version_and_sql_definition_exclusive!(version, sql_definition)
 
       if version.nil?
         version = 1
@@ -201,19 +186,8 @@ module Fx
       on = options[:on]
       sql_definition = options[:sql_definition]
 
-      if version.nil? && sql_definition.nil?
-        raise(
-          ArgumentError,
-          "version or sql_definition must be specified"
-        )
-      end
-
-      if version.present? && sql_definition.present?
-        raise(
-          ArgumentError,
-          "sql_definition and version cannot both be set"
-        )
-      end
+      validate_version_or_sql_definition_present!(version, sql_definition)
+      validate_version_and_sql_definition_exclusive!(version, sql_definition)
 
       if on.nil?
         raise ArgumentError, "on is required"
@@ -231,8 +205,26 @@ module Fx
 
     private
 
+    VERSION_OR_SQL_DEFINITION_REQUIRED = "version or sql_definition must be specified".freeze
+    private_constant :VERSION_OR_SQL_DEFINITION_REQUIRED
+
+    VERSION_AND_SQL_DEFINITION_EXCLUSIVE = "sql_definition and version cannot both be set".freeze
+    private_constant :VERSION_AND_SQL_DEFINITION_EXCLUSIVE
+
     def process_sql_definition(sql_definition)
       sql_definition&.strip_heredoc
+    end
+
+    def validate_version_or_sql_definition_present!(version, sql_definition)
+      if version.nil? && sql_definition.nil?
+        raise ArgumentError, VERSION_OR_SQL_DEFINITION_REQUIRED, caller
+      end
+    end
+
+    def validate_version_and_sql_definition_exclusive!(version, sql_definition)
+      if version.present? && sql_definition.present?
+        raise ArgumentError, VERSION_AND_SQL_DEFINITION_EXCLUSIVE, caller
+      end
     end
   end
 end
