@@ -4,7 +4,7 @@ module Fx
     # The F(x) database adapter instance to use when executing SQL.
     #
     # Defaults to an instance of {Fx::Adapters::Postgres}
-    # @return Fx adapter
+    # @return [Fx::Adapters::Postgres] Fx adapter
     attr_accessor :database
 
     # Prioritizes the order in the schema.rb of functions before other
@@ -12,7 +12,7 @@ module Fx
     # in statements below, i.e.: default column values.
     #
     # Defaults to false
-    # @return Boolean
+    # @return [Boolean] Boolean
     attr_accessor :dump_functions_at_beginning_of_schema
 
     def initialize
