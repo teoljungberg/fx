@@ -1,5 +1,6 @@
 module Fx
   module Generators
+    # @api private
     class PathHelper
       OBJECT_PATHS = {
         function: %w[db functions],

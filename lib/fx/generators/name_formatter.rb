@@ -1,5 +1,6 @@
 module Fx
   module Generators
+    # @api private
     class NameFormatter
       def self.format_for_migration(name)
         if name.include?(".")

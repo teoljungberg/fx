@@ -1,5 +1,6 @@
 module Fx
   module Generators
+    # @api private
     class MigrationHelper
       def initialize(options)
         @options = options

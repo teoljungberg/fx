@@ -1,5 +1,6 @@
 module Fx
   module Generators
+    # @api private
     class VersionCalculator
       def initialize(file_name, definition_path)
         @file_name = file_name
