@@ -4,7 +4,7 @@ module Fx
     # Create a new database function.
     #
     # @param name [String, Symbol] The name of the database function.
-    # @param version [Fixnum] The version number of the function, used to
+    # @param version [Integer] The version number of the function, used to
     #   find the definition file in `db/functions`. This defaults to `1` if
     #   not provided.
     # @param sql_definition [String] The SQL query for the function schema.
@@ -39,7 +39,7 @@ module Fx
     # Drop a database function by name.
     #
     # @param name [String, Symbol] The name of the database function.
-    # @param revert_to_version [Fixnum] Used to reverse the `drop_function`
+    # @param revert_to_version [Integer] Used to reverse the `drop_function`
     #   command on `rake db:rollback`. The provided version will be passed as
     #   the `version` argument to {#create_function}.
     # @return The database response from executing the drop statement.
@@ -54,7 +54,7 @@ module Fx
     # Update a database function.
     #
     # @param name [String, Symbol] The name of the database function.
-    # @param version [Fixnum] The version number of the function, used to
+    # @param version [Integer] The version number of the function, used to
     #   find the definition file in `db/functions`. This defaults to `1` if
     #   not provided.
     # @param sql_definition [String] The SQL query for the function schema.
@@ -94,7 +94,7 @@ module Fx
     # Create a new database trigger.
     #
     # @param name [String, Symbol] The name of the database trigger.
-    # @param version [Fixnum] The version number of the trigger, used to
+    # @param version [Integer] The version number of the trigger, used to
     #   find the definition file in `db/triggers`. This defaults to `1` if
     #   not provided.
     # @param sql_definition [String] The SQL query for the function. An error
@@ -131,7 +131,7 @@ module Fx
     # @param name [String, Symbol] The name of the database trigger.
     # @param on [String, Symbol] The name of the table the database trigger
     #   is associated with.
-    # @param revert_to_version [Fixnum] Used to reverse the `drop_trigger`
+    # @param revert_to_version [Integer] Used to reverse the `drop_trigger`
     #   command on `rake db:rollback`. The provided version will be passed as
     #   the `version` argument to {#create_trigger}.
     # @return The database response from executing the drop statement.
@@ -150,13 +150,13 @@ module Fx
     # and `version` parameter.
     #
     # @param name [String, Symbol] The name of the database trigger.
-    # @param version [Fixnum] The version number of the trigger.
+    # @param version [Integer] The version number of the trigger.
     # @param on [String, Symbol] The name of the table the database trigger
     #   is associated with.
     # @param sql_definition [String] The SQL query for the function. An error
     #   will be raised if `sql_definition` and `version` are both set,
     #   as they are mutually exclusive.
-    # @param revert_to_version [Fixnum] The version number to rollback to on
+    # @param revert_to_version [Integer] The version number to rollback to on
     #   `rake db rollback`
     # @return The database response from executing the create statement.
     #
