@@ -65,7 +65,7 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Function#create_function}.
       #
-      # @param sql_definition The SQL schema for the function.
+      # @param sql_definition [String] The SQL schema for the function.
       #
       # @return [void]
       def create_function(sql_definition)
@@ -77,7 +77,7 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Trigger#create_trigger}.
       #
-      # @param sql_definition The SQL schema for the trigger.
+      # @param sql_definition [String] The SQL schema for the trigger.
       #
       # @return [void]
       def create_trigger(sql_definition)
@@ -89,8 +89,8 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Function#update_function}.
       #
-      # @param name The name of the function.
-      # @param sql_definition The SQL schema for the function.
+      # @param name [String, Symbol] The name of the function.
+      # @param sql_definition [String] The SQL schema for the function.
       #
       # @return [void]
       def update_function(name, sql_definition)
@@ -106,9 +106,9 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Function#update_trigger}.
       #
-      # @param name The name of the trigger.
-      # @param on The associated table for the trigger to drop
-      # @param sql_definition The SQL schema for the function.
+      # @param name [String, Symbol] The name of the trigger.
+      # @param on [String, Symbol] The associated table for the trigger to update
+      # @param sql_definition [String] The SQL schema for the trigger.
       #
       # @return [void]
       def update_trigger(name, on:, sql_definition:)
@@ -121,7 +121,7 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Function#drop_function}.
       #
-      # @param name The name of the function to drop
+      # @param name [String, Symbol] The name of the function to drop
       #
       # @return [void]
       def drop_function(name)
@@ -137,8 +137,8 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Trigger#drop_trigger}.
       #
-      # @param name The name of the trigger to drop
-      # @param on The associated table for the trigger to drop
+      # @param name [String, Symbol] The name of the trigger to drop
+      # @param on [String, Symbol] The associated table for the trigger to drop
       #
       # @return [void]
       def drop_trigger(name, on:)
