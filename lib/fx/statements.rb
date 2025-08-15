@@ -9,7 +9,7 @@ module Fx
     #   not provided.
     # @param sql_definition [String] The SQL query for the function schema.
     #   If both `sql_definition` and `version` are provided,
-    #   `sql_definition` takes prescedence.
+    #   `sql_definition` takes precedence.
     # @return The database response from executing the create statement.
     #
     # @example Create from `db/functions/uppercase_users_name_v02.sql`
@@ -59,7 +59,7 @@ module Fx
     #   not provided.
     # @param sql_definition [String] The SQL query for the function schema.
     #   If both `sql_definition` and `version` are provided,
-    #   `sql_definition` takes prescedence.
+    #   `sql_definition` takes precedence.
     # @return The database response from executing the create statement.
     #
     # @example Update function to a given version
