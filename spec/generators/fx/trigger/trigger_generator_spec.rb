@@ -7,7 +7,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     trigger_definition = file("db/triggers/test_v01.sql")
 
     run_generator(
-      Fx::Generators::TriggerGenerator,
+      described_class,
       ["test", {"table_name" => "some_table"}]
     )
 
@@ -23,7 +23,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
       trigger_definition = file("db/triggers/test_v01.sql")
 
       run_generator(
-        Fx::Generators::TriggerGenerator,
+        described_class,
         ["test", {"table_name" => "some_table"}],
         {migration: false}
       )
@@ -38,7 +38,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     trigger_definition = file("db/triggers/test_v01.sql")
 
     run_generator(
-      Fx::Generators::TriggerGenerator,
+      described_class,
       ["test", {"on" => "some_table"}]
     )
 
@@ -51,7 +51,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
   it "requires `table_name` or `on` to be specified" do
     expect do
       run_generator(
-        Fx::Generators::TriggerGenerator,
+        described_class,
         ["test", {"foo" => "some_table"}]
       )
     end.to raise_error(ArgumentError)
@@ -63,7 +63,7 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     trigger_definition = file("db/triggers/test_v02.sql")
 
     run_generator(
-      Fx::Generators::TriggerGenerator,
+      described_class,
       ["test", {"table_name" => "some_table"}]
     )
 

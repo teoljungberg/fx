@@ -6,7 +6,7 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
     migration = file("db/migrate/create_function_test.rb")
     function_definition = file("db/functions/test_v01.sql")
 
-    run_generator(Fx::Generators::FunctionGenerator, ["test"])
+    run_generator(described_class, ["test"])
 
     expect(function_definition).to exist
     expect_to_be_a_migration(migration)
@@ -18,7 +18,7 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
       migration = file("db/migrate/create_function_test.rb")
       function_definition = file("db/functions/test_v01.sql")
 
-      run_generator(Fx::Generators::FunctionGenerator, ["test"], {migration: false})
+      run_generator(described_class, ["test"], {migration: false})
 
       expect(function_definition).to exist
       expect(migration).not_to exist
@@ -35,7 +35,7 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
       migration = file("db/migrate/update_function_test_to_version_2.rb")
       function_definition = file("db/functions/test_v02.sql")
 
-      run_generator(Fx::Generators::FunctionGenerator, ["test"])
+      run_generator(described_class, ["test"])
 
       expect(function_definition).to exist
       expect_to_be_a_migration(migration)
