@@ -91,6 +91,15 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         expect(adapter.functions.map(&:name)).not_to include("test")
       end
     end
+
+    context "when the function does not exist" do
+      it "successfully drops a function with if_exists = true" do
+        adapter = Fx::Adapters::Postgres.new
+        adapter.drop_function(:test, if_exists: true)
+
+        expect(adapter.functions.map(&:name)).not_to include("test")
+      end
+    end
   end
 
   describe "#functions" do
