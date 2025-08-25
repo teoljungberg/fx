@@ -1,4 +1,5 @@
 require "fx/function"
+require "fx/adapters/postgres/query_executor"
 
 module Fx
   module Adapters
@@ -28,31 +29,12 @@ module Fx
         # Wraps #all as a static facade.
         #
         # @return [Array<Fx::Function>]
-        def self.all(...)
-          new(...).all
-        end
-
-        def initialize(connection)
-          @connection = connection
-        end
-
-        # All of the functions that this connection has defined.
-        #
-        # @return [Array<Fx::Function>]
-        def all
-          functions_from_postgres.map { |function| to_fx_function(function) }
-        end
-
-        private
-
-        attr_reader :connection
-
-        def functions_from_postgres
-          connection.execute(FUNCTIONS_WITH_DEFINITIONS_QUERY)
-        end
-
-        def to_fx_function(result)
-          Fx::Function.new(result)
+        def self.all(connection)
+          QueryExecutor.call(
+            connection: connection,
+            query: FUNCTIONS_WITH_DEFINITIONS_QUERY,
+            model_class: Fx::Function
+          )
         end
       end
     end
