@@ -122,13 +122,14 @@ module Fx
       # {Fx::Statements::Function#drop_function}.
       #
       # @param name The name of the function to drop
+      # @param if_exists If true, will not raise an error if the function does not exist
       #
       # @return [void]
-      def drop_function(name)
+      def drop_function(name, if_exists: false)
         if connection.support_drop_function_without_args
-          execute("DROP FUNCTION #{name};")
+          execute("DROP FUNCTION #{if_exists ? 'IF EXISTS ' : ' '}#{name};")
         else
-          execute("DROP FUNCTION #{name}();")
+          execute("DROP FUNCTION #{if_exists ? 'IF EXISTS ' : ' '}#{name}();")
         end
       end
 
@@ -139,10 +140,11 @@ module Fx
       #
       # @param name The name of the trigger to drop
       # @param on The associated table for the trigger to drop
+      # @param if_exists If true, will not raise an error if the trigger does not exist
       #
       # @return [void]
-      def drop_trigger(name, on:)
-        execute("DROP TRIGGER #{name} ON #{on};")
+      def drop_trigger(name, on:, if_exists: false)
+        execute("DROP TRIGGER #{if_exists ? 'IF EXISTS ' : ' '}#{name} ON #{on};")
       end
 
       private

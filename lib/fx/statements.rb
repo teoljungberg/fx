@@ -53,8 +53,12 @@ module Fx
     # @example Drop a function, rolling back to version 2 on rollback
     #   drop_function(:uppercase_users_name, revert_to_version: 2)
     #
+    # @example Drop a function only if it exists
+    #   drop_function(:uppercase_users_name, if_exists: true)
+    #
     def drop_function(name, options = {})
-      Fx.database.drop_function(name)
+      if_exists = options.fetch(:if_exists, false)
+      Fx.database.drop_function(name, if_exists: if_exists)
     end
 
     # Update a database function.
@@ -160,9 +164,13 @@ module Fx
     # @example Drop a trigger, rolling back to version 3 on rollback
     #   drop_trigger(:log_inserts, on: :users, revert_to_version: 3)
     #
+    # @example Drop a trigger only if it exists
+    #   drop_trigger(:log_inserts, on: :users, if_exists: true)
+    #
     def drop_trigger(name, options = {})
       on = options.fetch(:on)
-      Fx.database.drop_trigger(name, on: on)
+      if_exists = options.fetch(:if_exists, false)
+      Fx.database.drop_trigger(name, on: on, if_exists: if_exists)
     end
 
     # Update a database trigger to a new version.
