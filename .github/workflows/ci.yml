@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby: ["3.2", "3.3", "3.4"]
-        rails: ["7.1", "7.2", "8.0", "8.1.0.rc1"]
+        rails: ["7.1", "7.2", "8.0", "8.1.0"]
         continue-on-error: [false]
 
     services:
