@@ -22,7 +22,7 @@ module Fx
           WHERE pn.nspname = ANY (current_schemas(false))
               AND pt.tgname NOT ILIKE '%constraint%'
               AND pt.tgname NOT ILIKE 'pg%'
-          ORDER BY pc.oid;
+          ORDER BY name;
         EOS
 
         # Wraps #all as a static facade.
