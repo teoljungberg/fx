@@ -22,7 +22,7 @@ module Fx
           WHERE pn.nspname = ANY (current_schemas(false))
               AND pd.objid IS NULL
               AND pa.aggfnoid IS NULL
-          ORDER BY pp.oid;
+          ORDER BY name;
         EOS
 
         # Wraps #all as a static facade.
