@@ -22,7 +22,12 @@ module Fx
         "Update#{object_type.capitalize}#{class_name}ToVersion#{version}"
       end
 
-      def migration_template_info(object_type, file_name, updating_existing, version)
+      def migration_template_info(
+        object_type,
+        file_name,
+        updating_existing,
+        version
+      )
         if updating_existing
           {
             template: "db/migrate/update_#{object_type}.erb",

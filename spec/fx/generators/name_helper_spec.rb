@@ -66,7 +66,10 @@ RSpec.describe Fx::Generators::NameHelper do
 
       expect {
         described_class.format_table_name_from_hash(table_hash)
-      }.to raise_error(ArgumentError, "Either `table_name:NAME` or `on:NAME` must be specified")
+      }.to raise_error(
+        ArgumentError,
+        "Either `table_name:NAME` or `on:NAME` must be specified"
+      )
     end
 
     it "raises error when both keys have nil values" do
@@ -74,7 +77,10 @@ RSpec.describe Fx::Generators::NameHelper do
 
       expect {
         described_class.format_table_name_from_hash(table_hash)
-      }.to raise_error(ArgumentError, "Either `table_name:NAME` or `on:NAME` must be specified")
+      }.to raise_error(
+        ArgumentError,
+        "Either `table_name:NAME` or `on:NAME` must be specified"
+      )
     end
 
     it "uses on key when table_name is nil" do

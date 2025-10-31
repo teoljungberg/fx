@@ -91,7 +91,8 @@ RSpec.describe Fx::Generators::VersionHelper do
     it "returns function definition for function type" do
       temp_dir = create_temp_directory
       helper = described_class.new("test_function", temp_dir)
-      allow(Fx::Definition).to receive(:function).and_return("function_definition")
+      allow(Fx::Definition).to receive(:function)
+        .and_return("function_definition")
 
       result = helper.definition_for_version(2, :function)
 
@@ -105,7 +106,8 @@ RSpec.describe Fx::Generators::VersionHelper do
     it "returns trigger definition for trigger type" do
       temp_dir = create_temp_directory
       helper = described_class.new("test_trigger", temp_dir)
-      allow(Fx::Definition).to receive(:trigger).and_return("trigger_definition")
+      allow(Fx::Definition).to receive(:trigger)
+        .and_return("trigger_definition")
 
       result = helper.definition_for_version(3, :trigger)
 
@@ -122,7 +124,10 @@ RSpec.describe Fx::Generators::VersionHelper do
 
       expect {
         helper.definition_for_version(1, :unknown)
-      }.to raise_error(ArgumentError, "Unknown type: unknown. Must be :function or :trigger")
+      }.to raise_error(
+        ArgumentError,
+        "Unknown type: unknown. Must be :function or :trigger"
+      )
     end
   end
 

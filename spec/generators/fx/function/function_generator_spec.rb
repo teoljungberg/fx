@@ -38,7 +38,9 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
 
       expect(function_definition).to exist
       expect_to_be_a_migration(migration)
-      expect(migration_content(migration)).to include("UpdateFunctionTestToVersion2")
+      expect(migration_content(migration)).to include(
+        "UpdateFunctionTestToVersion2"
+      )
     end
   end
 end

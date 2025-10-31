@@ -73,7 +73,9 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
 
       expect(trigger_definition).to exist
       expect_to_be_a_migration(migration)
-      expect(migration_content(migration)).to include("UpdateTriggerTestToVersion2")
+      expect(migration_content(migration)).to include(
+        "UpdateTriggerTestToVersion2"
+      )
       expect(migration_content(migration)).to include("on: :some_table")
     end
   end

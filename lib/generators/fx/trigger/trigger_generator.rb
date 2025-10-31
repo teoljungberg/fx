@@ -18,11 +18,13 @@ module Fx
       class_option :migration, type: :boolean
 
       def create_triggers_directory
-        empty_directory(trigger_definition_path) unless trigger_definition_path.exist?
+        return if trigger_definition_path.exist?
+
+        empty_directory(trigger_definition_path)
       end
 
       def create_trigger_definition
-        create_file definition.path
+        create_file(definition.path)
       end
 
       def create_migration_file
@@ -53,7 +55,11 @@ module Fx
 
         def migration_class_name
           if version_helper.updating_existing?
-            migration_helper.update_migration_class_name(:trigger, class_name, version)
+            migration_helper.update_migration_class_name(
+              :trigger,
+              class_name,
+              version
+            )
           else
             super
           end
@@ -79,7 +85,10 @@ module Fx
       end
 
       def version_helper
-        @_version_helper ||= VersionHelper.new(file_name, trigger_definition_path)
+        @_version_helper ||= VersionHelper.new(
+          file_name,
+          trigger_definition_path
+        )
       end
 
       def migration_helper
