@@ -18,6 +18,7 @@ changelog, see the [commits] for each version via the version links.
 - Add Rails 8.1 to the test matrix (#175)
 - Ensure multi-schema dumping in Rails 8.1.0 does not dump the same objects for
   all schemas (#177)
+- Drop Rails 7.1 due to EOL (#176)
 
 ## [0.9.0]
 
