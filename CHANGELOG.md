@@ -15,6 +15,7 @@ changelog, see the [commits] for each version via the version links.
 - Require Ruby >= 3.1 (#162)
 - Drop EOL Ruby versions (3.0) (#162)
 - Drop EOL Rails versions (7.0) (#162)
+- Add Rails 8.1 to the test matrix (#175)
 - Ensure multi-schema dumping in Rails 8.1.0 does not dump the same objects for
   all schemas (#177)
 
