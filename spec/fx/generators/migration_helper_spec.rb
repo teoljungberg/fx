@@ -87,7 +87,7 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       function_result = helper.migration_template_info(
         :function,
-        "my_func",
+        "my_function",
         true,
         2
       )
@@ -105,7 +105,7 @@ RSpec.describe Fx::Generators::MigrationHelper do
         "db/migrate/update_trigger.erb"
       )
       expect(function_result.fetch(:filename)).to eq(
-        "db/migrate/update_function_my_func_to_version_2.rb"
+        "db/migrate/update_function_my_function_to_version_2.rb"
       )
       expect(trigger_result.fetch(:filename)).to eq(
         "db/migrate/update_trigger_my_trigger_to_version_2.rb"
