@@ -17,14 +17,16 @@ module Fx
       class_option :migration, type: :boolean
 
       def create_functions_directory
-        empty_directory(function_definition_path) unless function_definition_path.exist?
+        return if function_definition_path.exist?
+
+        empty_directory(function_definition_path)
       end
 
       def create_function_definition
         if version_helper.creating_new?
-          create_file definition.path
+          create_file(definition.path)
         else
-          copy_file previous_definition.full_path, definition.full_path
+          copy_file(previous_definition.full_path, definition.full_path)
         end
       end
 
@@ -38,7 +40,9 @@ module Fx
           version_helper.current_version
         )
 
-        migration_template(template_info[:template], template_info[:filename])
+        migration_template(
+          template_info.fetch(:template),
+          template_info.fetch(:filename))
       end
 
       def self.next_migration_number(dir)
@@ -56,7 +60,11 @@ module Fx
 
         def migration_class_name
           if version_helper.updating_existing?
-            migration_helper.update_migration_class_name(:function, class_name, version)
+            migration_helper.update_migration_class_name(
+              :function,
+              class_name,
+              version
+            )
           else
             super
           end
@@ -78,7 +86,10 @@ module Fx
       end
 
       def version_helper
-        @_version_helper ||= VersionHelper.new(file_name, function_definition_path)
+        @_version_helper ||= VersionHelper.new(
+          file_name,
+          function_definition_path
+        )
       end
 
       def migration_helper
