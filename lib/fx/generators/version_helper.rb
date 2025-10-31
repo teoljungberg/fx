@@ -47,7 +47,7 @@ module Fx
       def existing_versions
         Dir
           .glob("#{file_name}_v*.sql", base: definition_path)
-          .map { |f| f[VERSION_PATTERN, 1].to_i }
+          .map { |file| file[VERSION_PATTERN, 1].to_i }
           .compact
       end
     end
