@@ -18,9 +18,6 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
   describe "#active_record_migration_class" do
     it "returns versioned migration class when current_version is available" do
-      allow(ActiveRecord::Migration).to receive(:respond_to?)
-        .with(:current_version)
-        .and_return(true)
       allow(ActiveRecord::Migration).to receive(:current_version)
         .and_return(7.0)
 
