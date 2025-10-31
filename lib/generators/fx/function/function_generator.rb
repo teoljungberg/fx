@@ -42,7 +42,8 @@ module Fx
 
         migration_template(
           template_info.fetch(:template),
-          template_info.fetch(:filename))
+          template_info.fetch(:filename)
+        )
       end
 
       def self.next_migration_number(dir)
