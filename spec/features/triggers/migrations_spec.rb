@@ -2,14 +2,14 @@ require "spec_helper"
 
 RSpec.describe "Trigger migrations", :db do
   around do |example|
-    connection.execute <<~EOS
+    connection.execute <<~SQL
       CREATE TABLE users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
       );
-    EOS
-    Fx.database.create_function <<~EOS
+    SQL
+    Fx.database.create_function <<~SQL
       CREATE OR REPLACE FUNCTION uppercase_users_name()
       RETURNS trigger AS $$
       BEGIN
@@ -17,13 +17,13 @@ RSpec.describe "Trigger migrations", :db do
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
-    EOS
-    sql_definition = <<~EOS
+    SQL
+    sql_definition = <<~SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();
-    EOS
+    SQL
     with_trigger_definition(
       name: :uppercase_users_name,
       sql_definition: sql_definition

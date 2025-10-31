@@ -2,14 +2,14 @@ require "spec_helper"
 
 RSpec.describe Fx::SchemaDumper, :db do
   it "dumps a create_function for a function in the database" do
-    sql_definition = <<~EOS
+    sql_definition = <<~SQL
       CREATE OR REPLACE FUNCTION my_function()
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     connection.create_function :my_function, sql_definition: sql_definition
     connection.create_table :my_table
     stream = StringIO.new
@@ -24,14 +24,14 @@ RSpec.describe Fx::SchemaDumper, :db do
 
   it "dumps a create_function for a function in the database" do
     Fx.configuration.dump_functions_at_beginning_of_schema = true
-    sql_definition = <<~EOS
+    sql_definition = <<~SQL
       CREATE OR REPLACE FUNCTION my_function()
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
     connection.create_function :my_function, sql_definition: sql_definition
     connection.create_table :my_table
     stream = StringIO.new
@@ -47,22 +47,22 @@ RSpec.describe Fx::SchemaDumper, :db do
   end
 
   it "does not dump a create_function for aggregates in the database" do
-    sql_definition = <<~EOS
+    sql_definition = <<~SQL
       CREATE OR REPLACE FUNCTION test(text, text)
       RETURNS text AS $$
       BEGIN
           RETURN 'test';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
+    SQL
 
-    aggregate_sql_definition = <<~EOS
+    aggregate_sql_definition = <<~SQL
       CREATE AGGREGATE aggregate_test(text)
       (
           sfunc = test,
           stype = text
       );
-    EOS
+    SQL
 
     connection.create_function :test, sql_definition: sql_definition
     connection.execute aggregate_sql_definition
@@ -77,14 +77,14 @@ RSpec.describe Fx::SchemaDumper, :db do
   end
 
   it "dumps a create_trigger for a trigger in the database" do
-    connection.execute <<~EOS
+    connection.execute <<~SQL
       CREATE TABLE users (
           id int PRIMARY KEY,
           name varchar(256),
           upper_name varchar(256)
       );
-    EOS
-    Fx.database.create_function <<~EOS
+    SQL
+    Fx.database.create_function <<~SQL
       CREATE OR REPLACE FUNCTION uppercase_users_name()
       RETURNS trigger AS $$
       BEGIN
@@ -92,13 +92,13 @@ RSpec.describe Fx::SchemaDumper, :db do
         RETURN NEW;
       END;
       $$ LANGUAGE plpgsql;
-    EOS
-    sql_definition = <<~EOS
+    SQL
+    sql_definition = <<~SQL
       CREATE TRIGGER uppercase_users_name
           BEFORE INSERT ON users
           FOR EACH ROW
           EXECUTE FUNCTION uppercase_users_name();
-    EOS
+    SQL
     connection.create_trigger(
       :uppercase_users_name,
       sql_definition: sql_definition
@@ -116,36 +116,36 @@ RSpec.describe Fx::SchemaDumper, :db do
   it "dumps functions and triggers for multiple schemas" do
     connection.schema_search_path = "public,test_schema"
     connection.create_table :my_table
-    connection.create_function :test1, sql_definition: <<~EOS
+    connection.create_function :test1, sql_definition: <<~SQL
       CREATE OR REPLACE FUNCTION test_public_func()
       RETURNS TRIGGER AS $$
       BEGIN
         RETURN 1;
       END;
       $$ LANGUAGE plpgsql;
-    EOS
-    connection.create_trigger :test1_trigger, sql_definition: <<~EOS
+    SQL
+    connection.create_trigger :test1_trigger, sql_definition: <<~SQL
       CREATE TRIGGER test_public_trigger
       BEFORE INSERT ON my_table
       FOR EACH ROW
       EXECUTE FUNCTION test_public_func();
-    EOS
+    SQL
     connection.execute("CREATE SCHEMA test_schema;")
     connection.create_table "test_schema.my_table2"
-    connection.execute <<~EOS
+    connection.execute <<~SQL
       CREATE OR REPLACE FUNCTION test_schema.test_schema_func()
       RETURNS TRIGGER AS $$
       BEGIN
         RETURN 'test_schema';
       END;
       $$ LANGUAGE plpgsql;
-    EOS
-    connection.execute <<~EOS
+    SQL
+    connection.execute <<~SQL
       CREATE TRIGGER test_schema_trigger
       BEFORE INSERT ON test_schema.my_table2
       FOR EACH ROW
       EXECUTE FUNCTION test_schema.test_schema_func();
-    EOS
+    SQL
     stream = StringIO.new
     output = stream.string
 
