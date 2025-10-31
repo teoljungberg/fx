@@ -28,10 +28,10 @@ RSpec.describe Fx::Adapters::Postgres::QueryExecutor, :db do
   it "executes query with multiple results" do
     connection = ActiveRecord::Base.connection
     query = <<~SQL
-        SELECT 'first' as name
-        UNION ALL
-        SELECT 'second' as name
-        ORDER BY name
+      SELECT 'first' as name
+      UNION ALL
+      SELECT 'second' as name
+      ORDER BY name
     SQL
     simple_name = Class.new do
       attr_reader :name
