@@ -1,5 +1,8 @@
 require "rails/generators"
 require "rails/generators/active_record"
+require "fx/generators/version_helper"
+require "fx/generators/migration_helper"
+require "fx/generators/name_helper"
 
 module Fx
   module Generators
@@ -9,16 +12,16 @@ module Fx
 
       source_root File.expand_path("../templates", __FILE__)
 
+      DEFINITION_PATH = %w[db functions].freeze
+
       class_option :migration, type: :boolean
 
       def create_functions_directory
-        unless function_definition_path.exist?
-          empty_directory(function_definition_path)
-        end
+        empty_directory(function_definition_path) unless function_definition_path.exist?
       end
 
       def create_function_definition
-        if creating_new_function?
+        if version_helper.creating_new?
           create_file definition.path
         else
           copy_file previous_definition.full_path, definition.full_path
@@ -26,18 +29,16 @@ module Fx
       end
 
       def create_migration_file
-        return if skip_migration_creation?
-        if updating_existing_function?
-          migration_template(
-            "db/migrate/update_function.erb",
-            "db/migrate/update_function_#{file_name}_to_version_#{version}.rb"
-          )
-        else
-          migration_template(
-            "db/migrate/create_function.erb",
-            "db/migrate/create_function_#{file_name}.rb"
-          )
-        end
+        return if migration_helper.skip_creation?
+
+        template_info = migration_helper.migration_template_info(
+          :function,
+          file_name,
+          version_helper.updating_existing?,
+          version_helper.current_version
+        )
+
+        migration_template(template_info[:template], template_info[:filename])
       end
 
       def self.next_migration_number(dir)
@@ -46,75 +47,58 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(function_definition_path)
-            .map { |name| version_regex.match(name).try(:[], "version").to_i }
-            .max
+          version_helper.previous_version
         end
 
         def version
-          @_version ||= previous_version.next
+          version_helper.current_version
         end
 
         def migration_class_name
-          if updating_existing_function?
-            "UpdateFunction#{class_name}ToVersion#{version}"
+          if version_helper.updating_existing?
+            migration_helper.update_migration_class_name(:function, class_name, version)
           else
             super
           end
         end
 
-        def activerecord_migration_class
-          if ActiveRecord::Migration.respond_to?(:current_version)
-            "ActiveRecord::Migration[#{ActiveRecord::Migration.current_version}]"
-          else
-            "ActiveRecord::Migration"
-          end
+        def active_record_migration_class
+          migration_helper.active_record_migration_class
         end
 
         def formatted_name
-          if singular_name.include?(".")
-            "\"#{singular_name}\""
-          else
-            ":#{singular_name}"
-          end
+          NameHelper.format_for_migration(singular_name)
         end
       end
 
       private
 
       def function_definition_path
-        @_function_definition_path ||= Rails.root.join(*%w[db functions])
+        @_function_definition_path ||= Rails.root.join(*DEFINITION_PATH)
       end
 
-      def version_regex
-        /\A#{file_name}_v(?<version>\d+)\.sql\z/
+      def version_helper
+        @_version_helper ||= VersionHelper.new(file_name, function_definition_path)
       end
 
-      def updating_existing_function?
-        previous_version > 0
-      end
-
-      def creating_new_function?
-        previous_version == 0
+      def migration_helper
+        @_migration_helper ||= MigrationHelper.new(options)
       end
 
       def definition
-        Fx::Definition.function(name: file_name, version: version)
+        version_helper.definition_for_version(version, :function)
       end
 
       def previous_definition
-        Fx::Definition.function(name: file_name, version: previous_version)
+        version_helper.definition_for_version(previous_version, :function)
       end
 
-      # Skip creating migration file if:
-      #   - migrations option is nil or false
-      def skip_migration_creation?
-        !migration
+      def updating_existing_function?
+        version_helper.updating_existing?
       end
 
-      # True unless explicitly false
-      def migration
-        options[:migration] != false
+      def creating_new_function?
+        version_helper.creating_new?
       end
     end
   end
