@@ -113,58 +113,50 @@ RSpec.describe Fx::SchemaDumper, :db do
     expect(output).to include("EXECUTE FUNCTION uppercase_users_name()")
   end
 
-  context "when there are functions / triggers in multiple schemas" do
-    before { connection.schema_search_path = "public,test_schema" }
+  it "dumps functions and triggers for multiple schemas" do
+    connection.schema_search_path = "public,test_schema"
+    connection.create_table :my_table
+    connection.create_function :test1, sql_definition: <<~EOS
+      CREATE OR REPLACE FUNCTION test_public_func()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        RETURN 1;
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    connection.create_trigger :test1_trigger, sql_definition: <<~EOS
+      CREATE TRIGGER test_public_trigger
+      BEFORE INSERT ON my_table
+      FOR EACH ROW
+      EXECUTE FUNCTION test_public_func();
+    EOS
+    connection.execute("CREATE SCHEMA test_schema;")
+    connection.create_table "test_schema.my_table2"
+    connection.execute <<~EOS
+      CREATE OR REPLACE FUNCTION test_schema.test_schema_func()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        RETURN 'test_schema';
+      END;
+      $$ LANGUAGE plpgsql;
+    EOS
+    connection.execute <<~EOS
+      CREATE TRIGGER test_schema_trigger
+      BEFORE INSERT ON test_schema.my_table2
+      FOR EACH ROW
+      EXECUTE FUNCTION test_schema.test_schema_func();
+    EOS
+    stream = StringIO.new
+    output = stream.string
 
-    after { connection.schema_search_path = "public" }
+    dump(connection: connection, stream: stream)
 
-    it "dumps functions and triggers for multiple schemas" do
-      connection.create_table :my_table
+    expect(output.scan("create_function :test_public_func").size).to eq(1)
+    expect(output.scan("create_trigger :test_public_trigger").size).to eq(1)
+    expect(output.scan("create_function :test_schema_func").size).to eq(1)
+    expect(output.scan("create_trigger :test_schema_trigger").size).to eq(1)
 
-      connection.create_function :test1, sql_definition: <<~EOS
-        CREATE OR REPLACE FUNCTION test_public_func()
-        RETURNS TRIGGER AS $$
-        BEGIN
-          RETURN 1;
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      connection.create_trigger :test1_trigger, sql_definition: <<~EOS
-        CREATE TRIGGER test_public_trigger
-        BEFORE INSERT ON my_table
-        FOR EACH ROW
-        EXECUTE FUNCTION test_public_func();
-      EOS
-
-      connection.execute("CREATE SCHEMA test_schema;")
-
-      connection.create_table "test_schema.my_table2"
-
-      connection.execute <<~EOS
-        CREATE OR REPLACE FUNCTION test_schema.test_schema_func()
-        RETURNS TRIGGER AS $$
-        BEGIN
-          RETURN 'test_schema';
-        END;
-        $$ LANGUAGE plpgsql;
-      EOS
-      connection.execute <<~EOS
-        CREATE TRIGGER test_schema_trigger
-        BEFORE INSERT ON test_schema.my_table2
-        FOR EACH ROW
-        EXECUTE FUNCTION test_schema.test_schema_func();
-      EOS
-
-      stream = StringIO.new
-      dump(connection: connection, stream: stream)
-      output = stream.string
-
-      expect(output.scan("create_function :test_public_func").size).to eq(1)
-      expect(output.scan("create_trigger :test_public_trigger").size).to eq(1)
-
-      expect(output.scan("create_function :test_schema_func").size).to eq(1)
-      expect(output.scan("create_trigger :test_schema_trigger").size).to eq(1)
-    end
+    connection.schema_search_path = "public"
   end
 
   def dump(connection:, stream:)
