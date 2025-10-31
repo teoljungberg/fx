@@ -31,7 +31,6 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
       version: 1,
       sql_definition: "hello"
     ) do
-      allow(Dir).to receive(:entries).and_return(["test_v01.sql"])
       migration = file("db/migrate/update_function_test_to_version_2.rb")
       function_definition = file("db/functions/test_v02.sql")
 

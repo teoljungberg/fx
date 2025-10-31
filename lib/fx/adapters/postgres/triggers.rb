@@ -1,4 +1,5 @@
 require "fx/trigger"
+require "fx/adapters/postgres/query_executor"
 
 module Fx
   module Adapters
@@ -28,31 +29,12 @@ module Fx
         # Wraps #all as a static facade.
         #
         # @return [Array<Fx::Trigger>]
-        def self.all(...)
-          new(...).all
-        end
-
-        def initialize(connection)
-          @connection = connection
-        end
-
-        # All of the triggers that this connection has defined.
-        #
-        # @return [Array<Fx::Trigger>]
-        def all
-          triggers_from_postgres.map { |trigger| to_fx_trigger(trigger) }
-        end
-
-        private
-
-        attr_reader :connection
-
-        def triggers_from_postgres
-          connection.execute(TRIGGERS_WITH_DEFINITIONS_QUERY)
-        end
-
-        def to_fx_trigger(result)
-          Fx::Trigger.new(result)
+        def self.all(connection)
+          QueryExecutor.call(
+            connection: connection,
+            query: TRIGGERS_WITH_DEFINITIONS_QUERY,
+            model_class: Fx::Trigger
+          )
         end
       end
     end

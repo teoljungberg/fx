@@ -13,7 +13,7 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
         $$ LANGUAGE plpgsql;
       SQL
 
-      functions = Fx::Adapters::Postgres::Functions.new(connection).all
+      functions = Fx::Adapters::Postgres::Functions.all(connection)
 
       first = functions.first
       expect(functions.size).to eq(1)
@@ -32,7 +32,7 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
       connection.execute "CREATE SCHEMA IF NOT EXISTS other;"
       connection.execute "SET search_path = 'other';"
 
-      functions = Fx::Adapters::Postgres::Functions.new(connection).all
+      functions = Fx::Adapters::Postgres::Functions.all(connection)
 
       expect(functions).to be_empty
     end
