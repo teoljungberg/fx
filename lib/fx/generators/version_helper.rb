@@ -30,7 +30,10 @@ module Fx
         when :trigger
           Fx::Definition.trigger(name: file_name, version: version)
         else
-          raise ArgumentError, "Unknown type: #{type}. Must be :function or :trigger"
+          raise(
+            ArgumentError,
+            "Unknown type: #{type}. Must be :function or :trigger"
+          )
         end
       end
 

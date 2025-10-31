@@ -14,7 +14,10 @@ module Fx
         name = table_hash["table_name"] || table_hash["on"]
 
         if name.nil?
-          raise ArgumentError, "Either `table_name:NAME` or `on:NAME` must be specified"
+          raise(
+            ArgumentError,
+            "Either `table_name:NAME` or `on:NAME` must be specified"
+          )
         end
 
         format_for_migration(name)
