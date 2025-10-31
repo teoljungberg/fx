@@ -86,8 +86,8 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       expect(function_result[:template]).to eq("db/migrate/update_function.erb")
       expect(trigger_result[:template]).to eq("db/migrate/update_trigger.erb")
-      expect(function_result[:filename]).to include("function")
-      expect(trigger_result[:filename]).to include("trigger")
+      expect(function_result[:filename]).to eq("db/migrate/update_function_my_func_to_version_2.rb")
+      expect(trigger_result[:filename]).to eq("db/migrate/update_trigger_my_trigger_to_version_2.rb")
     end
   end
 end
