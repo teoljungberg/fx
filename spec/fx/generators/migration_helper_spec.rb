@@ -23,7 +23,9 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       helper = described_class.new({})
 
-      expect(helper.active_record_migration_class).to eq("ActiveRecord::Migration[7.0]")
+      expect(helper.active_record_migration_class).to eq(
+        "ActiveRecord::Migration[7.0]"
+      )
     end
 
     it "returns base migration class when current_version is not available" do
@@ -33,7 +35,9 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       helper = described_class.new({})
 
-      expect(helper.active_record_migration_class).to eq("ActiveRecord::Migration")
+      expect(helper.active_record_migration_class).to eq(
+        "ActiveRecord::Migration"
+      )
     end
   end
 
@@ -81,13 +85,31 @@ RSpec.describe Fx::Generators::MigrationHelper do
     it "handles different object types correctly" do
       helper = described_class.new({})
 
-      function_result = helper.migration_template_info(:function, "my_func", true, 2)
-      trigger_result = helper.migration_template_info(:trigger, "my_trigger", true, 2)
+      function_result = helper.migration_template_info(
+        :function,
+        "my_func",
+        true,
+        2
+      )
+      trigger_result = helper.migration_template_info(
+        :trigger,
+        "my_trigger",
+        true,
+        2
+      )
 
-      expect(function_result[:template]).to eq("db/migrate/update_function.erb")
-      expect(trigger_result[:template]).to eq("db/migrate/update_trigger.erb")
-      expect(function_result[:filename]).to eq("db/migrate/update_function_my_func_to_version_2.rb")
-      expect(trigger_result[:filename]).to eq("db/migrate/update_trigger_my_trigger_to_version_2.rb")
+      expect(function_result.fetch(:template)).to eq(
+        "db/migrate/update_function.erb"
+      )
+      expect(trigger_result.fetch(:template)).to eq(
+        "db/migrate/update_trigger.erb"
+      )
+      expect(function_result.fetch(:filename)).to eq(
+        "db/migrate/update_function_my_func_to_version_2.rb"
+      )
+      expect(trigger_result.fetch(:filename)).to eq(
+        "db/migrate/update_trigger_my_trigger_to_version_2.rb"
+      )
     end
   end
 end
