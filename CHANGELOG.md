@@ -19,6 +19,7 @@ changelog, see the [commits] for each version via the version links.
 - Ensure multi-schema dumping in Rails 8.1.0 does not dump the same objects for
   all schemas (#177)
 - Drop Rails 7.1 due to EOL (#176)
+- YARD documentation improvements (#179)
 
 ## [0.9.0]
 
