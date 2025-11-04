@@ -1,5 +1,5 @@
 require "spec_helper"
-require "fx/generators/version_helper"
+require "generators/fx/version_helper"
 
 RSpec.describe Fx::Generators::VersionHelper do
   describe "#previous_version" do

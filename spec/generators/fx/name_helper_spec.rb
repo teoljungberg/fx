@@ -1,5 +1,5 @@
 require "spec_helper"
-require "fx/generators/name_helper"
+require "generators/fx/name_helper"
 
 RSpec.describe Fx::Generators::NameHelper do
   describe ".format_for_migration" do

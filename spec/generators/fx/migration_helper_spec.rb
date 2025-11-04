@@ -1,5 +1,5 @@
 require "spec_helper"
-require "fx/generators/migration_helper"
+require "generators/fx/migration_helper"
 
 RSpec.describe Fx::Generators::MigrationHelper do
   describe "#skip_creation?" do

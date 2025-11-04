@@ -1,8 +1,8 @@
 require "rails/generators"
 require "rails/generators/active_record"
-require "fx/generators/version_helper"
-require "fx/generators/migration_helper"
-require "fx/generators/name_helper"
+require "generators/fx/version_helper"
+require "generators/fx/migration_helper"
+require "generators/fx/name_helper"
 
 module Fx
   module Generators
