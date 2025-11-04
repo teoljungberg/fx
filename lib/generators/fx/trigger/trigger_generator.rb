@@ -85,14 +85,14 @@ module Fx
       end
 
       def version_helper
-        @_version_helper ||= VersionHelper.new(
+        @_version_helper ||= Fx::Generators::VersionHelper.new(
           file_name,
           trigger_definition_path
         )
       end
 
       def migration_helper
-        @_migration_helper ||= MigrationHelper.new(options)
+        @_migration_helper ||= Fx::Generators::MigrationHelper.new(options)
       end
 
       def definition
