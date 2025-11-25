@@ -220,14 +220,17 @@ module Fx
     def resolve_sql_definition(sql_definition, name, version, type)
       return sql_definition.strip_heredoc if sql_definition
 
-      case type
-      when :function
-        Fx::Definition.function(name: name, version: version).to_sql
-      when :trigger
-        Fx::Definition.trigger(name: name, version: version).to_sql
-      else
-        raise ArgumentError, "Unknown type: #{type}. Must be :function or :trigger"
-      end
+      definition =
+        case type
+        when :function
+          Fx::Definition.function(name: name, version: version)
+        when :trigger
+          Fx::Definition.trigger(name: name, version: version)
+        else
+          raise ArgumentError, "Unknown type: #{type}. Must be :function or :trigger"
+        end
+
+      definition.to_sql
     end
   end
 end
