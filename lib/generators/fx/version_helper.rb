@@ -2,7 +2,7 @@ module Fx
   module Generators
     # @api private
     class VersionHelper
-      def initialize(file_name, definition_path)
+      def initialize(file_name:, definition_path:)
         @file_name = file_name
         @definition_path = definition_path
       end
@@ -23,7 +23,7 @@ module Fx
         previous_version == 0
       end
 
-      def definition_for_version(version, type)
+      def definition_for_version(version:, type:)
         case type
         when :function
           Fx::Definition.function(name: file_name, version: version)

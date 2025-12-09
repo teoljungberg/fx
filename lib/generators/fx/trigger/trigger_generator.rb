@@ -31,10 +31,10 @@ module Fx
         return if migration_helper.skip_creation?
 
         template_info = migration_helper.migration_template_info(
-          :trigger,
-          file_name,
-          version_helper.updating_existing?,
-          version_helper.current_version
+          object_type: :trigger,
+          file_name: file_name,
+          updating_existing: version_helper.updating_existing?,
+          version: version_helper.current_version
         )
 
         migration_template(template_info[:template], template_info[:filename])
@@ -56,9 +56,9 @@ module Fx
         def migration_class_name
           if version_helper.updating_existing?
             migration_helper.update_migration_class_name(
-              :trigger,
-              class_name,
-              version
+              object_type: :trigger,
+              class_name: class_name,
+              version: version
             )
           else
             super
@@ -86,8 +86,8 @@ module Fx
 
       def version_helper
         @_version_helper ||= Fx::Generators::VersionHelper.new(
-          file_name,
-          trigger_definition_path
+          file_name: file_name,
+          definition_path: trigger_definition_path
         )
       end
 
@@ -96,7 +96,7 @@ module Fx
       end
 
       def definition
-        version_helper.definition_for_version(version, :trigger)
+        version_helper.definition_for_version(version: version, type: :trigger)
       end
 
       def updating_existing_trigger?

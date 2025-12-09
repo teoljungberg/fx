@@ -34,10 +34,10 @@ module Fx
         return if migration_helper.skip_creation?
 
         template_info = migration_helper.migration_template_info(
-          :function,
-          file_name,
-          version_helper.updating_existing?,
-          version_helper.current_version
+          object_type: :function,
+          file_name: file_name,
+          updating_existing: version_helper.updating_existing?,
+          version: version_helper.current_version
         )
 
         migration_template(
@@ -62,9 +62,9 @@ module Fx
         def migration_class_name
           if version_helper.updating_existing?
             migration_helper.update_migration_class_name(
-              :function,
-              class_name,
-              version
+              object_type: :function,
+              class_name: class_name,
+              version: version
             )
           else
             super
@@ -88,8 +88,8 @@ module Fx
 
       def version_helper
         @_version_helper ||= Fx::Generators::VersionHelper.new(
-          file_name,
-          function_definition_path
+          file_name: file_name,
+          definition_path: function_definition_path
         )
       end
 
@@ -98,11 +98,11 @@ module Fx
       end
 
       def definition
-        version_helper.definition_for_version(version, :function)
+        version_helper.definition_for_version(version: version, type: :function)
       end
 
       def previous_definition
-        version_helper.definition_for_version(previous_version, :function)
+        version_helper.definition_for_version(version: previous_version, type: :function)
       end
 
       def updating_existing_function?

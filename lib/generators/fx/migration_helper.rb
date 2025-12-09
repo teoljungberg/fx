@@ -18,15 +18,15 @@ module Fx
         end
       end
 
-      def update_migration_class_name(object_type, class_name, version)
+      def update_migration_class_name(object_type:, class_name:, version:)
         "Update#{object_type.capitalize}#{class_name}ToVersion#{version}"
       end
 
       def migration_template_info(
-        object_type,
-        file_name,
-        updating_existing,
-        version
+        object_type:,
+        file_name:,
+        updating_existing:,
+        version:
       )
         if updating_existing
           {
