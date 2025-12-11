@@ -13,12 +13,20 @@ RSpec.configure do |config|
 
   DatabaseCleaner.strategy = :transaction
 
-  config.around(:each, db: true) do |example|
-    ActiveRecord::Base.connection.execute("SET search_path TO DEFAULT;")
+  config.define_derived_metadata(file_path: %r{spec/(fx|features)/}) do |metadata|
+    metadata[:db] = true
+  end
 
-    DatabaseCleaner.start
+  config.before(:suite) do
+    DatabaseReset.call
+  end
+
+  config.around(:each, db: true) do |example|
+    DatabaseReset.call
+
     example.run
-    DatabaseCleaner.clean
+
+    DatabaseReset.call
   end
 
   unless defined?(silence_stream)

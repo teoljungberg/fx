@@ -5,7 +5,11 @@ ENV["RAILS_ENV"] = "test"
 RSpec.configure do |config|
   config.around(:each) do |example|
     Dir.chdir("spec/dummy") do
+      DatabaseReset.call
+
       example.run
+
+      DatabaseReset.call
     end
   end
 
@@ -24,6 +28,7 @@ RSpec.configure do |config|
   config.after(:suite) do
     Dir.chdir("spec/dummy") do
       ActiveRecord::Base.connection.disconnect!
+      DatabaseReset.call
       system [
         "git add -A",
         "git reset --hard HEAD 1>/dev/null",
@@ -54,9 +59,5 @@ RSpec.configure do |config|
 
   def verify_identical_definitions(def_a, def_b)
     successfully "cmp #{def_a} #{def_b}"
-  end
-
-  def execute(command)
-    ActiveRecord::Base.connection.execute(command).first
   end
 end
