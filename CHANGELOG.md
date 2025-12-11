@@ -7,7 +7,11 @@ changelog, see the [commits] for each version via the version links.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.9.0..HEAD
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.0..HEAD
+
+## [0.10.0]
+
+[0.10.0]: https://github.com/teoljungberg/fx/compare/v0.9.0...v0.10.0
 
 - Scope functions and triggers to schema search path (#168)
 - Ensure multi-schema dumping in Rails 8.1.0 does not dump the same objects for
