@@ -10,17 +10,26 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.9.0..HEAD
 
 - Scope functions and triggers to schema search path (#168)
-- Require Ruby >= 3.2 (#166)
-- Add Ruby 3.4 to the test matrix (#161)
-- Require Ruby >= 3.1 (#162)
-- Drop EOL Ruby versions (3.0) (#162)
-- Drop EOL Rails versions (7.0) (#162)
-- Add Rails 8.1 to the test matrix (#175)
 - Ensure multi-schema dumping in Rails 8.1.0 does not dump the same objects for
   all schemas (#177)
-- Drop Rails 7.1 due to EOL (#176)
-- YARD documentation improvements (#179)
-- Extract `QueryExecutor` to remove duplication (#182)
+- Require Ruby >= 3.2 (#166)
+- Require Ruby >= 3.1 (#162)
+- New version support
+  - Add Rails 8.1 to the test matrix (#175)
+  - Add Ruby 3.4 to the test matrix (#161)
+- Removed version support
+  - Drop Rails 7.1 due to EOL (#176)
+  - Drop EOL Ruby versions (3.0) (#162)
+  - Drop EOL Rails versions (7.0) (#162)
+- Internal refactorings / improvements
+  - Extract validation methods in `Statements` module (#184)
+  - Refactor generators with helper classes and improvements (#183)
+  - Extract `QueryExecutor` to remove duplication (#182)
+  - Extract PostgreSQL version constants (#181)
+  - YARD documentation improvements (#179)
+  - Ensure fx has been loaded (#173)
+  - Replace ammeter (#172)
+  - Remove teardown phase (#171)
 
 ## [0.9.0]
 
