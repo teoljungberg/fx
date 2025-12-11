@@ -9,6 +9,9 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.0..HEAD
 
+- Refactor Statements module to use explicit keyword arguments instead of `**options` hash
+- Update CommandRecorder to use `ruby2_keywords` for proper argument forwarding, following Rails' migration pattern
+
 ## [0.10.0]
 
 [0.10.0]: https://github.com/teoljungberg/fx/compare/v0.9.0...v0.10.0

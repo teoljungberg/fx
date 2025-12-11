@@ -26,10 +26,7 @@ module Fx
     #     $$ LANGUAGE plpgsql;
     #   SQL
     #
-    def create_function(name, options = {})
-      version = options.fetch(:version, 1)
-      sql_definition = options[:sql_definition]
-
+    def create_function(name, version: 1, sql_definition: nil, revert_to_version: nil)
       validate_version_or_sql_definition_present!(version, sql_definition)
       sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
 
@@ -47,7 +44,7 @@ module Fx
     # @example Drop a function, rolling back to version 2 on rollback
     #   drop_function(:uppercase_users_name, revert_to_version: 2)
     #
-    def drop_function(name, options = {})
+    def drop_function(name, revert_to_version: nil)
       Fx.database.drop_function(name)
     end
 
@@ -80,10 +77,7 @@ module Fx
     #     $$ LANGUAGE plpgsql;
     #   SQL
     #
-    def update_function(name, options = {})
-      version = options[:version]
-      sql_definition = options[:sql_definition]
-
+    def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil)
       validate_version_or_sql_definition_present!(version, sql_definition)
 
       sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
@@ -113,10 +107,7 @@ module Fx
     #         EXECUTE FUNCTION uppercase_users_name();
     #    SQL
     #
-    def create_trigger(name, options = {})
-      version = options[:version]
-      sql_definition = options[:sql_definition]
-
+    def create_trigger(name, version: nil, sql_definition: nil, on: nil, revert_to_version: nil)
       validate_version_and_sql_definition_exclusive!(version, sql_definition)
 
       version ||= 1
@@ -139,8 +130,7 @@ module Fx
     # @example Drop a trigger, rolling back to version 3 on rollback
     #   drop_trigger(:log_inserts, on: :users, revert_to_version: 3)
     #
-    def drop_trigger(name, options = {})
-      on = options.fetch(:on)
+    def drop_trigger(name, on:, revert_to_version: nil)
       Fx.database.drop_trigger(name, on: on)
     end
 
@@ -176,17 +166,9 @@ module Fx
     #         EXECUTE FUNCTION uppercase_users_name();
     #    SQL
     #
-    def update_trigger(name, options = {})
-      version = options[:version]
-      on = options[:on]
-      sql_definition = options[:sql_definition]
-
+    def update_trigger(name, on:, version: nil, sql_definition: nil, revert_to_version: nil)
       validate_version_or_sql_definition_present!(version, sql_definition)
       validate_version_and_sql_definition_exclusive!(version, sql_definition)
-
-      if on.nil?
-        raise ArgumentError, "on is required"
-      end
 
       sql_definition = resolve_sql_definition(sql_definition, name, version, :trigger)
 
