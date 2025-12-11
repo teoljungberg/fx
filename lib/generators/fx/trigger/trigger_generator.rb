@@ -65,10 +65,6 @@ module Fx
           end
         end
 
-        def active_record_migration_class
-          migration_helper.active_record_migration_class
-        end
-
         def formatted_name
           NameHelper.format_for_migration(singular_name)
         end
