@@ -5,32 +5,33 @@ ENV["RAILS_ENV"] = "test"
 RSpec.configure do |config|
   config.around(:each) do |example|
     Dir.chdir("spec/dummy") do
+      reset_dummy_db!
       example.run
+      reset_dummy_db!
     end
   end
 
   config.before(:suite) do
     Dir.chdir("spec/dummy") do
-      system <<~CMD
-        git init -b master 1>/dev/null &&
-        git config user.email "fx@example.com" &&
-        git config user.name "Fx" &&
-        git add -A &&
-        git commit --no-gpg-sign --message 'initial' 1>/dev/null
-      CMD
+      system [
+        "git init -b master 1>/dev/null",
+        "git config user.email 'fx@example.com'",
+        "git config user.name 'Fx'",
+        "git add -A",
+        "git commit --no-gpg-sign --message 'initial' 1>/dev/null"
+      ].join(" && ")
     end
   end
 
   config.after(:suite) do
     Dir.chdir("spec/dummy") do
       ActiveRecord::Base.connection.disconnect!
-      system <<~CMD
-        echo &&
-        rake db:environment:set db:drop db:create 1>/dev/null &&
-        git add -A &&
-        git reset --hard HEAD 1>/dev/null &&
-        rm -rf .git/ 1>/dev/null
-      CMD
+      reset_dummy_db!
+      system [
+        "git add -A",
+        "git reset --hard HEAD 1>/dev/null",
+        "rm -rf .git/ 1>/dev/null"
+      ].join(" && ")
     end
   end
 
@@ -60,5 +61,12 @@ RSpec.configure do |config|
 
   def execute(command)
     ActiveRecord::Base.connection.execute(command).first
+  end
+
+  def reset_dummy_db!
+    ActiveRecord::Base.connection.execute("SET search_path TO DEFAULT;")
+    ActiveRecord::Base.connection.execute("DROP SCHEMA IF EXISTS public CASCADE;")
+    ActiveRecord::Base.connection.execute("CREATE SCHEMA public;")
+    ActiveRecord::Base.connection.schema_search_path = "public"
   end
 end

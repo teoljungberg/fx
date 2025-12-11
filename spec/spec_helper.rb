@@ -13,6 +13,17 @@ RSpec.configure do |config|
 
   DatabaseCleaner.strategy = :transaction
 
+  config.define_derived_metadata(file_path: %r{spec/(fx|features)/}) do |metadata|
+    metadata[:db] = true
+  end
+
+  config.before(:suite) do
+    connection = ActiveRecord::Base.connection
+    connection.execute("DROP SCHEMA IF EXISTS public CASCADE;")
+    connection.execute("CREATE SCHEMA public;")
+    connection.schema_search_path = "public"
+  end
+
   config.around(:each, db: true) do |example|
     ActiveRecord::Base.connection.execute("SET search_path TO DEFAULT;")
 
