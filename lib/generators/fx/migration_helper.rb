@@ -10,14 +10,6 @@ module Fx
         !should_create_migration?
       end
 
-      def active_record_migration_class
-        if ActiveRecord::Migration.respond_to?(:current_version)
-          "ActiveRecord::Migration[#{ActiveRecord::Migration.current_version}]"
-        else
-          "ActiveRecord::Migration"
-        end
-      end
-
       def update_migration_class_name(object_type:, class_name:, version:)
         "Update#{object_type.capitalize}#{class_name}ToVersion#{version}"
       end

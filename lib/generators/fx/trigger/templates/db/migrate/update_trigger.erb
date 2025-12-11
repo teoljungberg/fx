@@ -1,4 +1,4 @@
-class <%= migration_class_name %> < <%= active_record_migration_class %>
+class <%= migration_class_name %> < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
   def change
     update_trigger <%= formatted_name %>, on: <%= formatted_table_name %>, version: <%= version %>, revert_to_version: <%= previous_version %>
   end

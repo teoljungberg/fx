@@ -16,31 +16,6 @@ RSpec.describe Fx::Generators::MigrationHelper do
     end
   end
 
-  describe "#active_record_migration_class" do
-    it "returns versioned migration class when current_version is available" do
-      allow(ActiveRecord::Migration).to receive(:current_version)
-        .and_return(7.0)
-
-      helper = described_class.new({})
-
-      expect(helper.active_record_migration_class).to eq(
-        "ActiveRecord::Migration[7.0]"
-      )
-    end
-
-    it "returns base migration class when current_version is not available" do
-      allow(ActiveRecord::Migration).to receive(:respond_to?)
-        .with(:current_version)
-        .and_return(false)
-
-      helper = described_class.new({})
-
-      expect(helper.active_record_migration_class).to eq(
-        "ActiveRecord::Migration"
-      )
-    end
-  end
-
   describe "#update_migration_class_name" do
     it "generates correct class name for functions" do
       helper = described_class.new({})
