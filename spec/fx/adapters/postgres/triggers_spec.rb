@@ -27,7 +27,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
             EXECUTE FUNCTION uppercase_users_name();
       SQL
 
-      triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
+      triggers = Fx::Adapters::Postgres::Triggers.all(connection)
 
       first = triggers.first
       expect(triggers.size).to eq(1)
@@ -40,7 +40,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
       connection.execute "CREATE SCHEMA IF NOT EXISTS other;"
       connection.execute "SET search_path = 'other';"
 
-      triggers = Fx::Adapters::Postgres::Triggers.new(connection).all
+      triggers = Fx::Adapters::Postgres::Triggers.all(connection)
 
       expect(triggers).to be_empty
     end
