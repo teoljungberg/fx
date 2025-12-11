@@ -227,7 +227,7 @@ module Fx
         when :trigger
           Fx::Definition.trigger(name: name, version: version)
         else
-          raise ArgumentError, "Unknown type: #{type}. Must be :function or :trigger"
+          raise ArgumentError, "Unknown type: #{type}. Must be :function or :trigger", caller
         end
 
       definition.to_sql
