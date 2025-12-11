@@ -1,4 +1,4 @@
-class <%= migration_class_name %> < <%= activerecord_migration_class %>
+class <%= migration_class_name %> < <%= active_record_migration_class %>
   def change
     create_trigger <%= formatted_name %>, on: <%= formatted_table_name %>
   end

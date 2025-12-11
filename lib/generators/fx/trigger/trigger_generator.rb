@@ -1,5 +1,8 @@
 require "rails/generators"
 require "rails/generators/active_record"
+require "generators/fx/version_helper"
+require "generators/fx/migration_helper"
+require "generators/fx/name_helper"
 
 module Fx
   module Generators
@@ -10,31 +13,31 @@ module Fx
       source_root File.expand_path("../templates", __FILE__)
       argument :table_name, type: :hash, required: true
 
+      DEFINITION_PATH = %w[db triggers].freeze
+
       class_option :migration, type: :boolean
 
       def create_triggers_directory
-        unless trigger_definition_path.exist?
-          empty_directory(trigger_definition_path)
-        end
+        return if trigger_definition_path.exist?
+
+        empty_directory(trigger_definition_path)
       end
 
       def create_trigger_definition
-        create_file definition.path
+        create_file(definition.path)
       end
 
       def create_migration_file
-        return if skip_migration_creation?
-        if updating_existing_trigger?
-          migration_template(
-            "db/migrate/update_trigger.erb",
-            "db/migrate/update_trigger_#{file_name}_to_version_#{version}.rb"
-          )
-        else
-          migration_template(
-            "db/migrate/create_trigger.erb",
-            "db/migrate/create_trigger_#{file_name}.rb"
-          )
-        end
+        return if migration_helper.skip_creation?
+
+        template_info = migration_helper.migration_template_info(
+          object_type: :trigger,
+          file_name: file_name,
+          updating_existing: version_helper.updating_existing?,
+          version: version_helper.current_version
+        )
+
+        migration_template(template_info[:template], template_info[:filename])
       end
 
       def self.next_migration_number(dir)
@@ -43,84 +46,61 @@ module Fx
 
       no_tasks do
         def previous_version
-          @_previous_version ||= Dir.entries(trigger_definition_path)
-            .map { |name| version_regex.match(name).try(:[], "version").to_i }
-            .max
+          version_helper.previous_version
         end
 
         def version
-          @_version ||= previous_version.next
+          version_helper.current_version
         end
 
         def migration_class_name
-          if updating_existing_trigger?
-            "UpdateTrigger#{class_name}ToVersion#{version}"
+          if version_helper.updating_existing?
+            migration_helper.update_migration_class_name(
+              object_type: :trigger,
+              class_name: class_name,
+              version: version
+            )
           else
             super
           end
         end
 
-        def activerecord_migration_class
-          if ActiveRecord::Migration.respond_to?(:current_version)
-            "ActiveRecord::Migration[#{ActiveRecord::Migration.current_version}]"
-          else
-            "ActiveRecord::Migration"
-          end
+        def active_record_migration_class
+          migration_helper.active_record_migration_class
         end
 
         def formatted_name
-          if singular_name.include?(".")
-            "\"#{singular_name}\""
-          else
-            ":#{singular_name}"
-          end
+          NameHelper.format_for_migration(singular_name)
         end
 
         def formatted_table_name
-          name = table_name["table_name"] || table_name["on"]
-
-          if name.nil?
-            raise(
-              ArgumentError,
-              "Either `table_name:NAME` or `on:NAME` must be specified"
-            )
-          end
-
-          if name.include?(".")
-            "\"#{name}\""
-          else
-            ":#{name}"
-          end
+          NameHelper.format_table_name_from_hash(table_name)
         end
       end
 
       private
 
-      def version_regex
-        /\A#{file_name}_v(?<version>\d+)\.sql\z/
+      def trigger_definition_path
+        @_trigger_definition_path ||= Rails.root.join(*DEFINITION_PATH)
       end
 
-      def updating_existing_trigger?
-        previous_version > 0
+      def version_helper
+        @_version_helper ||= Fx::Generators::VersionHelper.new(
+          file_name: file_name,
+          definition_path: trigger_definition_path
+        )
+      end
+
+      def migration_helper
+        @_migration_helper ||= Fx::Generators::MigrationHelper.new(options)
       end
 
       def definition
-        Fx::Definition.trigger(name: file_name, version: version)
+        version_helper.definition_for_version(version: version, type: :trigger)
       end
 
-      def trigger_definition_path
-        @_trigger_definition_path ||= Rails.root.join("db", "triggers")
-      end
-
-      # Skip creating migration file if:
-      #   - migrations option is nil or false
-      def skip_migration_creation?
-        !migration
-      end
-
-      # True unless explicitly false
-      def migration
-        options[:migration] != false
+      def updating_existing_trigger?
+        version_helper.updating_existing?
       end
     end
   end
