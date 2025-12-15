@@ -12,6 +12,6 @@ module Dummy
     config.eager_load = false
     config.active_support.deprecation = :stderr
 
-    config.load_defaults 7.0
+    config.load_defaults 7.2
   end
 end
