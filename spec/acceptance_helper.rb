@@ -60,4 +60,8 @@ RSpec.configure do |config|
   def verify_identical_definitions(def_a, def_b)
     successfully "cmp #{def_a} #{def_b}"
   end
+
+  def execute(command)
+    ActiveRecord::Base.connection.execute(command).first
+  end
 end
