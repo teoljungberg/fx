@@ -101,14 +101,6 @@ module Fx
         @options ||= args[1] || {}
       end
 
-      def keyword_hash(hash)
-        if Hash.respond_to?(:ruby2_keywords_hash)
-          Hash.ruby2_keywords_hash(hash)
-        else
-          hash
-        end
-      end
-
       def options_for_revert
         opts = options.clone.tap do |revert_options|
           revert_options[:version] = revert_to_version
@@ -116,6 +108,14 @@ module Fx
         end
 
         keyword_hash(opts)
+      end
+
+      def keyword_hash(hash)
+        if Hash.respond_to?(:ruby2_keywords_hash)
+          Hash.ruby2_keywords_hash(hash)
+        else
+          hash
+        end
       end
     end
     private_constant :Arguments
