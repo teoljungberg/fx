@@ -1,5 +1,4 @@
 ENV["RAILS_ENV"] = "test"
-require "database_cleaner"
 
 require File.expand_path("../dummy/config/environment", __FILE__)
 Dir["spec/support/**/*.rb"].sort.each { |file| load file }
@@ -10,8 +9,6 @@ require "fx"
 RSpec.configure do |config|
   config.order = "random"
   config.disable_monkey_patching!
-
-  DatabaseCleaner.strategy = :transaction
 
   config.define_derived_metadata(file_path: %r{spec/(fx|features)/}) do |metadata|
     metadata[:db] = true

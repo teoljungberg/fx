@@ -155,7 +155,7 @@ RSpec.describe Fx::SchemaDumper, :db do
     expect(output.scan("create_trigger :test_public_trigger").size).to eq(1)
     expect(output.scan("create_function :test_schema_func").size).to eq(1)
     expect(output.scan("create_trigger :test_schema_trigger").size).to eq(1)
-
+  ensure
     connection.schema_search_path = "public"
   end
 
