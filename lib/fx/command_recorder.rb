@@ -57,13 +57,13 @@ module Fx
 
     private
 
-    MESSAGE_IRREVERSIBLE = "%<method>s is reversible only if given a `revert_to_version`".freeze
+    MESSAGE_IRREVERSIBLE = "`%s` is reversible only if given a `revert_to_version`".freeze
 
     def perform_inversion(method, args)
-      arguments = Fx::CommandRecorder::Arguments.new(args)
+      arguments = Arguments.new(args)
 
       if arguments.revert_to_version.nil?
-        raise ActiveRecord::IrreversibleMigration, format(MESSAGE_IRREVERSIBLE % {method: method})
+        raise ActiveRecord::IrreversibleMigration, format(MESSAGE_IRREVERSIBLE, method)
       end
 
       [method, arguments.invert_version.to_a]
@@ -87,7 +87,7 @@ module Fx
       end
 
       def invert_version
-        Arguments.new([function, options_for_revert])
+        self.class.new([function, options_for_revert])
       end
 
       def to_a
