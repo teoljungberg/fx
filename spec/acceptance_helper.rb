@@ -11,26 +11,25 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     Dir.chdir("spec/dummy") do
-      system <<~CMD
-        git init -b master 1>/dev/null &&
-        git config user.email "fx@example.com" &&
-        git config user.name "Fx" &&
-        git add -A &&
-        git commit --no-gpg-sign --message 'initial' 1>/dev/null
-      CMD
+      system [
+        "git init -b master 1>/dev/null",
+        "git config user.email 'fx@example.com'",
+        "git config user.name 'Fx'",
+        "git add -A",
+        "git commit --no-gpg-sign --message 'initial' 1>/dev/null"
+      ].join(" && ")
     end
   end
 
   config.after(:suite) do
     Dir.chdir("spec/dummy") do
       ActiveRecord::Base.connection.disconnect!
-      system <<~CMD
-        echo &&
-        rake db:environment:set db:drop db:create 1>/dev/null &&
-        git add -A &&
-        git reset --hard HEAD 1>/dev/null &&
-        rm -rf .git/ 1>/dev/null
-      CMD
+      DatabaseReset.call
+      system [
+        "git add -A",
+        "git reset --hard HEAD 1>/dev/null",
+        "rm -rf .git/ 1>/dev/null"
+      ].join(" && ")
     end
   end
 
