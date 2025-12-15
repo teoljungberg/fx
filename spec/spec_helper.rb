@@ -1,5 +1,4 @@
 ENV["RAILS_ENV"] = "test"
-require "database_cleaner"
 
 require File.expand_path("../dummy/config/environment", __FILE__)
 Dir["spec/support/**/*.rb"].sort.each { |file| load file }
@@ -11,14 +10,20 @@ RSpec.configure do |config|
   config.order = "random"
   config.disable_monkey_patching!
 
-  DatabaseCleaner.strategy = :transaction
+  config.define_derived_metadata(file_path: %r{spec/(fx|features)/}) do |metadata|
+    metadata[:db] = true
+  end
+
+  config.before(:suite) do
+    DatabaseReset.call
+  end
 
   config.around(:each, db: true) do |example|
-    ActiveRecord::Base.connection.execute("SET search_path TO DEFAULT;")
+    DatabaseReset.call
 
-    DatabaseCleaner.start
     example.run
-    DatabaseCleaner.clean
+
+    DatabaseReset.call
   end
 
   unless defined?(silence_stream)

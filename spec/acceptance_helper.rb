@@ -5,7 +5,11 @@ ENV["RAILS_ENV"] = "test"
 RSpec.configure do |config|
   config.around(:each) do |example|
     Dir.chdir("spec/dummy") do
+      DatabaseReset.call
+
       example.run
+
+      DatabaseReset.call
     end
   end
 
@@ -24,6 +28,7 @@ RSpec.configure do |config|
   config.after(:suite) do
     Dir.chdir("spec/dummy") do
       ActiveRecord::Base.connection.disconnect!
+      DatabaseReset.call
       system [
         "git add -A",
         "git reset --hard HEAD 1>/dev/null",
