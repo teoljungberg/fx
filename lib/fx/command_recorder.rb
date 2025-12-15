@@ -74,15 +74,15 @@ module Fx
       end
 
       def function
-        args[0]
+        args.fetch(0)
       end
 
       def version
-        options[:version]
+        options.fetch(:version)
       end
 
       def revert_to_version
-        options[:revert_to_version]
+        options.fetch(:revert_to_version, nil)
       end
 
       def invert_version
@@ -98,7 +98,11 @@ module Fx
       attr_reader :args
 
       def options
+<<<<<<< HEAD
         @options ||= args[1] || {}
+=======
+        @options ||= args.fetch(1, {}).dup
+>>>>>>> cc4da33 (Use attr_reader + .fetch)
       end
 
       def options_for_revert
