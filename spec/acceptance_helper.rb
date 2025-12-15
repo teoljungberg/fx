@@ -24,7 +24,6 @@ RSpec.configure do |config|
   config.after(:suite) do
     Dir.chdir("spec/dummy") do
       ActiveRecord::Base.connection.disconnect!
-      DatabaseReset.call
       system [
         "git add -A",
         "git reset --hard HEAD 1>/dev/null",
