@@ -14,13 +14,13 @@ module Fx
 
     def initialize(name:, version:, type:)
       @name = name
-      @version = version.to_i
+      @version_number = version.to_i
       @type = type
     end
 
     def to_sql
       content = File.read(find_file || full_path)
-      raise "Define #{@type} in #{path} before migrating." if content.empty?
+      raise "Define #{type} in #{path} before migrating." if content.empty?
 
       content
     end
@@ -30,17 +30,19 @@ module Fx
     end
 
     def path
-      @_path ||= File.join("db", @type.pluralize, filename)
+      @_path ||= File.join("db", type.pluralize, filename)
     end
 
     def version
-      @version.to_s.rjust(2, "0")
+      version_number.to_s.rjust(2, "0")
     end
 
     private
 
+    attr_reader :name, :version_number, :type
+
     def filename
-      @_filename ||= "#{@name}_v#{version}.sql"
+      @_filename ||= "#{name}_v#{version}.sql"
     end
 
     def find_file
