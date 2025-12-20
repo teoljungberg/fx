@@ -68,7 +68,7 @@ module Fx
       end
 
       def function
-        @args[0]
+        args[0]
       end
 
       def version
@@ -84,13 +84,15 @@ module Fx
       end
 
       def to_a
-        @args.to_a
+        args.to_a
       end
 
       private
 
+      attr_reader :args
+
       def options
-        @options ||= @args[1] || {}
+        @options ||= args[1] || {}
       end
 
       def options_for_revert
