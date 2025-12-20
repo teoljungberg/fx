@@ -99,11 +99,7 @@ module Fx
       attr_reader :args
 
       def options
-<<<<<<< HEAD
-        @options ||= args[1] || {}
-=======
         @options ||= args.fetch(1, {}).dup
->>>>>>> cc4da33 (Use attr_reader + .fetch)
       end
 
       def options_for_revert
