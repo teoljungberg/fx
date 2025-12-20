@@ -47,7 +47,7 @@ module Fx
       #
       # @return [Array<Fx::Function>]
       def functions
-        Functions.all(connection)
+        Fx::Adapters::Postgres::Functions.all(connection)
       end
 
       # Returns an array of triggers in the database.
@@ -57,7 +57,7 @@ module Fx
       #
       # @return [Array<Fx::Trigger>]
       def triggers
-        Triggers.all(connection)
+        Fx::Adapters::Postgres::Triggers.all(connection)
       end
 
       # Creates a function in the database.
@@ -152,7 +152,7 @@ module Fx
       delegate :execute, to: :connection
 
       def connection
-        Connection.new(connectable.connection)
+        Fx::Adapters::Postgres::Connection.new(connectable.connection)
       end
     end
   end

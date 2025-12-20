@@ -30,7 +30,7 @@ module Fx
         #
         # @return [Array<Fx::Trigger>]
         def self.all(connection)
-          QueryExecutor.call(
+          Fx::Adapters::Postgres::QueryExecutor.call(
             connection: connection,
             query: TRIGGERS_WITH_DEFINITIONS_QUERY,
             model_class: Fx::Trigger

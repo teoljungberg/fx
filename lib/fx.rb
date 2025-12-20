@@ -28,7 +28,7 @@ module Fx
 
   # @return [Fx::Configuration] F(x)'s current configuration
   def self.configuration
-    @_configuration ||= Configuration.new
+    @_configuration ||= Fx::Configuration.new
   end
 
   # Set F(x)'s configuration
