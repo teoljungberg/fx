@@ -10,13 +10,13 @@ jobs:
   tests:
     name: Ruby ${{ matrix.ruby }}, Rails ${{ matrix.rails }}
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.ruby == 'head' }}
 
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4"]
+        ruby: ["3.2", "3.3", "3.4", "head"]
         rails: ["7.2", "8.0", "8.1"]
-        continue-on-error: [false]
 
     services:
       postgres:
