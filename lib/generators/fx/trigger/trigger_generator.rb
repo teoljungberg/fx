@@ -66,11 +66,11 @@ module Fx
         end
 
         def formatted_name
-          NameHelper.format_for_migration(singular_name)
+          Fx::Generators::NameHelper.format_for_migration(singular_name)
         end
 
         def formatted_table_name
-          NameHelper.format_table_name_from_hash(table_name)
+          Fx::Generators::NameHelper.format_table_name_from_hash(table_name)
         end
       end
 

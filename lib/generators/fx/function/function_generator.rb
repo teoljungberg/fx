@@ -72,7 +72,7 @@ module Fx
         end
 
         def formatted_name
-          NameHelper.format_for_migration(singular_name)
+          Fx::Generators::NameHelper.format_for_migration(singular_name)
         end
       end
 
