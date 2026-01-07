@@ -9,6 +9,12 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.0..HEAD
 
+- Add PostgreSQL versioning policy (#180)
+  - Officially support PostgreSQL 14, 15, 16, 17, 18
+  - Follow PostgreSQL's 5-year support window
+  - Add PostgreSQL 18 to CI test matrix
+  - Document policy in README and gemspec metadata
+
 ## [0.10.0]
 
 [0.10.0]: https://github.com/teoljungberg/fx/compare/v0.9.0...v0.10.0

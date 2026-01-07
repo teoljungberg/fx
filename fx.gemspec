@@ -18,7 +18,8 @@ Gem::Specification.new do |spec|
     "bug_tracker_uri" => "#{spec.homepage}/issues",
     "changelog_uri" => "#{spec.homepage}/blob/v#{spec.version}/CHANGELOG.md",
     "homepage_uri" => spec.homepage,
-    "source_code_uri" => spec.homepage
+    "source_code_uri" => spec.homepage,
+    "postgresql_versions" => "14, 15, 16, 17, 18"
   }
 
   spec.files = `git ls-files -z`.split("\x0")
