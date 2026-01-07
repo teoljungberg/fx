@@ -8,18 +8,23 @@ on:
 
 jobs:
   tests:
-    name: Ruby ${{ matrix.ruby }}, Rails ${{ matrix.rails }}
+    name: "${{ matrix.ruby }} / rails ${{ matrix.rails }} / postgres ${{ matrix.database.version }}"
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4", "4.0"]
-        rails: ["7.2", "8.0", "8.1"]
+        ruby: ["ruby-3.2", "ruby-4.0"]
+        rails: ["7.2", "8.1"]
+        database:
+          - image: "postgres"
+            version: "14"
+          - image: "postgres"
+            version: "18"
 
     services:
       postgres:
-        image: postgres:14
+        image: ${{ matrix.database.image }}:${{ matrix.database.version }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_HOST_AUTH_METHOD: trust
@@ -34,9 +39,10 @@ jobs:
 
     env:
       POSTGRES_USER: postgres
+      RAILS_VERSION: ${{ matrix.rails }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1

@@ -114,6 +114,19 @@ column value instead of a plain string.
 - [Oracle](https://github.com/zygotecnologia/fx-oracle-adapter)
 - [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter)
 
+## PostgreSQL Version Support
+
+F(x) follows [PostgreSQL's versioning policy], supporting all major versions
+within their 5-year support window.
+
+**Currently supported:** PostgreSQL 14, 15, 16, 17, 18
+
+When a PostgreSQL version reaches end-of-life, support will be dropped in the
+next minor release of F(x). Older versions may continue to work but are not
+tested or guaranteed.
+
+[PostgreSQL's versioning policy]: https://www.postgresql.org/support/versioning/
+
 ## Contributing
 
 See [contributing](CONTRIBUTING.md) for more details.

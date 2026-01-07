@@ -183,4 +183,46 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       expect(result).to be(false)
     end
   end
+
+  describe "#supported_postgres_version?" do
+    it "returns true for PostgreSQL 14 (minimum supported)" do
+      adapter = Fx::Adapters::Postgres.new
+      connection = adapter.send(:connection)
+      allow(connection).to receive(:server_version).and_return(14_00_00)
+
+      result = connection.supported_postgres_version?
+
+      expect(result).to be(true)
+    end
+
+    it "returns true for PostgreSQL 18 (latest supported)" do
+      adapter = Fx::Adapters::Postgres.new
+      connection = adapter.send(:connection)
+      allow(connection).to receive(:server_version).and_return(18_00_00)
+
+      result = connection.supported_postgres_version?
+
+      expect(result).to be(true)
+    end
+
+    it "returns false for PostgreSQL 13 (EOL)" do
+      adapter = Fx::Adapters::Postgres.new
+      connection = adapter.send(:connection)
+      allow(connection).to receive(:server_version).and_return(13_00_00)
+
+      result = connection.supported_postgres_version?
+
+      expect(result).to be(false)
+    end
+
+    it "returns false for PostgreSQL 10" do
+      adapter = Fx::Adapters::Postgres.new
+      connection = adapter.send(:connection)
+      allow(connection).to receive(:server_version).and_return(10_00_00)
+
+      result = connection.supported_postgres_version?
+
+      expect(result).to be(false)
+    end
+  end
 end
