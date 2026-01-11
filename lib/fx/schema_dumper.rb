@@ -20,6 +20,8 @@ module Fx
     def functions(stream)
       dumpable_functions_in_database = Fx.database.functions
 
+      return unless dumpable_functions_in_database.any?
+
       stream.puts
 
       dumpable_functions_in_database.each_with_index do |function, index|
@@ -30,6 +32,8 @@ module Fx
 
     def triggers(stream)
       dumpable_triggers_in_database = Fx.database.triggers
+
+      return unless dumpable_triggers_in_database.any?
 
       stream.puts
 
