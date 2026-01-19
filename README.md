@@ -114,6 +114,22 @@ column value instead of a plain string.
 - [Oracle](https://github.com/zygotecnologia/fx-oracle-adapter)
 - [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter)
 
+## Version Support
+
+F(x) follows the maintenance policies of Ruby and Rails, supporting versions
+within their official maintenance windows.
+
+**Ruby:** 3.2+ ([maintenance branches])
+
+**Rails:** 7.2, 8.0, 8.1 ([maintenance policy])
+
+When a Ruby or Rails version reaches end-of-life, support will be dropped in the
+next minor release of F(x). Older versions may continue to work but are not
+tested or guaranteed.
+
+[maintenance branches]: https://www.ruby-lang.org/en/downloads/branches/
+[maintenance policy]: https://rubyonrails.org/maintenance
+
 ## Contributing
 
 See [contributing](CONTRIBUTING.md) for more details.
