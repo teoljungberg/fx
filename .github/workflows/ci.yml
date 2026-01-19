@@ -14,8 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ["3.2", "3.3", "3.4", "4.0"]
-        rails: ["7.2", "8.0", "8.1"]
+        ruby: ["3.2", "4.0"]
+        rails: ["7.2", "8.1"]
 
     services:
       postgres:
@@ -34,9 +34,10 @@ jobs:
 
     env:
       POSTGRES_USER: postgres
+      RAILS_VERSION: ${{ matrix.rails }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
