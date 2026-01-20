@@ -20,8 +20,6 @@ module Fx
     def functions(stream)
       dumpable_functions_in_database = Fx.database.functions
 
-      return if dumpable_functions_in_database.empty?
-
       dumpable_functions_in_database.each_with_index do |function, index|
         stream.puts
         stream.puts(function.to_schema)
@@ -30,8 +28,6 @@ module Fx
 
     def triggers(stream)
       dumpable_triggers_in_database = Fx.database.triggers
-
-      return if dumpable_triggers_in_database.empty?
 
       dumpable_triggers_in_database.each_with_index do |trigger, index|
         stream.puts
