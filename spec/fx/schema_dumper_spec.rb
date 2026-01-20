@@ -159,6 +159,43 @@ RSpec.describe Fx::SchemaDumper, :db do
     connection.schema_search_path = "public"
   end
 
+  it "puts a blank line before functions and triggers" do
+    connection.create_table :users do |t|
+      t.string :name
+      t.string :upper_name
+    end
+    Fx.database.create_function <<~SQL
+      CREATE OR REPLACE FUNCTION uppercase_users_name()
+      RETURNS trigger AS $$
+      BEGIN
+        NEW.upper_name = UPPER(NEW.name);
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    SQL
+    sql_definition = <<~SQL
+      CREATE TRIGGER uppercase_users_name
+          BEFORE INSERT ON users
+          FOR EACH ROW
+          EXECUTE FUNCTION uppercase_users_name();
+    SQL
+    connection.create_trigger(
+      :uppercase_users_name,
+      sql_definition: sql_definition
+    )
+    stream = StringIO.new
+    output = stream.string
+
+    dump(connection: connection, stream: stream)
+
+    debugger
+
+    # Verify blank lines before functions and triggers for readability
+    pattern = /(?<delimiter>end|SQL)\n\n  (?<statement>create_function|create_trigger)/
+    # a blank line between the table and the function, and another between the function and the trigger
+    expect(output.scan(pattern).size).to eq(2)
+  end
+
   def dump(connection:, stream:)
     if Rails.version >= "7.2"
       ActiveRecord::SchemaDumper.dump(connection.pool, stream)
