@@ -188,8 +188,6 @@ RSpec.describe Fx::SchemaDumper, :db do
 
     dump(connection: connection, stream: stream)
 
-    debugger
-
     # Verify blank lines before functions and triggers for readability
     pattern = /(?<delimiter>end|SQL)\n\n  (?<statement>create_function|create_trigger)/
     # a blank line between the table and the function, and another between the function and the trigger
