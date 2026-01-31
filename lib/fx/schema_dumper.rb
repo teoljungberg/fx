@@ -21,20 +21,16 @@ module Fx
       dumpable_functions_in_database = Fx.database.functions
 
       dumpable_functions_in_database.each do |function|
+        stream.puts
         stream.puts(function.to_schema)
       end
-
-      stream.puts if dumpable_functions_in_database.any?
     end
 
     def triggers(stream)
       dumpable_triggers_in_database = Fx.database.triggers
 
-      if dumpable_triggers_in_database.any?
-        stream.puts
-      end
-
       dumpable_triggers_in_database.each do |trigger|
+        stream.puts
         stream.puts(trigger.to_schema)
       end
     end
