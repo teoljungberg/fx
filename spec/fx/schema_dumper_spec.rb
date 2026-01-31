@@ -208,13 +208,27 @@ RSpec.describe Fx::SchemaDumper, :db do
 
     dump(connection: connection, stream: stream)
 
-    pattern = /(?<delimiter>end|SQL)\n\n  (?<statement>create_function|create_trigger)/
+    pattern = /(end|SQL)\n\n  (create_function|create_trigger)/
     # a blank line between:
     # - the table and the uppercase_users_name function,
     # - the uppercase_users_name function and the downcase_users_name function,
     # - the downcase_users_name function and the uppercase_users_name trigger,
     # - the uppercase_users_name trigger and the downcase_users_name trigger,
     expect(output.scan(pattern).size).to eq(4)
+  end
+
+  it "does not add blank lines when there are no functions or triggers" do
+    connection.create_table :users do |t|
+      t.string :name
+    end
+    stream = StringIO.new
+    output = stream.string
+
+    dump(connection: connection, stream: stream)
+
+    expect(output).not_to match(/create_function/)
+    expect(output).not_to match(/create_trigger/)
+    expect(output).not_to match(/end\n\n\nend/)
   end
 
   def dump(connection:, stream:)
