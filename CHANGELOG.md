@@ -10,6 +10,8 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
 
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
+- Add `config.function_sorter` to allow custom function ordering in
+  schema.rb (#197)
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
 

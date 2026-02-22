@@ -29,4 +29,19 @@ RSpec.describe Fx::Configuration do
 
     expect(configuration.dump_functions_at_beginning_of_schema).to eq(true)
   end
+
+  it "defaults `function_sorter` to nil" do
+    configuration = Fx::Configuration.new
+
+    expect(configuration.function_sorter).to be_nil
+  end
+
+  it "allows `function_sorter` to be set" do
+    configuration = Fx::Configuration.new
+    sorter = ->(functions) { functions.reverse }
+
+    configuration.function_sorter = sorter
+
+    expect(configuration.function_sorter).to eq(sorter)
+  end
 end

@@ -15,9 +15,18 @@ module Fx
     # @return [Boolean] Boolean
     attr_accessor :dump_functions_at_beginning_of_schema
 
+    # A callable that sorts functions before they are dumped to schema.rb.
+    # Must respond to `#call(functions)` and return a sorted array of
+    # {Fx::Function} objects.
+    #
+    # Defaults to nil (no sorting, preserves database order).
+    # @return [#call, nil] Function sorter
+    attr_accessor :function_sorter
+
     def initialize
       @database = Fx::Adapters::Postgres.new
       @dump_functions_at_beginning_of_schema = false
+      @function_sorter = nil
     end
   end
 end
