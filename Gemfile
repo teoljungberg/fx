@@ -4,8 +4,13 @@ rails_version = ENV.fetch("RAILS_VERSION", "8.1")
 
 gemspec
 
-gem "activerecord", "~> #{rails_version}.0"
-gem "railties", "~> #{rails_version}.0"
+if rails_version == "main"
+  gem "activerecord", github: "rails/rails", branch: "main"
+  gem "railties", github: "rails/rails", branch: "main"
+else
+  gem "activerecord", "~> #{rails_version}.0"
+  gem "railties", "~> #{rails_version}.0"
+end
 
 gem "bundler", ">= 1.5"
 gem "pg"

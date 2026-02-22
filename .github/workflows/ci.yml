@@ -16,6 +16,12 @@ jobs:
       matrix:
         ruby: ["3.2", "4.0"]
         rails: ["7.2", "8.1"]
+        include:
+          - ruby: "4.0"
+            rails: "main"
+            allow-failure: true
+
+    continue-on-error: ${{ matrix.allow-failure || false }}
 
     services:
       postgres:
