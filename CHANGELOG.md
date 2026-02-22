@@ -9,6 +9,9 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.1..HEAD
 
+- Remove upper bound on Rails dependency (#198)
+- Add Rails main to CI matrix
+
 ## [0.10.1]
 
 [0.10.1]: https://github.com/teoljungberg/fx/compare/v0.10.0...v0.10.1
