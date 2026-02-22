@@ -7,10 +7,15 @@ changelog, see the [commits] for each version via the version links.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.1..HEAD
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
+
+## [0.10.2]
+
+[0.10.2]: https://github.com/teoljungberg/fx/compare/v0.10.1...v0.10.2
 
 - Remove upper bound on Rails dependency (#198)
-- Add Rails main to CI matrix
+- Internal refactorings / improvements
+  - Add Rails main to CI matrix
 
 ## [0.10.1]
 
