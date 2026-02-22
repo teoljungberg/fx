@@ -18,12 +18,16 @@ module Fx
     private
 
     def functions(stream)
-      dumpable_functions_in_database = Fx.database.functions
-
-      dumpable_functions_in_database.each do |function|
+      sorted_functions(Fx.database.functions).each do |function|
         stream.puts
         stream.puts(function.to_schema)
       end
+    end
+
+    def sorted_functions(functions)
+      return functions unless (sorter = Fx.configuration.function_sorter)
+
+      sorter.call(functions)
     end
 
     def triggers(stream)
