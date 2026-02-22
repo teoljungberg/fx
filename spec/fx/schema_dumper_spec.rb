@@ -217,6 +217,38 @@ RSpec.describe Fx::SchemaDumper, :db do
     expect(output.scan(pattern).size).to eq(4)
   end
 
+  it "sorts functions by dependency when configured" do
+    sql_a = <<~SQL
+      CREATE OR REPLACE FUNCTION a()
+      RETURNS text AS $$
+      BEGIN
+          RETURN b();
+      END;
+      $$ LANGUAGE plpgsql;
+    SQL
+    sql_b = <<~SQL
+      CREATE OR REPLACE FUNCTION b()
+      RETURNS text AS $$
+      BEGIN
+          RETURN 'hello';
+      END;
+      $$ LANGUAGE plpgsql;
+    SQL
+    connection.create_function :a, sql_definition: sql_a
+    connection.create_function :b, sql_definition: sql_b
+    Fx.configuration.function_sorter = Fx::FunctionDependencySort
+    stream = StringIO.new
+    output = stream.string
+
+    dump(connection: connection, stream: stream)
+
+    expect(output).to match(
+      /create_function :b.*create_function :a/m
+    )
+  ensure
+    Fx.configuration.function_sorter = nil
+  end
+
   it "does not add blank lines when there are no functions or triggers" do
     connection.create_table :users do |t|
       t.string :name
