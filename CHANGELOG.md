@@ -7,7 +7,23 @@ changelog, see the [commits] for each version via the version links.
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.0..HEAD
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.1..HEAD
+
+## [0.10.1]
+
+[0.10.1]: https://github.com/teoljungberg/fx/compare/v0.10.0...v0.10.1
+
+- Fix spacing between functions and triggers in schema.rb (#195)
+- Remove `database_cleaner` dependency (#190)
+- Internal refactorings / improvements
+  - Improve schema dumper test coverage
+  - Use methods over instance variables (#192)
+  - Write out fully qualified path in definitions (#189)
+  - Improve test isolation with schema reset (#190)
+  - Rewrite shell command chains (#188)
+  - Inline `active_record_migration_class` (#187)
+  - Add Ruby 4.0 to CI matrix (#193)
+  - Minimize CI matrix to boundary versions (#196)
 
 ## [0.10.0]
 
