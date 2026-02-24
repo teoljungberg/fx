@@ -14,6 +14,8 @@ module Fx
     end
 
     def call
+      # Uses strongly_connected_components instead of tsort to tolerate
+      # mutually recursive functions, which are valid in PostgreSQL.
       strongly_connected_components.flatten(FLATTEN_DEPTH)
     end
 
