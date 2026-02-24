@@ -25,15 +25,15 @@ module Fx
     end
 
     def sorted_functions(functions)
-      return functions unless (sorter = Fx.configuration.function_sorter)
-
-      sorter.call(functions)
+      if (function_sorter = Fx.configuration.function_sorter)
+        function_sorter.call(functions)
+      else
+        functions
+      end
     end
 
     def triggers(stream)
-      dumpable_triggers_in_database = Fx.database.triggers
-
-      dumpable_triggers_in_database.each do |trigger|
+      Fx.database.triggers.each do |trigger|
         stream.puts
         stream.puts(trigger.to_schema)
       end
