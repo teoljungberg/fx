@@ -236,7 +236,8 @@ RSpec.describe Fx::SchemaDumper, :db do
     SQL
     connection.create_function :a, sql_definition: sql_a
     connection.create_function :b, sql_definition: sql_b
-    Fx.configuration.function_sorter = Fx::FunctionsSortByDependency
+    allow(Fx.configuration).to receive(:function_sorter)
+      .and_return(Fx::FunctionsSortByDependency)
     stream = StringIO.new
     output = stream.string
 
@@ -245,8 +246,6 @@ RSpec.describe Fx::SchemaDumper, :db do
     expect(output).to match(
       /create_function :b.*create_function :a/m
     )
-  ensure
-    Fx.configuration.function_sorter = nil
   end
 
   it "does not add blank lines when there are no functions or triggers" do
