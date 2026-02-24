@@ -1,7 +1,7 @@
 require "tsort"
 
 module Fx
-  class FunctionDependencySort
+  class FunctionsSortByDependency
     include TSort
 
     def self.call(functions)
@@ -10,6 +10,7 @@ module Fx
 
     def initialize(functions)
       @functions = functions
+      @stripped_definitions = {}
     end
 
     def sort
@@ -30,9 +31,6 @@ module Fx
     STRING_LITERAL = /'(?:[^']|'')*'/
     private_constant :STRING_LITERAL
 
-    FUNCTION_CALL = ->(name) { /\b#{Regexp.escape(name)}[ \t]*\(/i }
-    private_constant :FUNCTION_CALL
-
     attr_reader :functions
 
     def tsort_each_node(&block)
@@ -44,15 +42,19 @@ module Fx
     end
 
     def dependencies_of(function)
-      definition = strip_non_code(function.definition)
+      definition = strip_non_code(function)
 
       functions
         .reject { |other| other == function }
-        .select { |other| definition.match?(FUNCTION_CALL[other.name]) }
+        .select { |other| definition.match?(function_call_pattern(other.name)) }
     end
 
-    def strip_non_code(sql)
-      sql
+    def function_call_pattern(name)
+      /\b#{Regexp.escape(name)}[ \t]*\(/i
+    end
+
+    def strip_non_code(function)
+      @stripped_definitions[function] ||= function.definition
         .gsub(SINGLE_LINE_COMMENT, "")
         .gsub(BLOCK_COMMENT, "")
         .gsub(STRING_LITERAL, "")

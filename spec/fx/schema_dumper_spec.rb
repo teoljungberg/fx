@@ -236,7 +236,7 @@ RSpec.describe Fx::SchemaDumper, :db do
     SQL
     connection.create_function :a, sql_definition: sql_a
     connection.create_function :b, sql_definition: sql_b
-    Fx.configuration.function_sorter = Fx::FunctionDependencySort
+    Fx.configuration.function_sorter = Fx::FunctionsSortByDependency
     stream = StringIO.new
     output = stream.string
 

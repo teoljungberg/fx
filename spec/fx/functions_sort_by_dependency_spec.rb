@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Fx::FunctionDependencySort do
+RSpec.describe Fx::FunctionsSortByDependency do
   describe ".call" do
     it "orders dependencies before dependents" do
       euclidean = function("euclidean", <<~SQL)
