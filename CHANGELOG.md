@@ -12,8 +12,8 @@ changelog, see the [commits] for each version via the version links.
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
 - Add `config.function_sorter` to allow custom function ordering in
   schema.rb (#197, #200)
-- Add `Fx::FunctionDependencySort` to sort functions by dependency order
-  using TSort
+- Add `Fx::FunctionsSortByDependency` to sort functions by dependency order
+  using TSort (#201)
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
   - Simplify conditional function dumping in SchemaDumper (#200)
