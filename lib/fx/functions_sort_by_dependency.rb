@@ -14,13 +14,13 @@ module Fx
     end
 
     def call
-      strongly_connected_components.flatten(SINGLE_LEVEL)
+      strongly_connected_components.flatten(FLATTEN_DEPTH)
     end
 
     private
 
-    SINGLE_LEVEL = 1
-    private_constant :SINGLE_LEVEL
+    FLATTEN_DEPTH = 1
+    private_constant :FLATTEN_DEPTH
 
     SINGLE_LINE_COMMENT = /--[^\n]*/
     private_constant :SINGLE_LINE_COMMENT
@@ -50,14 +50,14 @@ module Fx
     end
 
     def function_call_pattern(name)
-      /\b#{Regexp.escape(name)}[ \t]*\(/i
+      /(?<![a-zA-Z0-9_])#{Regexp.escape(name)}[ \t]*\(/
     end
 
     def strip_non_code(function)
       @stripped_definitions[function] ||= function.definition
+        .gsub(STRING_LITERAL, "")
         .gsub(SINGLE_LINE_COMMENT, "")
         .gsub(BLOCK_COMMENT, "")
-        .gsub(STRING_LITERAL, "")
     end
   end
 end

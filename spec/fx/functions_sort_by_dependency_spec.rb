@@ -135,7 +135,7 @@ RSpec.describe Fx::FunctionsSortByDependency do
       expect(result).to eq([normalize_vector, normalize, norm])
     end
 
-    it "handles overloaded function calls" do
+    it "handles multiple calls to the same dependency" do
       distance = function("distance", <<~SQL)
         CREATE OR REPLACE FUNCTION distance(a float[], b float[])
         RETURNS float AS $$
@@ -204,6 +204,29 @@ RSpec.describe Fx::FunctionsSortByDependency do
       result = described_class.call([calculate, helper])
 
       expect(result).to eq([calculate, helper])
+    end
+
+    it "does not match function names preceded by word characters" do
+      process = function("process", <<~SQL)
+        CREATE OR REPLACE FUNCTION process(x integer)
+        RETURNS integer AS $$
+        BEGIN
+            RETURN preprocess(x);
+        END;
+        $$ LANGUAGE plpgsql;
+      SQL
+      preprocess = function("preprocess", <<~SQL)
+        CREATE OR REPLACE FUNCTION preprocess(x integer)
+        RETURNS integer AS $$
+        BEGIN
+            RETURN x;
+        END;
+        $$ LANGUAGE plpgsql;
+      SQL
+
+      result = described_class.call([process, preprocess])
+
+      expect(result).to eq([preprocess, process])
     end
 
     it "returns an empty array when given no functions" do
