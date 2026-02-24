@@ -4,13 +4,6 @@ module Fx
   class FunctionDependencySort
     include TSort
 
-    SINGLE_LINE_COMMENT = /--[^\n]*/
-    BLOCK_COMMENT = %r{/\*.*?\*/}m
-    STRING_LITERAL = /'(?:[^']|'')*'/
-    FUNCTION_CALL = ->(name) { /\b#{Regexp.escape(name)}[ \t]*\(/i }
-
-    private_constant :SINGLE_LINE_COMMENT, :BLOCK_COMMENT, :STRING_LITERAL, :FUNCTION_CALL
-
     def self.call(functions)
       new(functions).sort
     end
@@ -20,10 +13,25 @@ module Fx
     end
 
     def sort
-      strongly_connected_components.flatten(1)
+      strongly_connected_components.flatten(SINGLE_LEVEL)
     end
 
     private
+
+    SINGLE_LEVEL = 1
+    private_constant :SINGLE_LEVEL
+
+    SINGLE_LINE_COMMENT = /--[^\n]*/
+    private_constant :SINGLE_LINE_COMMENT
+
+    BLOCK_COMMENT = %r{/\*.*?\*/}m
+    private_constant :BLOCK_COMMENT
+
+    STRING_LITERAL = /'(?:[^']|'')*'/
+    private_constant :STRING_LITERAL
+
+    FUNCTION_CALL = ->(name) { /\b#{Regexp.escape(name)}[ \t]*\(/i }
+    private_constant :FUNCTION_CALL
 
     attr_reader :functions
 
