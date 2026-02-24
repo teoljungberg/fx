@@ -5,7 +5,7 @@ module Fx
     include TSort
 
     def self.call(functions)
-      new(functions).sort
+      new(functions).call
     end
 
     def initialize(functions)
@@ -13,7 +13,7 @@ module Fx
       @stripped_definitions = {}
     end
 
-    def sort
+    def call
       strongly_connected_components.flatten(SINGLE_LEVEL)
     end
 
