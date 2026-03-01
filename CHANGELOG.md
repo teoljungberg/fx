@@ -12,6 +12,8 @@ changelog, see the [commits] for each version via the version links.
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
+  - Default `support_drop_function_without_args` to `true`
+  - Remove duplicate command recorder specs
 
 ## [0.10.2]
 
