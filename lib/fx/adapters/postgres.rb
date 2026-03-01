@@ -91,10 +91,12 @@ module Fx
       #
       # @param name [String, Symbol] The name of the function.
       # @param sql_definition [String] The SQL schema for the function.
+      # @param arguments [String] Optional function argument types for
+      #   identifying overloaded functions (e.g. "integer, text").
       #
       # @return [void]
-      def update_function(name, sql_definition)
-        drop_function(name)
+      def update_function(name, sql_definition, arguments: nil)
+        drop_function(name, arguments: arguments)
         create_function(sql_definition)
       end
 
@@ -121,11 +123,22 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Function#drop_function}.
       #
-      # @param name [String, Symbol] The name of the function to drop
+      # @param name [String, Symbol] The name of the function to drop.
+      # @param arguments [String] Optional function argument types for
+      #   identifying overloaded functions (e.g. "integer, text"). When not
+      #   provided, the argument types are looked up automatically from
+      #   pg_proc. If multiple overloads exist, an {Fx::AmbiguousFunctionError}
+      #   is raised.
       #
       # @return [void]
-      def drop_function(name)
-        execute("DROP FUNCTION #{name};")
+      def drop_function(name, arguments: nil)
+        arguments ||= function_arguments_for(name)
+
+        if arguments
+          execute("DROP FUNCTION #{name}(#{arguments});")
+        else
+          execute("DROP FUNCTION #{name};")
+        end
       end
 
       # Drops the trigger from the database
@@ -141,11 +154,54 @@ module Fx
         execute("DROP TRIGGER #{name} ON #{on};")
       end
 
+      # The SQL query used to look up a function's argument types from pg_proc.
+      FUNCTION_ARGUMENTS_QUERY = <<~SQL.freeze
+        SELECT pg_get_function_identity_arguments(pp.oid) AS arguments
+        FROM pg_proc pp
+        JOIN pg_namespace pn ON pn.oid = pp.pronamespace
+        WHERE pp.proname = %{function_name}
+          AND pp.prokind = 'f'
+          AND %{schema_condition}
+      SQL
+      private_constant :FUNCTION_ARGUMENTS_QUERY
+
       private
 
       attr_reader :connectable
 
       delegate :execute, to: :connection
+
+      def function_arguments_for(name)
+        name_str = name.to_s
+
+        if name_str.include?(".")
+          schema, function_name = name_str.split(".", 2)
+          schema_condition = "pn.nspname = #{connection.quote(schema)}"
+        else
+          function_name = name_str
+          schema_condition = "pn.nspname = ANY(current_schemas(false))"
+        end
+
+        rows = connection.execute(
+          FUNCTION_ARGUMENTS_QUERY % {
+            function_name: connection.quote(function_name),
+            schema_condition: schema_condition
+          }
+        ).to_a
+
+        case rows.length
+        when 0
+          nil
+        when 1
+          rows.first["arguments"]
+        else
+          signatures = rows.map { |r| "#{name_str}(#{r["arguments"]})" }
+          raise Fx::AmbiguousFunctionError, <<~MSG.chomp
+            Multiple definitions for function "#{name_str}": #{signatures.join(", ")}.
+            Specify which to drop: drop_function :#{name_str}, arguments: "<argument types>"
+          MSG
+        end
+      end
 
       def connection
         Fx::Adapters::Postgres::Connection.new(connectable.connection)
