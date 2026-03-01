@@ -10,25 +10,11 @@ module Fx
       #
       # @api private
       class Connection < SimpleDelegator
-        # PostgreSQL version constants for feature support
-        POSTGRES_VERSIONS = {
-          # PostgreSQL 10.0 - introduced DROP FUNCTION without args
-          # https://www.postgresql.org/docs/10/sql-dropfunction.html
-          v10: 10_00_00
-        }.freeze
-
+        # All supported PostgreSQL versions (14+) support DROP FUNCTION
+        # without argument lists.
+        # https://www.postgresql.org/docs/10/sql-dropfunction.html
         def support_drop_function_without_args
-          server_version >= POSTGRES_VERSIONS[:v10]
-        end
-
-        private
-
-        def server_version
-          undecorated_connection.raw_connection.server_version
-        end
-
-        def undecorated_connection
-          __getobj__
+          true
         end
       end
     end
