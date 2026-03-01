@@ -14,6 +14,12 @@ require "fx/railtie"
 # F(x) adds methods `ActiveRecord::Migration` to create and manage database
 # triggers and functions in Rails applications.
 module Fx
+  class Error < StandardError; end
+
+  # Raised when dropping an overloaded function without specifying which
+  # overload to target. Pass the `arguments:` option to disambiguate.
+  class AmbiguousFunctionError < Error; end
+
   # Hooks Fx into Rails.
   #
   # Enables fx migration methods, migration reversability, and `schema.rb`
