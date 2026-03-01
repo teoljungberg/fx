@@ -116,19 +116,22 @@ column value instead of a plain string.
 
 ## Version Support
 
-F(x) follows the maintenance policies of Ruby and Rails, supporting versions
-within their official maintenance windows.
+F(x) follows the maintenance policies of Ruby, Rails, and PostgreSQL, supporting
+versions within their official maintenance windows.
 
 **Ruby:** 3.2+ ([maintenance branches])
 
 **Rails:** 7.2, 8.0, 8.1 ([maintenance policy])
 
-When a Ruby or Rails version reaches end-of-life, support will be dropped in the
-next minor release of F(x). Older versions may continue to work but are not
-tested or guaranteed.
+**PostgreSQL:** 14, 15, 16, 17, 18 ([versioning policy])
+
+When a version reaches end-of-life, support will be dropped in the next minor
+release of F(x). Older versions may continue to work but are not tested or
+guaranteed.
 
 [maintenance branches]: https://www.ruby-lang.org/en/downloads/branches/
 [maintenance policy]: https://rubyonrails.org/maintenance
+[versioning policy]: https://www.postgresql.org/support/versioning/
 
 ## Contributing
 

@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Ruby ${{ matrix.ruby }}, Rails ${{ matrix.rails }}
+    name: "ruby ${{ matrix.ruby }} / rails ${{ matrix.rails }} / postgres ${{ matrix.postgres }}"
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,16 +16,18 @@ jobs:
       matrix:
         ruby: ["3.2", "4.0"]
         rails: ["7.2", "8.1"]
+        postgres: ["14", "18"]
         include:
           - ruby: "4.0"
             rails: "main"
+            postgres: "18"
             allow-failure: true
 
     continue-on-error: ${{ matrix.allow-failure || false }}
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:${{ matrix.postgres }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_HOST_AUTH_METHOD: trust
