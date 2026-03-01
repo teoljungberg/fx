@@ -11,6 +11,10 @@ changelog, see the [commits] for each version via the version links.
 
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
 - Refactor Statements module to use explicit keyword arguments instead of `**options` hash (#186)
+- Auto-detect function argument types from `pg_proc` when dropping or updating
+  functions, fixing support for functions with parameters (#7)
+- Add `arguments:` option to `drop_function` and `update_function` for
+  targeting specific overloads of functions that share a name
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
 
