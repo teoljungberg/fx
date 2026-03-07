@@ -9,6 +9,10 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
 
+- Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
+- Internal refactorings / improvements
+  - Add PostgreSQL 18 to CI test matrix
+
 ## [0.10.2]
 
 [0.10.2]: https://github.com/teoljungberg/fx/compare/v0.10.1...v0.10.2

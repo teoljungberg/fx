@@ -125,11 +125,7 @@ module Fx
       #
       # @return [void]
       def drop_function(name)
-        if connection.support_drop_function_without_args
-          execute("DROP FUNCTION #{name};")
-        else
-          execute("DROP FUNCTION #{name}();")
-        end
+        execute("DROP FUNCTION #{name};")
       end
 
       # Drops the trigger from the database
