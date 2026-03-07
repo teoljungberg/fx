@@ -4,17 +4,17 @@ module Fx
     def create_function(*args, &block)
       record(:create_function, args, &block)
     end
-    ruby2_keywords :create_function if respond_to?(:ruby2_keywords, true)
+    ruby2_keywords :create_function
 
     def drop_function(*args, &block)
       record(:drop_function, args, &block)
     end
-    ruby2_keywords :drop_function if respond_to?(:ruby2_keywords, true)
+    ruby2_keywords :drop_function
 
     def update_function(*args, &block)
       record(:update_function, args, &block)
     end
-    ruby2_keywords :update_function if respond_to?(:ruby2_keywords, true)
+    ruby2_keywords :update_function
 
     def invert_create_function(args)
       [:drop_function, args]
@@ -31,17 +31,17 @@ module Fx
     def create_trigger(*args, &block)
       record(:create_trigger, args, &block)
     end
-    ruby2_keywords :create_trigger if respond_to?(:ruby2_keywords, true)
+    ruby2_keywords :create_trigger
 
     def drop_trigger(*args, &block)
       record(:drop_trigger, args, &block)
     end
-    ruby2_keywords :drop_trigger if respond_to?(:ruby2_keywords, true)
+    ruby2_keywords :drop_trigger
 
     def update_trigger(*args, &block)
       record(:update_trigger, args, &block)
     end
-    ruby2_keywords :update_trigger if respond_to?(:ruby2_keywords, true)
+    ruby2_keywords :update_trigger
 
     def invert_create_trigger(args)
       [:drop_trigger, args]
@@ -112,11 +112,7 @@ module Fx
       end
 
       def keyword_hash(hash)
-        if Hash.respond_to?(:ruby2_keywords_hash)
-          Hash.ruby2_keywords_hash(hash)
-        else
-          hash
-        end
+        Hash.ruby2_keywords_hash(hash)
       end
     end
     private_constant :Arguments
