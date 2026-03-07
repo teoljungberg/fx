@@ -10,6 +10,8 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
 
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
+- Refactor Statements module to use explicit keyword arguments instead of `**options` hash
+- Update CommandRecorder to use `ruby2_keywords` for proper argument forwarding, following Rails' migration pattern
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
 
@@ -36,9 +38,6 @@ changelog, see the [commits] for each version via the version links.
   - Inline `active_record_migration_class` (#187)
   - Add Ruby 4.0 to CI matrix (#193)
   - Minimize CI matrix to boundary versions (#196)
-
-- Refactor Statements module to use explicit keyword arguments instead of `**options` hash
-- Update CommandRecorder to use `ruby2_keywords` for proper argument forwarding, following Rails' migration pattern
 
 ## [0.10.0]
 
