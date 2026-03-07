@@ -13,6 +13,8 @@ changelog, see the [commits] for each version via the version links.
 - Refactor Statements module to use explicit keyword arguments instead of `**options` hash (#186)
 - Add `config.function_sorter` to allow custom function ordering in
   schema.rb (#197, #200)
+- Add `Fx::FunctionsSortByDependency` to sort functions by dependency order
+  using TSort (#201)
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
   - Simplify conditional function dumping in SchemaDumper (#200)
