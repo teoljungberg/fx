@@ -1,0 +1,95 @@
+#!/bin/sh
+#
+# Check if minimum supported dependency versions are at or approaching EOL.
+# Uses the endoflife.date API. Outputs GitHub Actions annotations and opens
+# an issue when action is needed.
+#
+# Environment:
+#   WARN_DAYS - days before EOL to start warning (default: 90)
+#   GH_TOKEN  - GitHub token for creating issues (optional)
+
+set -e
+
+WARN_DAYS="${WARN_DAYS:-90}"
+
+ruby_min=$(ruby -e "
+  spec = Gem::Specification.load('fx.gemspec')
+  puts spec.required_ruby_version.requirements
+    .select { |op, _| op == '>=' }
+    .map { |_, v| v.segments[0..1].join('.') }
+    .first
+")
+
+rails_min=$(ruby -e "
+  spec = Gem::Specification.load('fx.gemspec')
+  dep = spec.dependencies.find { |d| d.name == 'activerecord' }
+  puts dep.requirement.requirements
+    .select { |op, _| op == '>=' }
+    .map { |_, v| v.segments[0..1].join('.') }
+    .first
+")
+
+postgres_min=$(ruby -ryaml -e "
+  ci = YAML.load_file('.github/workflows/ci.yml')
+  versions = ci.dig('jobs', 'tests', 'strategy', 'matrix', 'postgres')
+  puts versions.map(&:to_i).min
+")
+
+echo "Ruby minimum: $ruby_min"
+echo "Rails minimum: $rails_min"
+echo "PostgreSQL minimum: $postgres_min"
+
+alerts=""
+
+check_eol() {
+  product="$1"
+  version="$2"
+
+  eol_date=$(curl -sf "https://endoflife.date/api/${product}/${version}.json" \
+    | ruby -rjson -e '
+      data = JSON.parse($stdin.read)
+      eol = data["eol"]
+      if eol == true
+        puts "1970-01-01"
+      elsif eol == false
+        exit
+      else
+        puts eol
+      end
+    ') || return 0
+
+  if [ -z "$eol_date" ]; then
+    echo "$product $version: no EOL date set (still supported)"
+    return
+  fi
+
+  today=$(date -u +%Y-%m-%d)
+  warn_date=$(date -u -d "$today + ${WARN_DAYS} days" +%Y-%m-%d 2>/dev/null \
+    || date -u -v+"${WARN_DAYS}"d +%Y-%m-%d)
+
+  if [ "$eol_date" \< "$today" ] || [ "$eol_date" = "$today" ]; then
+    echo "::error::$product $version reached EOL on $eol_date"
+    alerts="$alerts- **$product $version** reached EOL on $eol_date\n"
+  elif [ "$eol_date" \< "$warn_date" ]; then
+    echo "::warning::$product $version reaches EOL on $eol_date (within ${WARN_DAYS} days)"
+    alerts="$alerts- **$product $version** reaches EOL on $eol_date (within ${WARN_DAYS} days)\n"
+  else
+    echo "$product $version: EOL on $eol_date (no action needed)"
+  fi
+}
+
+check_eol "ruby" "$ruby_min"
+check_eol "rails" "$rails_min"
+check_eol "postgresql" "$postgres_min"
+
+if [ -n "$alerts" ]; then
+  title="Dependency EOL alert"
+  body=$(printf "The following minimum supported versions are at or approaching end-of-life:\n\n%b\n\nConsider bumping the minimum version in \`fx.gemspec\` and updating the CI matrix." "$alerts")
+
+  existing=$(gh issue list --state open --search "$title" --json number --jq '.[0].number' 2>/dev/null || true)
+  if [ -n "$existing" ]; then
+    echo "Issue #$existing already open, skipping creation"
+  else
+    gh issue create --title "$title" --body "$body"
+  fi
+fi

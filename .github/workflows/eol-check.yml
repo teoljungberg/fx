@@ -1,0 +1,30 @@
+name: EOL Check
+
+on:
+  schedule:
+    - cron: "0 9 1 * *" # 1st of each month at 09:00 UTC
+  workflow_dispatch:
+    inputs:
+      warn_days:
+        description: "Days before EOL to start warning"
+        required: false
+        default: "90"
+
+permissions:
+  issues: write
+
+env:
+  WARN_DAYS: ${{ inputs.warn_days || '90' }}
+
+jobs:
+  check:
+    name: Check dependency EOL status
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check EOL status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/check-eol
