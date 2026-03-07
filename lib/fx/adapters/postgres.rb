@@ -92,7 +92,8 @@ module Fx
       # @param name [String, Symbol] The name of the function.
       # @param sql_definition [String] The SQL schema for the function.
       # @param arguments [String] Optional function argument types for
-      #   identifying overloaded functions (e.g. "integer, text").
+      #   identifying overloaded functions (e.g. "integer, text"). This
+      #   option is specific to the Postgres adapter.
       #
       # @return [void]
       def update_function(name, sql_definition, arguments: nil)
@@ -128,7 +129,8 @@ module Fx
       #   identifying overloaded functions (e.g. "integer, text"). When not
       #   provided, the argument types are looked up automatically from
       #   pg_proc. If multiple overloads exist, an {Fx::AmbiguousFunctionError}
-      #   is raised.
+      #   is raised. This option is specific to the Postgres adapter; custom
+      #   adapters that do not accept it will raise an ArgumentError.
       #
       # @return [void]
       def drop_function(name, arguments: nil)
@@ -174,8 +176,9 @@ module Fx
       def function_arguments_for(name)
         name_str = name.to_s
 
-        if name_str.include?(".")
-          schema, function_name = name_str.split(".", 2)
+        if (match = name_str.match(/\A"?([^"]+)"?\."?([^"]+)"?\z/))
+          schema = match[1]
+          function_name = match[2]
           schema_condition = "pn.nspname = #{connection.quote(schema)}"
         else
           function_name = name_str
@@ -193,7 +196,7 @@ module Fx
         when 0
           nil
         when 1
-          rows.first["arguments"]
+          rows.first["arguments"].presence
         else
           signatures = rows.map { |r| "#{name_str}(#{r["arguments"]})" }
           raise Fx::AmbiguousFunctionError, <<~MSG.chomp

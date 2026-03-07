@@ -45,7 +45,8 @@ module Fx
     #   the `version` argument to {#create_function}.
     # @param arguments [String] Function argument types for identifying
     #   overloaded functions (e.g. "integer, text"). When omitted, the
-    #   adapter auto-detects the signature from the database.
+    #   Postgres adapter auto-detects the signature from the database.
+    #   Custom adapters must accept this keyword to use it.
     # @return [void] The database response from executing the drop statement.
     #
     # @example Drop a function, rolling back to version 2 on rollback
@@ -66,7 +67,8 @@ module Fx
     #   `sql_definition` takes precedence.
     # @param arguments [String] Function argument types for identifying
     #   overloaded functions (e.g. "integer, text"). When omitted, the
-    #   adapter auto-detects the signature from the database.
+    #   Postgres adapter auto-detects the signature from the database.
+    #   Custom adapters must accept this keyword to use it.
     # @return [void] The database response from executing the create statement.
     #
     # @example Update function to a given version
