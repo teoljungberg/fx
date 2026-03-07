@@ -176,6 +176,7 @@ RSpec.describe Fx::Statements, :db do
       expect do
         connection.update_trigger(
           :whatever,
+          on: :users,
           version: nil,
           sql_definition: nil
         )
@@ -191,6 +192,7 @@ RSpec.describe Fx::Statements, :db do
       expect do
         connection.update_trigger(
           :whatever,
+          on: :users,
           version: 1,
           sql_definition: "a definition"
         )
