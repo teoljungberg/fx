@@ -154,6 +154,8 @@ module Fx
         execute("DROP TRIGGER #{name} ON #{on};")
       end
 
+      private
+
       # The SQL query used to look up a function's argument types from pg_proc.
       FUNCTION_ARGUMENTS_QUERY = <<~SQL.freeze
         SELECT pg_get_function_identity_arguments(pp.oid) AS arguments
@@ -164,8 +166,6 @@ module Fx
           AND %{schema_condition}
       SQL
       private_constant :FUNCTION_ARGUMENTS_QUERY
-
-      private
 
       attr_reader :connectable
 
