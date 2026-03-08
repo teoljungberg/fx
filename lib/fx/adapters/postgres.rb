@@ -134,15 +134,16 @@ module Fx
       #
       # @return [void]
       def drop_function(name, arguments: nil)
-        function = if arguments
-          Fx::Function.new(
-            "name" => name.to_s,
-            "definition" => "",
-            "arguments" => arguments
-          )
-        else
-          find_function(name)
-        end
+        function =
+          if arguments
+            Fx::Function.new(
+              "name" => name.to_s,
+              "definition" => "",
+              "arguments" => arguments
+            )
+          else
+            find_function(name)
+          end
 
         execute("DROP FUNCTION #{function.signature};")
       end
@@ -168,9 +169,9 @@ module Fx
 
       def find_function(name)
         name_str = name.to_s
-        matches = functions.select { |f| f.name == name_str }
+        matches = functions.select { |function| function.name == name_str }
 
-        case matches.length
+        case matches.size
         when 0
           Fx::Function.new("name" => name_str, "definition" => "")
         when 1
