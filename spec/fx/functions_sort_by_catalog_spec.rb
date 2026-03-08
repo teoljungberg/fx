@@ -1,6 +1,6 @@
 require "spec_helper"
 
-RSpec.describe Fx::FunctionsSortByPgDepend do
+RSpec.describe Fx::FunctionsSortByCatalog do
   describe ".call" do
     it "orders dependencies before dependents" do
       create_function("value", arguments: "integer", body: "SELECT $1")

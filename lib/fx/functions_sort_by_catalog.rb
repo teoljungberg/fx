@@ -1,7 +1,7 @@
 require "tsort"
 
 module Fx
-  class FunctionsSortByPgDepend
+  class FunctionsSortByCatalog
     include TSort
 
     def self.call(functions)
@@ -32,7 +32,7 @@ module Fx
     # that use BEGIN ATOMIC bodies (PostgreSQL 14+). Traditional
     # string-literal bodies (AS $$ ... $$) are not parsed at definition
     # time, so their cross-function calls are invisible to pg_depend --
-    # regardless of language. Use FunctionsSortByDependency (regex-based)
+    # regardless of language. Use FunctionsSortByDefinition (regex-based)
     # for those.
     DEPENDENCY_QUERY = <<~SQL.freeze
       SELECT DISTINCT

@@ -1,7 +1,7 @@
 require "tsort"
 
 module Fx
-  class FunctionsSortByDependency
+  class FunctionsSortByDefinition
     include TSort
 
     def self.call(functions)
