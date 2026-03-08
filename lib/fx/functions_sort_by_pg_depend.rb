@@ -29,9 +29,11 @@ module Fx
     # full signatures so overloaded functions are correctly distinguished.
     #
     # PostgreSQL only records pg_depend entries for SQL-language functions
-    # whose bodies are parsed at CREATE time. PL/pgSQL bodies are parsed
-    # at execution time, so cross-function calls in PL/pgSQL will not
-    # appear here. Use FunctionsSortByDependency (regex-based) for those.
+    # that use BEGIN ATOMIC bodies (PostgreSQL 14+). Traditional
+    # string-literal bodies (AS $$ ... $$) are not parsed at definition
+    # time, so their cross-function calls are invisible to pg_depend --
+    # regardless of language. Use FunctionsSortByDependency (regex-based)
+    # for those.
     DEPENDENCY_QUERY = <<~SQL.freeze
       SELECT DISTINCT
           dep_proc.proname || '(' || pg_get_function_identity_arguments(dep_proc.oid) || ')' AS dependent,

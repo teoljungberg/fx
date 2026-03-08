@@ -3,53 +3,62 @@ require "spec_helper"
 RSpec.describe Fx::FunctionsSortByPgDepend do
   describe ".call" do
     it "orders dependencies before dependents" do
-      stub_pg_dependencies("euclidean()" => ["vec_sub()"])
-      euclidean = function("euclidean")
-      vec_sub = function("vec_sub")
+      create_function("value", arguments: "integer", body: "SELECT $1")
+      create_function("make_incr", arguments: "integer",
+        body: "SELECT value($1) + 1")
+      make_incr = function("make_incr", arguments: "integer")
+      value = function("value", arguments: "integer")
 
-      result = described_class.call([euclidean, vec_sub])
+      result = described_class.call([make_incr, value])
 
-      expect(result).to eq([vec_sub, euclidean])
+      expect(result).to eq([value, make_incr])
     end
 
     it "handles transitive dependencies" do
-      stub_pg_dependencies(
-        "distance()" => ["sum_squares()"],
-        "sum_squares()" => ["square()"]
-      )
-      distance = function("distance")
-      sum_squares = function("sum_squares")
-      square = function("square")
+      create_function("value", arguments: "integer", body: "SELECT $1")
+      create_function("add", arguments: "integer, integer",
+        body: "SELECT value($1) + value($2)")
+      create_function("make_incr", arguments: "integer",
+        body: "SELECT add($1, 1)")
+      make_incr = function("make_incr", arguments: "integer")
+      add = function("add", arguments: "integer, integer")
+      value = function("value", arguments: "integer")
 
-      result = described_class.call([distance, sum_squares, square])
+      result = described_class.call([make_incr, add, value])
 
-      expect(result).to eq([square, sum_squares, distance])
+      expect(result).to eq([value, add, make_incr])
     end
 
     it "handles diamond dependencies" do
-      stub_pg_dependencies(
-        "top()" => ["left()", "right()"],
-        "left()" => ["bottom()"],
-        "right()" => ["bottom()"]
-      )
-      top = function("top")
-      left = function("left")
-      right = function("right")
-      bottom = function("bottom")
+      create_function("value", arguments: "integer", body: "SELECT $1")
+      create_function("double", arguments: "integer",
+        body: "SELECT value($1) * 2")
+      create_function("negate", arguments: "integer",
+        body: "SELECT value($1) * -1")
+      create_function("compute", arguments: "integer",
+        body: "SELECT double($1) + negate($1)")
+      compute = function("compute", arguments: "integer")
+      double = function("double", arguments: "integer")
+      negate = function("negate", arguments: "integer")
+      value = function("value", arguments: "integer")
 
-      result = described_class.call([top, left, right, bottom])
+      result = described_class.call([compute, double, negate, value])
 
-      expect(result.first).to eq(bottom)
-      expect(result.last).to eq(top)
+      expect(result.first).to eq(value)
+      expect(result.last).to eq(compute)
     end
 
     it "handles cycles gracefully" do
-      stub_pg_dependencies(
-        "is_even()" => ["is_odd()"],
-        "is_odd()" => ["is_even()"]
-      )
-      is_even = function("is_even")
-      is_odd = function("is_odd")
+      # BEGIN ATOMIC bodies are parsed at creation, so we bootstrap
+      # is_even with a dummy body, then replace it after is_odd exists.
+      create_function("is_even", returns: "boolean",
+        arguments: "integer", body: "SELECT true")
+      create_function("is_odd", returns: "boolean",
+        arguments: "integer", body: "SELECT NOT is_even($1 - 1)")
+      create_function("is_even", returns: "boolean",
+        arguments: "integer", body: "SELECT NOT is_odd($1 - 1)")
+      is_even = function("is_even", arguments: "integer")
+      is_odd = function("is_odd", arguments: "integer")
 
       result = described_class.call([is_even, is_odd])
 
@@ -57,9 +66,12 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
     end
 
     it "preserves order when there are no dependencies" do
-      stub_pg_dependencies({})
-      add = function("add")
-      multiply = function("multiply")
+      create_function("add", arguments: "integer, integer",
+        body: "SELECT $1 + $2")
+      create_function("multiply", arguments: "integer, integer",
+        body: "SELECT $1 * $2")
+      add = function("add", arguments: "integer, integer")
+      multiply = function("multiply", arguments: "integer, integer")
 
       result = described_class.call([add, multiply])
 
@@ -67,12 +79,14 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
     end
 
     it "ignores dependencies on functions not in the input list" do
-      stub_pg_dependencies("calculate()" => ["unknown_function()"])
-      calculate = function("calculate")
+      create_function("value", arguments: "integer", body: "SELECT $1")
+      create_function("make_incr", arguments: "integer",
+        body: "SELECT value($1) + 1")
+      make_incr = function("make_incr", arguments: "integer")
 
-      result = described_class.call([calculate])
+      result = described_class.call([make_incr])
 
-      expect(result).to eq([calculate])
+      expect(result).to eq([make_incr])
     end
 
     it "returns an empty array when given no functions" do
@@ -82,16 +96,22 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
     end
 
     it "distinguishes overloaded functions by signature" do
-      stub_pg_dependencies("add(integer, integer)" => ["inc(integer)"])
+      create_function("value", arguments: "integer", body: "SELECT $1")
+      create_function("add", arguments: "integer, integer",
+        body: "SELECT value($1) + $2")
+      create_function("add", arguments: "text, text",
+        returns: "text", body: "SELECT $1 || $2")
       add_int = function("add", arguments: "integer, integer")
       add_text = function("add", arguments: "text, text")
-      inc = function("inc", arguments: "integer")
+      value = function("value", arguments: "integer")
 
-      result = described_class.call([add_int, add_text, inc])
+      result = described_class.call([add_int, add_text, value])
 
-      expect(result.index(inc)).to be < result.index(add_int)
+      expect(result.index(value)).to be < result.index(add_int)
       expect(result).to include(add_text)
     end
+
+    private
 
     def function(name, arguments: "")
       Fx::Function.new(
@@ -101,19 +121,15 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
       )
     end
 
-    def stub_pg_dependencies(deps)
-      rows = deps.flat_map do |dependent, dependencies|
-        dependencies.map { |dep| [dependent, dep] }
-      end
-
-      result = ActiveRecord::Result.new(
-        ["dependent", "dependency"],
-        rows
-      )
-
-      connection = instance_double(ActiveRecord::ConnectionAdapters::PostgreSQLAdapter)
-      allow(connection).to receive(:exec_query).and_return(result)
-      allow(ActiveRecord::Base).to receive(:connection).and_return(connection)
+    def create_function(name, body:, arguments: "", returns: "integer")
+      ActiveRecord::Base.connection.execute(<<~SQL)
+        CREATE OR REPLACE FUNCTION #{name}(#{arguments})
+        RETURNS #{returns}
+        LANGUAGE SQL
+        BEGIN ATOMIC
+          #{body};
+        END
+      SQL
     end
   end
 end
