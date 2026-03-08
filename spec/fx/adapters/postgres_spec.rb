@@ -6,16 +6,16 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       adapter = Fx::Adapters::Postgres.new
       adapter.create_function(
         <<~SQL
-          CREATE OR REPLACE FUNCTION test()
+          CREATE OR REPLACE FUNCTION value()
           RETURNS text AS $$
           BEGIN
-              RETURN 'test';
+              RETURN 'value';
           END;
           $$ LANGUAGE plpgsql;
         SQL
       )
 
-      expect(adapter.functions.map(&:name)).to include("test")
+      expect(adapter.functions.map(&:name)).to include("value")
     end
   end
 
@@ -30,7 +30,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       SQL
       adapter = Fx::Adapters::Postgres.new
       adapter.create_function <<~SQL
-        CREATE OR REPLACE FUNCTION uppercase_users_name()
+        CREATE OR REPLACE FUNCTION set_upper_name()
         RETURNS trigger AS $$
         BEGIN
           NEW.upper_name = UPPER(NEW.name);
@@ -40,14 +40,14 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       SQL
       adapter.create_trigger(
         <<~SQL
-          CREATE TRIGGER uppercase_users_name
+          CREATE TRIGGER set_upper_name
               BEFORE INSERT ON users
               FOR EACH ROW
-              EXECUTE FUNCTION uppercase_users_name();
+              EXECUTE FUNCTION set_upper_name();
         SQL
       )
 
-      expect(adapter.triggers.map(&:name)).to include("uppercase_users_name")
+      expect(adapter.triggers.map(&:name)).to include("set_upper_name")
     end
   end
 
@@ -57,7 +57,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         adapter = Fx::Adapters::Postgres.new
         adapter.create_function(
           <<~SQL
-            CREATE FUNCTION adder(x int, y int)
+            CREATE FUNCTION add(x int, y int)
             RETURNS int AS $$
             BEGIN
                 RETURN $1 + $2;
@@ -66,9 +66,9 @@ RSpec.describe Fx::Adapters::Postgres, :db do
           SQL
         )
 
-        adapter.drop_function(:adder)
+        adapter.drop_function(:add)
 
-        expect(adapter.functions.map(&:name)).not_to include("adder")
+        expect(adapter.functions.map(&:name)).not_to include("add")
       end
     end
 
@@ -77,18 +77,18 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         adapter = Fx::Adapters::Postgres.new
         adapter.create_function(
           <<~SQL
-            CREATE OR REPLACE FUNCTION test()
+            CREATE OR REPLACE FUNCTION value()
             RETURNS text AS $$
             BEGIN
-                RETURN 'test';
+                RETURN 'value';
             END;
             $$ LANGUAGE plpgsql;
           SQL
         )
 
-        adapter.drop_function(:test)
+        adapter.drop_function(:value)
 
-        expect(adapter.functions.map(&:name)).not_to include("test")
+        expect(adapter.functions.map(&:name)).not_to include("value")
       end
     end
   end
@@ -98,16 +98,16 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       adapter = Fx::Adapters::Postgres.new
       adapter.create_function(
         <<~SQL
-          CREATE OR REPLACE FUNCTION test()
+          CREATE OR REPLACE FUNCTION value()
           RETURNS text AS $$
           BEGIN
-              RETURN 'test';
+              RETURN 'value';
           END;
           $$ LANGUAGE plpgsql;
         SQL
       )
 
-      expect(adapter.functions.map(&:name)).to eq ["test"]
+      expect(adapter.functions.map(&:name)).to eq ["value"]
     end
   end
 
@@ -122,7 +122,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
       SQL
       adapter = Fx::Adapters::Postgres.new
       adapter.create_function <<~SQL
-        CREATE OR REPLACE FUNCTION uppercase_users_name()
+        CREATE OR REPLACE FUNCTION set_upper_name()
         RETURNS trigger AS $$
         BEGIN
           NEW.upper_name = UPPER(NEW.name);
@@ -131,14 +131,14 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         $$ LANGUAGE plpgsql;
       SQL
       sql_definition = <<~SQL
-        CREATE TRIGGER uppercase_users_name
+        CREATE TRIGGER set_upper_name
             BEFORE INSERT ON users
             FOR EACH ROW
-            EXECUTE FUNCTION uppercase_users_name()
+            EXECUTE FUNCTION set_upper_name()
       SQL
       adapter.create_trigger(sql_definition)
 
-      expect(adapter.triggers.map(&:name)).to eq ["uppercase_users_name"]
+      expect(adapter.triggers.map(&:name)).to eq ["set_upper_name"]
     end
   end
 

@@ -4,17 +4,17 @@ RSpec.describe Fx::Function do
   describe "#<=>" do
     it "delegates to `signature`" do
       function_a = Fx::Function.new(
-        "name" => "name_a",
+        "name" => "add",
         "definition" => "some definition",
         "arguments" => ""
       )
       function_b = Fx::Function.new(
-        "name" => "name_b",
+        "name" => "make_incr",
         "definition" => "some definition",
         "arguments" => ""
       )
       function_c = Fx::Function.new(
-        "name" => "name_c",
+        "name" => "value",
         "definition" => "some definition",
         "arguments" => ""
       )
@@ -41,12 +41,12 @@ RSpec.describe Fx::Function do
   describe "#==" do
     it "compares `signature` and `definition`" do
       function_a = Fx::Function.new(
-        "name" => "name_a",
+        "name" => "add",
         "definition" => "some definition",
         "arguments" => ""
       )
       function_b = Fx::Function.new(
-        "name" => "name_b",
+        "name" => "value",
         "definition" => "some other definition",
         "arguments" => ""
       )
@@ -73,12 +73,12 @@ RSpec.describe Fx::Function do
   describe "#signature" do
     it "returns name with arguments when arguments are present" do
       function = Fx::Function.new(
-        "name" => "inc",
+        "name" => "value",
         "definition" => "some definition",
         "arguments" => "integer"
       )
 
-      expect(function.signature).to eq("inc(integer)")
+      expect(function.signature).to eq("value(integer)")
     end
 
     it "returns name with multiple arguments" do
@@ -93,49 +93,49 @@ RSpec.describe Fx::Function do
 
     it "returns name with empty parens for no-arg functions" do
       function = Fx::Function.new(
-        "name" => "now_utc",
+        "name" => "value",
         "definition" => "some definition",
         "arguments" => ""
       )
 
-      expect(function.signature).to eq("now_utc()")
+      expect(function.signature).to eq("value()")
     end
 
     it "returns just the name when arguments key is missing" do
       function = Fx::Function.new(
-        "name" => "now_utc",
+        "name" => "value",
         "definition" => "some definition"
       )
 
-      expect(function.signature).to eq("now_utc")
+      expect(function.signature).to eq("value")
     end
   end
 
   describe "#to_schema" do
     it "returns a schema compatible version of the function" do
       function = Fx::Function.new(
-        "name" => "uppercase_users_name",
-        "definition" => "CREATE OR REPLACE TRIGGER uppercase_users_name ...",
+        "name" => "value",
+        "definition" => "CREATE OR REPLACE FUNCTION value() ...",
         "arguments" => ""
       )
 
       expect(function.to_schema).to eq(<<-EOS)
-  create_function :uppercase_users_name, sql_definition: <<-'SQL'
-      CREATE OR REPLACE TRIGGER uppercase_users_name ...
+  create_function :value, sql_definition: <<-'SQL'
+      CREATE OR REPLACE FUNCTION value() ...
   SQL
       EOS
     end
 
     it "maintains backslashes" do
       function = Fx::Function.new(
-        "name" => "regex",
-        "definition" => "CREATE OR REPLACE FUNCTION regex \\1",
+        "name" => "value",
+        "definition" => "CREATE OR REPLACE FUNCTION value \\1",
         "arguments" => ""
       )
 
       expect(function.to_schema).to eq(<<-'EOS')
-  create_function :regex, sql_definition: <<-'SQL'
-      CREATE OR REPLACE FUNCTION regex \1
+  create_function :value, sql_definition: <<-'SQL'
+      CREATE OR REPLACE FUNCTION value \1
   SQL
       EOS
     end

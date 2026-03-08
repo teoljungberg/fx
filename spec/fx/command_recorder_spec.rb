@@ -5,17 +5,17 @@ RSpec.describe Fx::CommandRecorder, :db do
     it "records the created function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.create_function :test
+      recorder.create_function :add
 
-      expect(recorder.commands).to eq([[:create_function, [:test], nil]])
+      expect(recorder.commands).to eq([[:create_function, [:add], nil]])
     end
 
     it "reverts to drop_function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.revert { recorder.create_function :test }
+      recorder.revert { recorder.create_function :add }
 
-      expect(recorder.commands).to eq([[:drop_function, [:test]]])
+      expect(recorder.commands).to eq([[:drop_function, [:add]]])
     end
   end
 
@@ -23,15 +23,15 @@ RSpec.describe Fx::CommandRecorder, :db do
     it "records the dropped function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.drop_function :test
+      recorder.drop_function :add
 
-      expect(recorder.commands).to eq([[:drop_function, [:test], nil]])
+      expect(recorder.commands).to eq([[:drop_function, [:add], nil]])
     end
 
     it "reverts to create_function with specified revert_to_version" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, {revert_to_version: 3}]
-      revert_args = [:test, {version: 3}]
+      args = [:add, {revert_to_version: 3}]
+      revert_args = [:add, {version: 3}]
 
       recorder.revert { recorder.drop_function(*args) }
 
@@ -40,7 +40,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
     it "raises when reverting without revert_to_version set" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, {another_argument: 1}]
+      args = [:add, {another_argument: 1}]
 
       expect do
         recorder.revert { recorder.drop_function(*args) }
@@ -51,7 +51,7 @@ RSpec.describe Fx::CommandRecorder, :db do
   describe "#update_function" do
     it "records the updated function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, {version: 2}]
+      args = [:add, {version: 2}]
 
       recorder.update_function(*args)
 
@@ -60,8 +60,8 @@ RSpec.describe Fx::CommandRecorder, :db do
 
     it "reverts to update_function with the specified revert_to_version" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, {version: 2, revert_to_version: 1}]
-      revert_args = [:test, {version: 1}]
+      args = [:add, {version: 2, revert_to_version: 1}]
+      revert_args = [:add, {version: 1}]
 
       recorder.revert { recorder.update_function(*args) }
 
@@ -70,7 +70,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
     it "raises when reverting without revert_to_version set" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:test, {version: 42, another_argument: 1}]
+      args = [:add, {version: 42, another_argument: 1}]
 
       expect do
         recorder.revert { recorder.update_function(*args) }
@@ -82,17 +82,17 @@ RSpec.describe Fx::CommandRecorder, :db do
     it "records the created trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.create_trigger :greetings
+      recorder.create_trigger :set_upper_name
 
-      expect(recorder.commands).to eq([[:create_trigger, [:greetings], nil]])
+      expect(recorder.commands).to eq([[:create_trigger, [:set_upper_name], nil]])
     end
 
     it "reverts to drop_trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.revert { recorder.create_trigger :greetings }
+      recorder.revert { recorder.create_trigger :set_upper_name }
 
-      expect(recorder.commands).to eq([[:drop_trigger, [:greetings]]])
+      expect(recorder.commands).to eq([[:drop_trigger, [:set_upper_name]]])
     end
   end
 
@@ -100,15 +100,15 @@ RSpec.describe Fx::CommandRecorder, :db do
     it "records the dropped trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.drop_trigger :users
+      recorder.drop_trigger :set_upper_name
 
-      expect(recorder.commands).to eq([[:drop_trigger, [:users], nil]])
+      expect(recorder.commands).to eq([[:drop_trigger, [:set_upper_name], nil]])
     end
 
     it "reverts to create_trigger with specified revert_to_version" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:users, {revert_to_version: 3}]
-      revert_args = [:users, {version: 3}]
+      args = [:set_upper_name, {revert_to_version: 3}]
+      revert_args = [:set_upper_name, {version: 3}]
 
       recorder.revert { recorder.drop_trigger(*args) }
 
@@ -117,7 +117,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
     it "raises when reverting without revert_to_version set" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:users, {another_argument: 1}]
+      args = [:set_upper_name, {another_argument: 1}]
 
       expect do
         recorder.revert { recorder.drop_trigger(*args) }
@@ -128,7 +128,7 @@ RSpec.describe Fx::CommandRecorder, :db do
   describe "#update_trigger" do
     it "records the updated trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:users, {version: 2}]
+      args = [:set_upper_name, {version: 2}]
 
       recorder.update_trigger(*args)
 
@@ -137,8 +137,8 @@ RSpec.describe Fx::CommandRecorder, :db do
 
     it "reverts to update_trigger with the specified revert_to_version" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:users, {version: 2, revert_to_version: 1}]
-      revert_args = [:users, {version: 1}]
+      args = [:set_upper_name, {version: 2, revert_to_version: 1}]
+      revert_args = [:set_upper_name, {version: 1}]
 
       recorder.revert { recorder.update_trigger(*args) }
 
@@ -147,7 +147,7 @@ RSpec.describe Fx::CommandRecorder, :db do
 
     it "raises when reverting without revert_to_version set" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
-      args = [:users, {version: 42, another_argument: 1}]
+      args = [:set_upper_name, {version: 42, another_argument: 1}]
 
       expect do
         recorder.revert { recorder.update_trigger(*args) }

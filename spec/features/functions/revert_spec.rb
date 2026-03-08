@@ -3,14 +3,14 @@ require "spec_helper"
 RSpec.describe "Reverting migrations", :db do
   around do |example|
     sql_definition = <<~SQL
-      CREATE OR REPLACE FUNCTION test()
+      CREATE OR REPLACE FUNCTION value()
       RETURNS text AS $$
       BEGIN
-          RETURN 'test';
+          RETURN 'value';
       END;
       $$ LANGUAGE plpgsql;
     SQL
-    with_function_definition(name: :test, sql_definition: sql_definition) do
+    with_function_definition(name: :value, sql_definition: sql_definition) do
       example.run
     end
   end
@@ -18,7 +18,7 @@ RSpec.describe "Reverting migrations", :db do
   it "can run reversible migrations for creating functions" do
     migration = Class.new(migration_class) do
       def change
-        create_function :test
+        create_function :value
       end
     end
 
@@ -26,16 +26,16 @@ RSpec.describe "Reverting migrations", :db do
   end
 
   it "can run reversible migrations for dropping functions" do
-    connection.create_function(:test)
+    connection.create_function(:value)
 
     good_migration = Class.new(migration_class) do
       def change
-        drop_function :test, revert_to_version: 1
+        drop_function :value, revert_to_version: 1
       end
     end
     bad_migration = Class.new(migration_class) do
       def change
-        drop_function :test
+        drop_function :value
       end
     end
 
@@ -48,10 +48,10 @@ RSpec.describe "Reverting migrations", :db do
   end
 
   it "can run reversible migrations for updating functions" do
-    connection.create_function(:test)
+    connection.create_function(:value)
 
     sql_definition = <<~SQL
-      CREATE OR REPLACE FUNCTION test()
+      CREATE OR REPLACE FUNCTION value()
       RETURNS text AS $$
       BEGIN
         RETURN 'bar';
@@ -59,13 +59,13 @@ RSpec.describe "Reverting migrations", :db do
       $$ LANGUAGE plpgsql;
     SQL
     with_function_definition(
-      name: :test,
+      name: :value,
       version: 2,
       sql_definition: sql_definition
     ) do
       migration = Class.new(migration_class) do
         def change
-          update_function :test, version: 2, revert_to_version: 1
+          update_function :value, version: 2, revert_to_version: 1
         end
       end
 

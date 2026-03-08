@@ -22,11 +22,11 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       result = helper.update_migration_class_name(
         object_type: :function,
-        class_name: "TestFunction",
+        class_name: "Value",
         version: 3
       )
 
-      expect(result).to eq("UpdateFunctionTestFunctionToVersion3")
+      expect(result).to eq("UpdateFunctionValueToVersion3")
     end
 
     it "generates correct class name for triggers" do
@@ -34,11 +34,11 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       result = helper.update_migration_class_name(
         object_type: :trigger,
-        class_name: "TestTrigger",
+        class_name: "SetUpperName",
         version: 2
       )
 
-      expect(result).to eq("UpdateTriggerTestTriggerToVersion2")
+      expect(result).to eq("UpdateTriggerSetUpperNameToVersion2")
     end
   end
 
@@ -48,14 +48,14 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       result = helper.migration_template_info(
         object_type: :function,
-        file_name: "test_func",
+        file_name: "value",
         updating_existing: false,
         version: 1
       )
 
       expect(result).to eq({
         template: "db/migrate/create_function.erb",
-        filename: "db/migrate/create_function_test_func.rb"
+        filename: "db/migrate/create_function_value.rb"
       })
     end
 
@@ -64,14 +64,14 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       result = helper.migration_template_info(
         object_type: :trigger,
-        file_name: "test_trigger",
+        file_name: "set_upper_name",
         updating_existing: true,
         version: 3
       )
 
       expect(result).to eq({
         template: "db/migrate/update_trigger.erb",
-        filename: "db/migrate/update_trigger_test_trigger_to_version_3.rb"
+        filename: "db/migrate/update_trigger_set_upper_name_to_version_3.rb"
       })
     end
 
@@ -80,13 +80,13 @@ RSpec.describe Fx::Generators::MigrationHelper do
 
       function_result = helper.migration_template_info(
         object_type: :function,
-        file_name: "my_function",
+        file_name: "add",
         updating_existing: true,
         version: 2
       )
       trigger_result = helper.migration_template_info(
         object_type: :trigger,
-        file_name: "my_trigger",
+        file_name: "set_lower_name",
         updating_existing: true,
         version: 2
       )
@@ -98,10 +98,10 @@ RSpec.describe Fx::Generators::MigrationHelper do
         "db/migrate/update_trigger.erb"
       )
       expect(function_result.fetch(:filename)).to eq(
-        "db/migrate/update_function_my_function_to_version_2.rb"
+        "db/migrate/update_function_add_to_version_2.rb"
       )
       expect(trigger_result.fetch(:filename)).to eq(
-        "db/migrate/update_trigger_my_trigger_to_version_2.rb"
+        "db/migrate/update_trigger_set_lower_name_to_version_2.rb"
       )
     end
   end

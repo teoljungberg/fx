@@ -6,24 +6,24 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_function(:test)
+      connection.create_function(:add)
 
       expect(database).to have_received(:create_function)
         .with(definition.to_sql)
       expect(Fx::Definition).to have_received(:function)
-        .with(name: :test, version: 1)
+        .with(name: :add, version: 1)
     end
 
     it "allows creating a function with a specific version" do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_function(:test, version: 2)
+      connection.create_function(:add, version: 2)
 
       expect(database).to have_received(:create_function)
         .with(definition.to_sql)
       expect(Fx::Definition).to have_received(:function)
-        .with(name: :test, version: 2)
+        .with(name: :add, version: 2)
     end
 
     it "raises an error if both arguments are nil" do
@@ -44,9 +44,9 @@ RSpec.describe Fx::Statements, :db do
     it "drops the function" do
       database = stubbed_database
 
-      connection.drop_function(:test)
+      connection.drop_function(:add)
 
-      expect(database).to have_received(:drop_function).with(:test)
+      expect(database).to have_received(:drop_function).with(:add)
     end
   end
 
@@ -55,21 +55,21 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.update_function(:test, version: 3)
+      connection.update_function(:add, version: 3)
 
       expect(database).to have_received(:update_function)
-        .with(:test, definition.to_sql)
+        .with(:add, definition.to_sql)
       expect(Fx::Definition).to have_received(:function)
-        .with(name: :test, version: 3)
+        .with(name: :add, version: 3)
     end
 
     it "updates a function from a text definition" do
       database = stubbed_database
 
-      connection.update_function(:test, sql_definition: "a definition")
+      connection.update_function(:add, sql_definition: "a definition")
 
       expect(database).to have_received(:update_function)
-        .with(:test, "a definition")
+        .with(:add, "a definition")
     end
 
     it "raises an error if not supplied a version" do
@@ -91,24 +91,24 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_trigger(:test)
+      connection.create_trigger(:add)
 
       expect(database).to have_received(:create_trigger)
         .with(definition.to_sql)
       expect(Fx::Definition).to have_received(:trigger)
-        .with(name: :test, version: 1)
+        .with(name: :add, version: 1)
     end
 
     it "allows creating a trigger with a specific version" do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_trigger(:test, version: 2)
+      connection.create_trigger(:add, version: 2)
 
       expect(database).to have_received(:create_trigger)
         .with(definition.to_sql)
       expect(Fx::Definition).to have_received(:trigger)
-        .with(name: :test, version: 2)
+        .with(name: :add, version: 2)
     end
 
     it "raises an error if both arguments are set" do
@@ -131,10 +131,10 @@ RSpec.describe Fx::Statements, :db do
     it "drops the trigger" do
       database = stubbed_database
 
-      connection.drop_trigger(:test, on: :users)
+      connection.drop_trigger(:add, on: :users)
 
       expect(database).to have_received(:drop_trigger)
-        .with(:test, on: :users)
+        .with(:add, on: :users)
     end
   end
 
@@ -143,15 +143,15 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.update_trigger(:test, on: :users, version: 3)
+      connection.update_trigger(:add, on: :users, version: 3)
 
       expect(database).to have_received(:update_trigger).with(
-        :test,
+        :add,
         on: :users,
         sql_definition: definition.to_sql
       )
       expect(Fx::Definition).to have_received(:trigger).with(
-        name: :test,
+        name: :add,
         version: 3
       )
     end
@@ -160,13 +160,13 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
 
       connection.update_trigger(
-        :test,
+        :add,
         on: :users,
         sql_definition: "a definition"
       )
 
       expect(database).to have_received(:update_trigger).with(
-        :test,
+        :add,
         on: :users,
         sql_definition: "a definition"
       )

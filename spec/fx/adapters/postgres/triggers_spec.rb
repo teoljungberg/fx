@@ -12,7 +12,7 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
         );
       SQL
       connection.execute <<~SQL
-        CREATE OR REPLACE FUNCTION uppercase_users_name()
+        CREATE OR REPLACE FUNCTION set_upper_name()
         RETURNS trigger AS $$
         BEGIN
           NEW.upper_name = UPPER(NEW.name);
@@ -21,21 +21,21 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
         $$ LANGUAGE plpgsql;
       SQL
       connection.execute <<~SQL
-        CREATE TRIGGER uppercase_users_name
+        CREATE TRIGGER set_upper_name
             BEFORE INSERT ON users
             FOR EACH ROW
-            EXECUTE FUNCTION uppercase_users_name();
+            EXECUTE FUNCTION set_upper_name();
       SQL
 
       triggers = Fx::Adapters::Postgres::Triggers.all(connection)
 
       first = triggers.first
       expect(triggers.size).to eq(1)
-      expect(first.name).to eq("uppercase_users_name")
+      expect(first.name).to eq("set_upper_name")
       expect(first.definition).to include("BEFORE INSERT")
       expect(first.definition).to match(/ON [public.ser|]/)
       expect(first.definition).to include("FOR EACH ROW")
-      expect(first.definition).to include("EXECUTE FUNCTION uppercase_users_name()")
+      expect(first.definition).to include("EXECUTE FUNCTION set_upper_name()")
 
       connection.execute "CREATE SCHEMA IF NOT EXISTS other;"
       connection.execute "SET search_path = 'other';"
