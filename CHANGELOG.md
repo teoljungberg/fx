@@ -15,7 +15,6 @@ changelog, see the [commits] for each version via the version links.
   schema.rb (#197, #200)
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
-  - Simplify conditional function dumping in SchemaDumper (#200)
 
 ## [0.10.2]
 
