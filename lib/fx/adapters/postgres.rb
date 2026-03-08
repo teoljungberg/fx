@@ -199,8 +199,12 @@ module Fx
         when 1
           rows.first["arguments"].presence
         else
-          signatures = rows.map { |r|
-            Fx::Function.new("name" => name_str, "definition" => "", "arguments" => r["arguments"]).signature
+          signatures = rows.map { |row|
+            Fx::Function.new(
+              "name" => name_str,
+              "definition" => "",
+              "arguments" => row["arguments"]
+            ).signature
           }
           raise Fx::AmbiguousFunctionError, <<~MSG.chomp
             Multiple definitions for function "#{name_str}": #{signatures.join(", ")}.
