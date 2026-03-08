@@ -19,6 +19,7 @@ changelog, see the [commits] for each version via the version links.
   - Add PostgreSQL 18 to CI test matrix (#194)
   - Default `support_drop_function_without_args` to `true` (#194)
   - Document adapter subclass pattern for custom schema dump ordering (#211)
+  - Harmonize function and trigger names in specs (#208)
   - Remove duplicate command recorder specs (#202)
 
 ## [0.10.2]
