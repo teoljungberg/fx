@@ -134,13 +134,16 @@ module Fx
       #
       # @return [void]
       def drop_function(name, arguments: nil)
-        arguments ||= function_arguments_for(name)
+        function = if arguments
+          Fx::Function.new(
+            "name" => name.to_s,
+            "definition" => "",
+            "arguments" => arguments
+          )
+        else
+          find_function(name)
+        end
 
-        function = Fx::Function.new(
-          "name" => name.to_s,
-          "definition" => "",
-          "arguments" => arguments
-        )
         execute("DROP FUNCTION #{function.signature};")
       end
 
@@ -159,53 +162,21 @@ module Fx
 
       private
 
-      # The SQL query used to look up a function's argument types from pg_proc.
-      FUNCTION_ARGUMENTS_QUERY = <<~SQL.freeze
-        SELECT pg_get_function_identity_arguments(pp.oid) AS arguments
-        FROM pg_proc pp
-        JOIN pg_namespace pn ON pn.oid = pp.pronamespace
-        WHERE pp.proname = %{function_name}
-          AND pp.prokind = 'f'
-          AND %{schema_condition}
-      SQL
-      private_constant :FUNCTION_ARGUMENTS_QUERY
-
       attr_reader :connectable
 
       delegate :execute, to: :connection
 
-      def function_arguments_for(name)
+      def find_function(name)
         name_str = name.to_s
+        matches = functions.select { |f| f.name == name_str }
 
-        if (match = name_str.match(/\A"?([^"]+)"?\."?([^"]+)"?\z/))
-          schema = match[1]
-          function_name = match[2]
-          schema_condition = "pn.nspname = #{connection.quote(schema)}"
-        else
-          function_name = name_str
-          schema_condition = "pn.nspname = ANY(current_schemas(false))"
-        end
-
-        rows = connection.execute(
-          FUNCTION_ARGUMENTS_QUERY % {
-            function_name: connection.quote(function_name),
-            schema_condition: schema_condition
-          }
-        ).to_a
-
-        case rows.length
+        case matches.length
         when 0
-          nil
+          Fx::Function.new("name" => name_str, "definition" => "")
         when 1
-          rows.first["arguments"].presence
+          matches.first
         else
-          signatures = rows.map { |row|
-            Fx::Function.new(
-              "name" => name_str,
-              "definition" => "",
-              "arguments" => row["arguments"]
-            ).signature
-          }
+          signatures = matches.map(&:signature)
           raise Fx::AmbiguousFunctionError, <<~MSG.chomp
             Multiple definitions for function "#{name_str}": #{signatures.join(", ")}.
             Specify which to drop: drop_function :#{name_str}, arguments: "<argument types>"
