@@ -5,48 +5,48 @@ RSpec.describe Fx::Definition do
     context "representing a function definition" do
       it "returns the content of a function definition" do
         sql_definition = <<~SQL
-          CREATE OR REPLACE FUNCTION test()
+          CREATE OR REPLACE FUNCTION value()
           RETURNS text AS $$
           BEGIN
-              RETURN 'test';
+              RETURN 'value';
           END;
           $$ LANGUAGE plpgsql;
         SQL
         allow(File).to receive(:read).and_return(sql_definition)
 
-        definition = Fx::Definition.function(name: "test", version: 1)
+        definition = Fx::Definition.function(name: "value", version: 1)
 
         expect(definition.to_sql).to eq(sql_definition)
       end
 
       it "raises an error if the file is empty" do
         allow(File).to receive(:read).and_return("")
-        definition = Fx::Definition.function(name: "test", version: 1)
+        definition = Fx::Definition.function(name: "value", version: 1)
 
         expect do
           definition.to_sql
         end.to raise_error(
           RuntimeError,
-          %r{Define function in db/functions/test_v01.sql before migrating}
+          %r{Define function in db/functions/value_v01.sql before migrating}
         )
       end
 
       context "when definition is at Rails engine" do
         it "returns the content of a function definition" do
           sql_definition = <<~SQL
-            CREATE OR REPLACE FUNCTION test()
+            CREATE OR REPLACE FUNCTION value()
             RETURNS text AS $$
             BEGIN
-                RETURN 'test';
+                RETURN 'value';
             END;
             $$ LANGUAGE plpgsql;
           SQL
           engine_path = Rails.root.join("tmp", "engine")
           FileUtils.mkdir_p(engine_path.join("db", "functions"))
-          File.write(engine_path.join("db", "functions", "custom_test_v01.sql"), sql_definition)
+          File.write(engine_path.join("db", "functions", "custom_value_v01.sql"), sql_definition)
           Rails.application.config.paths["db/migrate"].push(engine_path.join("db", "migrate"))
 
-          definition = Fx::Definition.function(name: "custom_test", version: 1)
+          definition = Fx::Definition.function(name: "custom_value", version: 1)
 
           expect(definition.to_sql).to eq(sql_definition)
 
@@ -58,27 +58,27 @@ RSpec.describe Fx::Definition do
     context "representing a trigger definition" do
       it "returns the content of a trigger definition" do
         sql_definition = <<~SQL
-          CREATE TRIGGER check_update
-          BEFORE UPDATE ON accounts
+          CREATE TRIGGER set_upper_name
+          BEFORE INSERT ON users
           FOR EACH ROW
-          EXECUTE FUNCTION check_account_update();
+          EXECUTE FUNCTION set_upper_name();
         SQL
         allow(File).to receive(:read).and_return(sql_definition)
 
-        definition = Fx::Definition.trigger(name: "test", version: 1)
+        definition = Fx::Definition.trigger(name: "set_upper_name", version: 1)
 
         expect(definition.to_sql).to eq(sql_definition)
       end
 
       it "raises an error if the file is empty" do
         allow(File).to receive(:read).and_return("")
-        definition = Fx::Definition.trigger(name: "test", version: 1)
+        definition = Fx::Definition.trigger(name: "set_upper_name", version: 1)
 
         expect do
           definition.to_sql
         end.to raise_error(
           RuntimeError,
-          %r{Define trigger in db/triggers/test_v01.sql before migrating}
+          %r{Define trigger in db/triggers/set_upper_name_v01.sql before migrating}
         )
       end
     end
@@ -87,24 +87,24 @@ RSpec.describe Fx::Definition do
   describe "#path" do
     context "representing a function definition" do
       it "returns a sql file with padded version and function name" do
-        definition = Fx::Definition.function(name: "test", version: 1)
+        definition = Fx::Definition.function(name: "value", version: 1)
 
-        expect(definition.path).to eq("db/functions/test_v01.sql")
+        expect(definition.path).to eq("db/functions/value_v01.sql")
       end
     end
 
     context "representing a trigger definition" do
       it "returns a sql file with padded version and trigger name" do
-        definition = Fx::Definition.trigger(name: "test", version: 1)
+        definition = Fx::Definition.trigger(name: "set_upper_name", version: 1)
 
-        expect(definition.path).to eq("db/triggers/test_v01.sql")
+        expect(definition.path).to eq("db/triggers/set_upper_name_v01.sql")
       end
     end
   end
 
   describe "#full_path" do
     it "joins the path with Rails.root" do
-      definition = Fx::Definition.function(name: "test", version: 15)
+      definition = Fx::Definition.function(name: "value", version: 15)
 
       expect(definition.full_path).to eq(Rails.root.join(definition.path))
     end

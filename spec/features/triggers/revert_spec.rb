@@ -10,7 +10,7 @@ RSpec.describe "Reverting migrations", :db do
       );
     SQL
     Fx.database.create_function <<~SQL
-      CREATE OR REPLACE FUNCTION uppercase_users_name()
+      CREATE OR REPLACE FUNCTION set_upper_name()
       RETURNS trigger AS $$
       BEGIN
         NEW.upper_name = UPPER(NEW.name);
@@ -19,13 +19,13 @@ RSpec.describe "Reverting migrations", :db do
       $$ LANGUAGE plpgsql;
     SQL
     sql_definition = <<~SQL
-      CREATE TRIGGER uppercase_users_name
+      CREATE TRIGGER set_upper_name
           BEFORE INSERT ON users
           FOR EACH ROW
-          EXECUTE FUNCTION uppercase_users_name();
+          EXECUTE FUNCTION set_upper_name();
     SQL
     with_trigger_definition(
-      name: :uppercase_users_name,
+      name: :set_upper_name,
       sql_definition: sql_definition
     ) do
       example.run
@@ -35,7 +35,7 @@ RSpec.describe "Reverting migrations", :db do
   it "can run reversible migrations for creating triggers" do
     migration = Class.new(migration_class) do
       def change
-        create_trigger :uppercase_users_name, on: :users
+        create_trigger :set_upper_name, on: :users
       end
     end
 
@@ -43,16 +43,16 @@ RSpec.describe "Reverting migrations", :db do
   end
 
   it "can run reversible migrations for dropping triggers" do
-    connection.create_trigger(:uppercase_users_name, on: :users)
+    connection.create_trigger(:set_upper_name, on: :users)
 
     good_migration = Class.new(migration_class) do
       def change
-        drop_trigger :uppercase_users_name, on: :users, revert_to_version: 1
+        drop_trigger :set_upper_name, on: :users, revert_to_version: 1
       end
     end
     bad_migration = Class.new(migration_class) do
       def change
-        drop_trigger :uppercase_users_name, on: :users
+        drop_trigger :set_upper_name, on: :users
       end
     end
 
@@ -65,23 +65,23 @@ RSpec.describe "Reverting migrations", :db do
   end
 
   it "can run reversible migrations for updating triggers" do
-    connection.create_trigger(:uppercase_users_name)
+    connection.create_trigger(:set_upper_name)
 
     sql_definition = <<~SQL
-      CREATE TRIGGER uppercase_users_name
+      CREATE TRIGGER set_upper_name
           BEFORE UPDATE ON users
           FOR EACH ROW
-          EXECUTE FUNCTION uppercase_users_name();
+          EXECUTE FUNCTION set_upper_name();
     SQL
     with_trigger_definition(
-      name: :uppercase_users_name,
+      name: :set_upper_name,
       sql_definition: sql_definition,
       version: 2
     ) do
       migration = Class.new(migration_class) do
         def change
           update_trigger(
-            :uppercase_users_name,
+            :set_upper_name,
             on: :users,
             version: 2,
             revert_to_version: 1
