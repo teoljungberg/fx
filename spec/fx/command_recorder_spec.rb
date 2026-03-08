@@ -25,6 +25,18 @@ RSpec.describe Fx::CommandRecorder, :db do
 
       expect(recorder.commands).to eq([[:drop_function, [:test]]])
     end
+
+    it "reverts to drop_function preserving arguments" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+
+      recorder.revert do
+        recorder.create_function :test, arguments: "integer, text"
+      end
+
+      expect(recorder.commands).to eq(
+        [[:drop_function, [:test, {arguments: "integer, text"}]]]
+      )
+    end
   end
 
   describe "#drop_function" do
@@ -40,6 +52,16 @@ RSpec.describe Fx::CommandRecorder, :db do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:test, {revert_to_version: 3}]
       revert_args = [:test, {version: 3}]
+
+      recorder.revert { recorder.drop_function(*args) }
+
+      expect(recorder.commands).to eq([[:create_function, revert_args]])
+    end
+
+    it "reverts to create_function preserving arguments" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:test, {revert_to_version: 3, arguments: "integer"}]
+      revert_args = [:test, {arguments: "integer", version: 3}]
 
       recorder.revert { recorder.drop_function(*args) }
 
@@ -70,6 +92,16 @@ RSpec.describe Fx::CommandRecorder, :db do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       args = [:test, {version: 2, revert_to_version: 1}]
       revert_args = [:test, {version: 1}]
+
+      recorder.revert { recorder.update_function(*args) }
+
+      expect(recorder.commands).to eq([[:update_function, revert_args]])
+    end
+
+    it "reverts to update_function preserving arguments" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+      args = [:test, {version: 2, revert_to_version: 1, arguments: "integer"}]
+      revert_args = [:test, {arguments: "integer", version: 1}]
 
       recorder.revert { recorder.update_function(*args) }
 

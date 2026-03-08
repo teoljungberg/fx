@@ -53,7 +53,7 @@ RSpec.describe Fx::Adapters::Postgres, :db do
 
   describe "#drop_function" do
     context "when the function has arguments" do
-      it "successfully drops a function with the entire function signature" do
+      it "successfully drops a function by looking up its signature" do
         adapter = Fx::Adapters::Postgres.new
         adapter.create_function(
           <<~SQL
@@ -89,6 +89,56 @@ RSpec.describe Fx::Adapters::Postgres, :db do
         adapter.drop_function(:test)
 
         expect(adapter.functions.map(&:name)).not_to include("test")
+      end
+    end
+
+    context "when the function is overloaded" do
+      it "raises AmbiguousFunctionError" do
+        adapter = Fx::Adapters::Postgres.new
+        adapter.create_function(
+          <<~SQL
+            CREATE FUNCTION foo(x int)
+            RETURNS int AS $$
+            BEGIN RETURN x; END;
+            $$ LANGUAGE plpgsql;
+          SQL
+        )
+        adapter.create_function(
+          <<~SQL
+            CREATE FUNCTION foo(x int, y int)
+            RETURNS int AS $$
+            BEGIN RETURN x + y; END;
+            $$ LANGUAGE plpgsql;
+          SQL
+        )
+
+        expect { adapter.drop_function(:foo) }
+          .to raise_error(Fx::AmbiguousFunctionError, /Multiple definitions/)
+      end
+
+      it "drops the correct overload when arguments are specified" do
+        adapter = Fx::Adapters::Postgres.new
+        adapter.create_function(
+          <<~SQL
+            CREATE FUNCTION foo(x int)
+            RETURNS int AS $$
+            BEGIN RETURN x; END;
+            $$ LANGUAGE plpgsql;
+          SQL
+        )
+        adapter.create_function(
+          <<~SQL
+            CREATE FUNCTION foo(x int, y int)
+            RETURNS int AS $$
+            BEGIN RETURN x + y; END;
+            $$ LANGUAGE plpgsql;
+          SQL
+        )
+
+        adapter.drop_function(:foo, arguments: "int, int")
+
+        remaining = adapter.functions.select { |f| f.name == "foo" }
+        expect(remaining.length).to eq(1)
       end
     end
   end
