@@ -136,11 +136,12 @@ module Fx
       def drop_function(name, arguments: nil)
         arguments ||= function_arguments_for(name)
 
-        if arguments
-          execute("DROP FUNCTION #{name}(#{arguments});")
-        else
-          execute("DROP FUNCTION #{name};")
-        end
+        function = Fx::Function.new(
+          "name" => name.to_s,
+          "definition" => "",
+          "arguments" => arguments
+        )
+        execute("DROP FUNCTION #{function.signature};")
       end
 
       # Drops the trigger from the database
@@ -198,7 +199,9 @@ module Fx
         when 1
           rows.first["arguments"].presence
         else
-          signatures = rows.map { |r| "#{name_str}(#{r["arguments"]})" }
+          signatures = rows.map { |r|
+            Fx::Function.new("name" => name_str, "definition" => "", "arguments" => r["arguments"]).signature
+          }
           raise Fx::AmbiguousFunctionError, <<~MSG.chomp
             Multiple definitions for function "#{name_str}": #{signatures.join(", ")}.
             Specify which to drop: drop_function :#{name_str}, arguments: "<argument types>"
