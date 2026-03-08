@@ -12,7 +12,8 @@ module Fx
         FUNCTIONS_WITH_DEFINITIONS_QUERY = <<~SQL.freeze
           SELECT
               pp.proname AS name,
-              pg_get_functiondef(pp.oid) AS definition
+              pg_get_functiondef(pp.oid) AS definition,
+              pg_get_function_identity_arguments(pp.oid) AS arguments
           FROM pg_proc pp
           JOIN pg_namespace pn
               ON pn.oid = pp.pronamespace

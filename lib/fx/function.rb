@@ -4,15 +4,27 @@ module Fx
     include Comparable
 
     attr_reader :name, :definition
-    delegate :<=>, to: :name
 
     def initialize(row)
       @name = row.fetch("name")
       @definition = row.fetch("definition")
+      @arguments = row.fetch("arguments", nil)
+    end
+
+    def <=>(other)
+      signature <=> other.signature
     end
 
     def ==(other)
-      name == other.name && definition == other.definition
+      signature == other.signature && definition == other.definition
+    end
+
+    def signature
+      if @arguments.nil?
+        name
+      else
+        "#{name}(#{@arguments})"
+      end
     end
 
     def to_schema
