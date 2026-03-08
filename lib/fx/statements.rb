@@ -30,7 +30,7 @@ module Fx
     #     $$ LANGUAGE plpgsql;
     #   SQL
     #
-    def create_function(name, version: 1, sql_definition: nil, revert_to_version: nil)
+    def create_function(name, version: 1, sql_definition: nil, revert_to_version: nil, arguments: nil)
       validate_version_or_sql_definition_present!(version, sql_definition)
       sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
 
