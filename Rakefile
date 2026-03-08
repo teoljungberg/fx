@@ -2,6 +2,11 @@ require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require "standard/rake"
 
+Rake::Task["release"].enhance do
+  tag = "v#{Fx::VERSION}"
+  sh "gh release create #{tag} --verify-tag -t #{tag} --generate-notes"
+end
+
 namespace :dummy do
   require_relative "spec/dummy/config/application"
   Dummy::Application.load_tasks
