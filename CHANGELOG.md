@@ -15,6 +15,7 @@ changelog, see the [commits] for each version via the version links.
 - Internal refactorings / improvements
   - Add scheduled EOL check for Ruby, Rails, and PostgreSQL (#205)
   - Add GitHub release creation to release task
+  - Harmonize function and trigger names in specs (#208)
   - Add PostgreSQL 18 to CI test matrix
   - Default `support_drop_function_without_args` to `true`
   - Remove duplicate command recorder specs
