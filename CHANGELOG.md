@@ -15,6 +15,8 @@ changelog, see the [commits] for each version via the version links.
   functions, fixing support for functions with parameters (#7)
 - Add `arguments:` option to `drop_function` and `update_function` for
   targeting specific overloads of functions that share a name
+- Custom adapters that override `drop_function` or `update_function` must
+  now accept an `arguments:` keyword argument
 - Internal refactorings / improvements
   - Add PostgreSQL 18 to CI test matrix
 
