@@ -9,9 +9,12 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
 
+- Add `Function#signature` for PostgreSQL function identity (#207)
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18
 - Refactor Statements module to use explicit keyword arguments instead of `**options` hash (#186)
 - Internal refactorings / improvements
+  - Add scheduled EOL check for Ruby, Rails, and PostgreSQL (#205)
+  - Add GitHub release creation to release task
   - Add PostgreSQL 18 to CI test matrix
 
 ## [0.10.2]
