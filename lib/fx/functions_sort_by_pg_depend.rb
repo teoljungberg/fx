@@ -26,7 +26,7 @@ module Fx
     private_constant :FLATTEN_DEPTH
 
     # Queries pg_depend for function-to-function dependencies, returning
-    # results by proname so they can be matched against Fx::Function#name.
+    # full signatures so overloaded functions are correctly distinguished.
     #
     # PostgreSQL only records pg_depend entries for SQL-language functions
     # whose bodies are parsed at CREATE time. PL/pgSQL bodies are parsed
@@ -34,8 +34,8 @@ module Fx
     # appear here. Use FunctionsSortByDependency (regex-based) for those.
     DEPENDENCY_QUERY = <<~SQL.freeze
       SELECT DISTINCT
-          dep_proc.proname AS dependent,
-          ref_proc.proname AS dependency
+          dep_proc.proname || '(' || pg_get_function_identity_arguments(dep_proc.oid) || ')' AS dependent,
+          ref_proc.proname || '(' || pg_get_function_identity_arguments(ref_proc.oid) || ')' AS dependency
       FROM pg_depend pd
       JOIN pg_proc dep_proc
           ON dep_proc.oid = pd.objid
@@ -60,20 +60,20 @@ module Fx
     end
 
     def tsort_each_child(function, &block)
-      deps = dependencies.fetch(function.name, [])
-      functions.select { |f| deps.include?(f.name) }.each(&block)
+      deps = dependencies.fetch(function.signature, [])
+      functions.select { |f| deps.include?(f.signature) }.each(&block)
     end
 
     def fetch_dependencies
       return {} if functions.empty?
 
-      function_names = functions.map(&:name).to_set
+      signatures = functions.map(&:signature).to_set
       rows = connection.exec_query(DEPENDENCY_QUERY)
       rows.each_with_object(Hash.new { |h, k| h[k] = [] }) do |row, hash|
         dependent = row["dependent"]
         dependency = row["dependency"]
 
-        if function_names.include?(dependent) && function_names.include?(dependency)
+        if signatures.include?(dependent) && signatures.include?(dependency)
           hash[dependent] << dependency
         end
       end

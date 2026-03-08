@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Fx::FunctionsSortByPgDepend do
   describe ".call" do
     it "orders dependencies before dependents" do
-      stub_pg_dependencies("euclidean" => ["vec_sub"])
+      stub_pg_dependencies("euclidean()" => ["vec_sub()"])
       euclidean = function("euclidean")
       vec_sub = function("vec_sub")
 
@@ -14,8 +14,8 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
 
     it "handles transitive dependencies" do
       stub_pg_dependencies(
-        "distance" => ["sum_squares"],
-        "sum_squares" => ["square"]
+        "distance()" => ["sum_squares()"],
+        "sum_squares()" => ["square()"]
       )
       distance = function("distance")
       sum_squares = function("sum_squares")
@@ -28,9 +28,9 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
 
     it "handles diamond dependencies" do
       stub_pg_dependencies(
-        "top" => ["left", "right"],
-        "left" => ["bottom"],
-        "right" => ["bottom"]
+        "top()" => ["left()", "right()"],
+        "left()" => ["bottom()"],
+        "right()" => ["bottom()"]
       )
       top = function("top")
       left = function("left")
@@ -45,8 +45,8 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
 
     it "handles cycles gracefully" do
       stub_pg_dependencies(
-        "is_even" => ["is_odd"],
-        "is_odd" => ["is_even"]
+        "is_even()" => ["is_odd()"],
+        "is_odd()" => ["is_even()"]
       )
       is_even = function("is_even")
       is_odd = function("is_odd")
@@ -67,7 +67,7 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
     end
 
     it "ignores dependencies on functions not in the input list" do
-      stub_pg_dependencies("calculate" => ["unknown_function"])
+      stub_pg_dependencies("calculate()" => ["unknown_function()"])
       calculate = function("calculate")
 
       result = described_class.call([calculate])
@@ -81,10 +81,23 @@ RSpec.describe Fx::FunctionsSortByPgDepend do
       expect(result).to eq([])
     end
 
-    def function(name)
+    it "distinguishes overloaded functions by signature" do
+      stub_pg_dependencies("add(integer, integer)" => ["inc(integer)"])
+      add_int = function("add", arguments: "integer, integer")
+      add_text = function("add", arguments: "text, text")
+      inc = function("inc", arguments: "integer")
+
+      result = described_class.call([add_int, add_text, inc])
+
+      expect(result.index(inc)).to be < result.index(add_int)
+      expect(result).to include(add_text)
+    end
+
+    def function(name, arguments: "")
       Fx::Function.new(
         "name" => name,
-        "definition" => "CREATE FUNCTION #{name}()"
+        "definition" => "CREATE FUNCTION #{name}()",
+        "arguments" => arguments
       )
     end
 
