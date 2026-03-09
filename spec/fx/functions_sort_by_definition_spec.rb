@@ -253,14 +253,49 @@ RSpec.describe Fx::FunctionsSortByDefinition do
       expect(result).to eq([helper, calculate])
     end
 
+    it "treats all overloaded functions as dependencies when called by name" do
+      add_integers = function("add", <<~SQL, arguments: "a integer, b integer")
+        CREATE OR REPLACE FUNCTION add(a integer, b integer)
+        RETURNS integer AS $$
+        BEGIN
+            RETURN a + b;
+        END;
+        $$ LANGUAGE plpgsql;
+      SQL
+      add_floats = function("add", <<~SQL, arguments: "a float, b float")
+        CREATE OR REPLACE FUNCTION add(a float, b float)
+        RETURNS float AS $$
+        BEGIN
+            RETURN a + b;
+        END;
+        $$ LANGUAGE plpgsql;
+      SQL
+      sum_three = function("sum_three", <<~SQL)
+        CREATE OR REPLACE FUNCTION sum_three(x integer, y integer, z integer)
+        RETURNS integer AS $$
+        BEGIN
+            RETURN add(add(x, y), z);
+        END;
+        $$ LANGUAGE plpgsql;
+      SQL
+
+      result = described_class.call([sum_three, add_integers, add_floats])
+
+      expect(result).to eq([add_integers, add_floats, sum_three])
+    end
+
     it "returns an empty array when given no functions" do
       result = described_class.call([])
 
       expect(result).to eq([])
     end
 
-    def function(name, definition)
-      Fx::Function.new("name" => name, "definition" => definition)
+    def function(name, definition, arguments: nil)
+      Fx::Function.new(
+        "name" => name,
+        "definition" => definition,
+        "arguments" => arguments,
+      )
     end
   end
 end
