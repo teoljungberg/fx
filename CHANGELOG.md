@@ -16,6 +16,8 @@ changelog, see the [commits] for each version via the version links.
   - Add scheduled EOL check for Ruby, Rails, and PostgreSQL (#205)
   - Add GitHub release creation to release task
   - Add PostgreSQL 18 to CI test matrix
+  - Default `support_drop_function_without_args` to `true`
+  - Remove duplicate command recorder specs
 
 ## [0.10.2]
 

@@ -13,14 +13,6 @@ RSpec.describe Fx::CommandRecorder, :db do
     it "reverts to drop_function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
-      recorder.create_function :test
-
-      expect(recorder.commands).to eq([[:create_function, [:test], nil]])
-    end
-
-    it "reverts to drop_function" do
-      recorder = ActiveRecord::Migration::CommandRecorder.new
-
       recorder.revert { recorder.create_function :test }
 
       expect(recorder.commands).to eq([[:drop_function, [:test]]])
@@ -88,14 +80,6 @@ RSpec.describe Fx::CommandRecorder, :db do
 
   describe "#create_trigger" do
     it "records the created trigger" do
-      recorder = ActiveRecord::Migration::CommandRecorder.new
-
-      recorder.create_trigger :greetings
-
-      expect(recorder.commands).to eq([[:create_trigger, [:greetings], nil]])
-    end
-
-    it "reverts to drop_trigger" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
 
       recorder.create_trigger :greetings
