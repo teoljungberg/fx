@@ -3,7 +3,7 @@ require "spec_helper"
 RSpec.describe Fx::FunctionsSortByDefinition do
   describe ".call" do
     it "orders dependencies before dependents" do
-      euclidean = function("euclidean", <<~SQL)
+      euclidean = Fx::Function.new("name" => "euclidean", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION euclidean(a float[], b float[])
         RETURNS float AS $$
         BEGIN
@@ -11,7 +11,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      vec_sub = function("vec_sub", <<~SQL)
+      vec_sub = Fx::Function.new("name" => "vec_sub", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION vec_sub(a float[], b float[])
         RETURNS float[] AS $$
         BEGIN
@@ -26,7 +26,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "handles transitive dependencies" do
-      distance = function("distance", <<~SQL)
+      distance = Fx::Function.new("name" => "distance", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION distance(a float[], b float[])
         RETURNS float AS $$
         BEGIN
@@ -34,7 +34,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      sum_squares = function("sum_squares", <<~SQL)
+      sum_squares = Fx::Function.new("name" => "sum_squares", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION sum_squares(a float[], b float[])
         RETURNS float AS $$
         BEGIN
@@ -42,7 +42,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      square = function("square", <<~SQL)
+      square = Fx::Function.new("name" => "square", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION square(x float)
         RETURNS float AS $$
         BEGIN
@@ -57,7 +57,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "handles cycles gracefully" do
-      is_even = function("is_even", <<~SQL)
+      is_even = Fx::Function.new("name" => "is_even", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION is_even(n integer)
         RETURNS boolean AS $$
         BEGIN
@@ -66,7 +66,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      is_odd = function("is_odd", <<~SQL)
+      is_odd = Fx::Function.new("name" => "is_odd", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION is_odd(n integer)
         RETURNS boolean AS $$
         BEGIN
@@ -82,7 +82,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "preserves order when there are no dependencies" do
-      add = function("add", <<~SQL)
+      add = Fx::Function.new("name" => "add", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION add(a integer, b integer)
         RETURNS integer AS $$
         BEGIN
@@ -90,7 +90,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      multiply = function("multiply", <<~SQL)
+      multiply = Fx::Function.new("name" => "multiply", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION multiply(a integer, b integer)
         RETURNS integer AS $$
         BEGIN
@@ -105,7 +105,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "does not match substring function names" do
-      normalize = function("normalize", <<~SQL)
+      normalize = Fx::Function.new("name" => "normalize", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION normalize(v float[])
         RETURNS float[] AS $$
         BEGIN
@@ -113,7 +113,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      normalize_vector = function("normalize_vector", <<~SQL)
+      normalize_vector = Fx::Function.new("name" => "normalize_vector", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION normalize_vector(v float[])
         RETURNS float[] AS $$
         BEGIN
@@ -121,7 +121,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      norm = function("norm", <<~SQL)
+      norm = Fx::Function.new("name" => "norm", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION norm(v float[])
         RETURNS float AS $$
         BEGIN
@@ -136,7 +136,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "handles multiple calls to the same dependency" do
-      distance = function("distance", <<~SQL)
+      distance = Fx::Function.new("name" => "distance", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION distance(a float[], b float[])
         RETURNS float AS $$
         BEGIN
@@ -144,7 +144,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      vec_sub = function("vec_sub", <<~SQL)
+      vec_sub = Fx::Function.new("name" => "vec_sub", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION vec_sub(a float[], b float[])
         RETURNS float[] AS $$
         BEGIN
@@ -159,7 +159,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "ignores function names in single-line comments" do
-      calculate = function("calculate", <<~SQL)
+      calculate = Fx::Function.new("name" => "calculate", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION calculate(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -168,7 +168,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      helper = function("helper", <<~SQL)
+      helper = Fx::Function.new("name" => "helper", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION helper(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -183,7 +183,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "ignores function names in block comments" do
-      calculate = function("calculate", <<~SQL)
+      calculate = Fx::Function.new("name" => "calculate", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION calculate(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -192,7 +192,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      helper = function("helper", <<~SQL)
+      helper = Fx::Function.new("name" => "helper", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION helper(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -207,7 +207,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "does not match function names preceded by word characters" do
-      process = function("process", <<~SQL)
+      process = Fx::Function.new("name" => "process", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION process(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -215,7 +215,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      preprocess = function("preprocess", <<~SQL)
+      preprocess = Fx::Function.new("name" => "preprocess", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION preprocess(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -230,7 +230,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "does not confuse apostrophes in comments with string delimiters" do
-      calculate = function("calculate", <<~SQL)
+      calculate = Fx::Function.new("name" => "calculate", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION calculate(x integer)
         RETURNS integer AS $$
         BEGIN
@@ -239,7 +239,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
         END;
         $$ LANGUAGE plpgsql;
       SQL
-      helper = function("helper", <<~SQL)
+      helper = Fx::Function.new("name" => "helper", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION helper(x text)
         RETURNS integer AS $$
         BEGIN
@@ -254,23 +254,31 @@ RSpec.describe Fx::FunctionsSortByDefinition do
     end
 
     it "treats all overloaded functions as dependencies when called by name" do
-      add_integers = function("add", <<~SQL, arguments: "a integer, b integer")
-        CREATE OR REPLACE FUNCTION add(a integer, b integer)
-        RETURNS integer AS $$
-        BEGIN
-            RETURN a + b;
-        END;
-        $$ LANGUAGE plpgsql;
-      SQL
-      add_floats = function("add", <<~SQL, arguments: "a float, b float")
-        CREATE OR REPLACE FUNCTION add(a float, b float)
-        RETURNS float AS $$
-        BEGIN
-            RETURN a + b;
-        END;
-        $$ LANGUAGE plpgsql;
-      SQL
-      sum_three = function("sum_three", <<~SQL)
+      add_integers = Fx::Function.new(
+        "name" => "add",
+        "definition" => <<~SQL,
+          CREATE OR REPLACE FUNCTION add(a integer, b integer)
+          RETURNS integer AS $$
+          BEGIN
+              RETURN a + b;
+          END;
+          $$ LANGUAGE plpgsql;
+        SQL
+        "arguments" => "a integer, b integer",
+      )
+      add_floats = Fx::Function.new(
+        "name" => "add",
+        "definition" => <<~SQL,
+          CREATE OR REPLACE FUNCTION add(a float, b float)
+          RETURNS float AS $$
+          BEGIN
+              RETURN a + b;
+          END;
+          $$ LANGUAGE plpgsql;
+        SQL
+        "arguments" => "a float, b float",
+      )
+      sum_three = Fx::Function.new("name" => "sum_three", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION sum_three(x integer, y integer, z integer)
         RETURNS integer AS $$
         BEGIN
@@ -288,14 +296,6 @@ RSpec.describe Fx::FunctionsSortByDefinition do
       result = described_class.call([])
 
       expect(result).to eq([])
-    end
-
-    def function(name, definition, arguments: nil)
-      Fx::Function.new(
-        "name" => name,
-        "definition" => definition,
-        "arguments" => arguments,
-      )
     end
   end
 end
