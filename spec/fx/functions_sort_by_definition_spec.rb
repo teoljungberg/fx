@@ -264,7 +264,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
           END;
           $$ LANGUAGE plpgsql;
         SQL
-        "arguments" => "a integer, b integer",
+        "arguments" => "a integer, b integer"
       )
       add_floats = Fx::Function.new(
         "name" => "add",
@@ -276,7 +276,7 @@ RSpec.describe Fx::FunctionsSortByDefinition do
           END;
           $$ LANGUAGE plpgsql;
         SQL
-        "arguments" => "a float, b float",
+        "arguments" => "a float, b float"
       )
       sum_three = Fx::Function.new("name" => "sum_three", "definition" => <<~SQL)
         CREATE OR REPLACE FUNCTION sum_three(x integer, y integer, z integer)
