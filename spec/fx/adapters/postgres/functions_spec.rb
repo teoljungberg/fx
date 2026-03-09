@@ -5,10 +5,10 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
     it "returns `Function` objects" do
       connection = ActiveRecord::Base.connection
       connection.execute <<~SQL
-        CREATE OR REPLACE FUNCTION test()
+        CREATE OR REPLACE FUNCTION value()
         RETURNS text AS $$
         BEGIN
-            RETURN 'test';
+            RETURN 'value';
         END;
         $$ LANGUAGE plpgsql;
       SQL
@@ -17,14 +17,14 @@ RSpec.describe Fx::Adapters::Postgres::Functions, :db do
 
       first = functions.first
       expect(functions.size).to eq(1)
-      expect(first.name).to eq("test")
+      expect(first.name).to eq("value")
       expect(first.definition).to eq(<<~SQL)
-        CREATE OR REPLACE FUNCTION public.test()
+        CREATE OR REPLACE FUNCTION public.value()
          RETURNS text
          LANGUAGE plpgsql
         AS $function$
         BEGIN
-            RETURN 'test';
+            RETURN 'value';
         END;
         $function$
       SQL

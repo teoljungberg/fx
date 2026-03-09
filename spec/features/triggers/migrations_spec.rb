@@ -10,7 +10,7 @@ RSpec.describe "Trigger migrations", :db do
       );
     SQL
     Fx.database.create_function <<~SQL
-      CREATE OR REPLACE FUNCTION uppercase_users_name()
+      CREATE OR REPLACE FUNCTION set_upper_name()
       RETURNS trigger AS $$
       BEGIN
         NEW.upper_name = UPPER(NEW.name);
@@ -19,13 +19,13 @@ RSpec.describe "Trigger migrations", :db do
       $$ LANGUAGE plpgsql;
     SQL
     sql_definition = <<~SQL
-      CREATE TRIGGER uppercase_users_name
+      CREATE TRIGGER set_upper_name
           BEFORE INSERT ON users
           FOR EACH ROW
-          EXECUTE FUNCTION uppercase_users_name();
+          EXECUTE FUNCTION set_upper_name();
     SQL
     with_trigger_definition(
-      name: :uppercase_users_name,
+      name: :set_upper_name,
       sql_definition: sql_definition
     ) do
       example.run
@@ -35,7 +35,7 @@ RSpec.describe "Trigger migrations", :db do
   it "can run migrations that create triggers" do
     migration = Class.new(migration_class) do
       def up
-        create_trigger :uppercase_users_name
+        create_trigger :set_upper_name
       end
     end
 
@@ -43,11 +43,11 @@ RSpec.describe "Trigger migrations", :db do
   end
 
   it "can run migrations that drop triggers" do
-    connection.create_trigger(:uppercase_users_name)
+    connection.create_trigger(:set_upper_name)
 
     migration = Class.new(migration_class) do
       def up
-        drop_trigger :uppercase_users_name, on: :users
+        drop_trigger :set_upper_name, on: :users
       end
     end
 

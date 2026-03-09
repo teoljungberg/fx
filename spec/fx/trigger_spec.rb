@@ -38,13 +38,13 @@ RSpec.describe Fx::Trigger do
   describe "#to_schema" do
     it "returns a schema compatible version of the trigger" do
       trigger = Fx::Trigger.new(
-        "name" => "uppercase_users_name",
-        "definition" => "CREATE TRIGGER uppercase_users_name ..."
+        "name" => "set_upper_name",
+        "definition" => "CREATE TRIGGER set_upper_name ..."
       )
 
       expect(trigger.to_schema).to eq(<<-EOS)
-  create_trigger :uppercase_users_name, sql_definition: <<-\SQL
-      CREATE TRIGGER uppercase_users_name ...
+  create_trigger :set_upper_name, sql_definition: <<-\SQL
+      CREATE TRIGGER set_upper_name ...
   SQL
       EOS
     end
