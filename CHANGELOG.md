@@ -12,6 +12,8 @@ changelog, see the [commits] for each version via the version links.
 - Add `Function#signature` for PostgreSQL function identity (#207)
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18 (#194)
 - Refactor Statements module to use explicit keyword arguments instead of `**options` hash (#186)
+- Add `config.function_sorter` to allow custom function ordering in
+  schema.rb (#197, #200)
 - Internal refactorings / improvements
   - Add scheduled EOL check for Ruby, Rails, and PostgreSQL (#205)
   - Add GitHub release creation to release task (#209)

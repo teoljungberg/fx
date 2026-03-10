@@ -4,11 +4,9 @@ module Fx
     def tables(stream)
       if Fx.configuration.dump_functions_at_beginning_of_schema
         functions(stream)
-      end
-
-      super
-
-      unless Fx.configuration.dump_functions_at_beginning_of_schema
+        super
+      else
+        super
         functions(stream)
       end
 
@@ -18,18 +16,22 @@ module Fx
     private
 
     def functions(stream)
-      dumpable_functions_in_database = Fx.database.functions
-
-      dumpable_functions_in_database.each do |function|
+      sorted_functions(Fx.database.functions).each do |function|
         stream.puts
         stream.puts(function.to_schema)
       end
     end
 
-    def triggers(stream)
-      dumpable_triggers_in_database = Fx.database.triggers
+    def sorted_functions(functions)
+      if (function_sorter = Fx.configuration.function_sorter)
+        function_sorter.call(functions)
+      else
+        functions
+      end
+    end
 
-      dumpable_triggers_in_database.each do |trigger|
+    def triggers(stream)
+      Fx.database.triggers.each do |trigger|
         stream.puts
         stream.puts(trigger.to_schema)
       end
