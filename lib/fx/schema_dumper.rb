@@ -31,9 +31,17 @@ module Fx
     end
 
     def triggers(stream)
-      Fx.database.triggers.each do |trigger|
+      sorted_triggers(Fx.database.triggers).each do |trigger|
         stream.puts
         stream.puts(trigger.to_schema)
+      end
+    end
+
+    def sorted_triggers(triggers)
+      if (trigger_sorter = Fx.configuration.trigger_sorter)
+        trigger_sorter.call(triggers)
+      else
+        triggers
       end
     end
   end
