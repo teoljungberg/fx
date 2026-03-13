@@ -44,4 +44,19 @@ RSpec.describe Fx::Configuration do
 
     expect(configuration.function_sorter).to eq(sorter)
   end
+
+  it "defaults `trigger_sorter` to nil" do
+    configuration = Fx::Configuration.new
+
+    expect(configuration.trigger_sorter).to be_nil
+  end
+
+  it "allows `trigger_sorter` to be set" do
+    configuration = Fx::Configuration.new
+    sorter = ->(triggers) { triggers.reverse }
+
+    configuration.trigger_sorter = sorter
+
+    expect(configuration.trigger_sorter).to eq(sorter)
+  end
 end
