@@ -111,7 +111,9 @@ column value instead of a plain string.
 
 By default, functions and triggers are dumped to `schema.rb` in the order
 returned by the database. If you need a specific ordering (e.g., alphabetical
-for deterministic diffs), subclass the adapter:
+for deterministic diffs), subclass the adapter and override `#functions` or
+`#triggers`. These methods are part of the adapter's public API and will remain
+stable across releases:
 
 ```ruby
 # config/initializers/fx.rb
