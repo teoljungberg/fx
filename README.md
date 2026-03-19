@@ -107,6 +107,35 @@ end
 That's how you tell Rails to use the default as a literal SQL for the default
 column value instead of a plain string.
 
+## Customizing Schema Dump Order
+
+By default, functions and triggers are dumped to `schema.rb` in the order
+returned by the database. If you need a specific ordering (e.g., alphabetical
+for deterministic diffs), subclass the adapter and override `#functions` or
+`#triggers`. These methods are part of the adapter's public API and will remain
+stable across releases:
+
+```ruby
+# config/initializers/fx.rb
+class SortedPostgresAdapter < Fx::Adapters::Postgres
+  def functions
+    super.sort_by(&:name)
+  end
+
+  def triggers
+    super.sort_by(&:name)
+  end
+end
+
+Fx.configure do |config|
+  config.database = SortedPostgresAdapter.new
+end
+```
+
+The same approach works for more advanced ordering. For example, if your
+functions depend on each other and need to be dumped in dependency order, you
+could use Ruby's built-in `TSort` to topologically sort them.
+
 ## Plugins/Adapters
 
 - [MySQL](https://github.com/f-mer/fx-adapters-mysql/)
