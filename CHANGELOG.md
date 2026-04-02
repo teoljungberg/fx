@@ -9,7 +9,7 @@ changelog, see the [commits] for each version via the version links.
 
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
 
-- Drop EOL Ruby 3.2
+- Drop EOL Ruby 3.2 (#212)
 - Add `Function#signature` for PostgreSQL function identity (#207)
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18 (#194)
 - Refactor Statements module to use explicit keyword arguments instead of `**options` hash (#186)
