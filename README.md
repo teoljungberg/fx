@@ -147,7 +147,7 @@ could use Ruby's built-in `TSort` to topologically sort them.
 F(x) follows the maintenance policies of Ruby, Rails, and PostgreSQL, supporting
 versions within their official maintenance windows.
 
-**Ruby:** 3.2+ ([maintenance branches])
+**Ruby:** 3.3+ ([maintenance branches])
 
 **Rails:** 7.2, 8.0, 8.1 ([maintenance policy])
 
