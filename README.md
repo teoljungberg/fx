@@ -136,6 +136,110 @@ The same approach works for more advanced ordering. For example, if your
 functions depend on each other and need to be dumped in dependency order, you
 could use Ruby's built-in `TSort` to topologically sort them.
 
+### Topological sort for dependent functions
+
+If your functions reference each other, dump-order matters: a function written
+in `LANGUAGE sql` is name-resolved at `CREATE` time, so a referenced function
+must already exist when its caller is created. The default order returned by
+the database is not guaranteed to be dependency-safe — for example, after
+out-of-order migrations across branches, or after dropping and recreating a
+function, the on-disk creation order may have flipped.
+
+`pg_depend` looks like the natural source of truth here, but PostgreSQL only
+records function-to-function dependencies for new-style (PG14+) SQL functions
+written with `RETURN ...` or `BEGIN ATOMIC ... END;`, whose body is stored as
+a parsed query tree. The `CREATE OR REPLACE FUNCTION ... LANGUAGE sql AS $$
+... $$` form that F(x) generates (and `LANGUAGE plpgsql` functions in general)
+store the body as opaque text in `pg_proc.prosrc`, with no `pg_depend` rows
+for inter-function references.
+
+A more portable approach is to scan `prosrc` textually for whole-word matches
+of other managed function names, then run the resulting graph through Ruby's
+`TSort`:
+
+```ruby
+# config/initializers/fx.rb
+require "tsort"
+
+class TopologicallySortedAdapter < Fx::Adapters::Postgres
+  def functions
+    fns = super
+    sort_by_dependencies(fns)
+  end
+
+  private
+
+  def sort_by_dependencies(fns)
+    by_name = fns.index_by(&:name)
+    deps = fetch_dependencies
+
+    sorter = Class.new do
+      include TSort
+      def initialize(nodes, deps, by_name)
+        @nodes, @deps, @by_name = nodes, deps, by_name
+      end
+      def tsort_each_node(&blk) = @nodes.each(&blk)
+      def tsort_each_child(node, &blk)
+        Array(@deps[node.name])
+          .map { |n| @by_name[n] }
+          .compact
+          .each(&blk)
+      end
+    end
+
+    sorter.new(fns, deps, by_name).tsort
+  end
+
+  def fetch_dependencies
+    rows = ActiveRecord::Base.connection.exec_query(<<~'SQL', "fx deps")
+      SELECT caller.proname AS caller, callee.proname AS callee
+      FROM pg_proc caller
+      JOIN pg_namespace cns ON cns.oid = caller.pronamespace
+      LEFT JOIN pg_depend cd ON cd.objid = caller.oid AND cd.deptype = 'e'
+      LEFT JOIN pg_aggregate ca ON ca.aggfnoid = caller.oid
+      JOIN pg_proc callee ON callee.oid <> caller.oid
+      JOIN pg_namespace ens ON ens.oid = callee.pronamespace
+      LEFT JOIN pg_depend ed ON ed.objid = callee.oid AND ed.deptype = 'e'
+      LEFT JOIN pg_aggregate ea ON ea.aggfnoid = callee.oid
+      WHERE cns.nspname = ANY (current_schemas(false))
+        AND ens.nspname = ANY (current_schemas(false))
+        AND cd.objid IS NULL AND ca.aggfnoid IS NULL
+        AND ed.objid IS NULL AND ea.aggfnoid IS NULL
+        AND caller.prosrc ~ ('\m' || callee.proname || '\M');
+    SQL
+
+    rows.each_with_object(Hash.new { |h, k| h[k] = [] }) do |r, acc|
+      acc[r["caller"]] << r["callee"]
+    end
+  end
+end
+
+Fx.configure do |config|
+  config.database = TopologicallySortedAdapter.new
+end
+```
+
+A few notes on the query and the technique:
+
+- The heredoc is `<<~'SQL'` (single-quoted marker) so Ruby leaves `\m` and
+  `\M` alone — those are PostgreSQL regex word-boundary anchors that match a
+  callee name as a whole word in the caller's body source.
+- Both sides of the join apply the same filters F(x) uses for its own dump
+  query: `pg_namespace` restricted to the current search path,
+  `pg_depend.deptype = 'e'` excluded so extension-owned functions don't
+  appear, and `pg_aggregate.aggfnoid IS NULL` so aggregates don't either.
+  The result is a graph over the same set of functions F(x) is about to dump.
+- Built-in or extension function names that happen to appear in a body
+  (`sum`, `round`, `unnest`, …) will produce edges in the raw query result,
+  but they're harmless — the graph drops them when `@by_name` lookup returns
+  no matching node.
+- `TSort#tsort` raises `TSort::Cyclic` on a true cycle. PostgreSQL would
+  reject the cycle at `CREATE` time anyway, so the loud failure is fine.
+
+Unlike a `pg_depend`-based approach, this technique works uniformly for
+`LANGUAGE sql`, `LANGUAGE plpgsql`, and any other language whose body is
+stored in `pg_proc.prosrc`.
+
 ## Plugins/Adapters
 
 - [MySQL](https://github.com/f-mer/fx-adapters-mysql/)
