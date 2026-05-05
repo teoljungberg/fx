@@ -5,9 +5,9 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
-## [Unreleased]
+## [0.11.0]
 
-[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.10.2..HEAD
+[0.11.0]: https://github.com/teoljungberg/fx/compare/v0.10.2...v0.11.0
 
 - Drop EOL Ruby 3.2 (#212)
 - Add `Function#signature` for PostgreSQL function identity (#207)
