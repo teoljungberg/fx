@@ -18,6 +18,7 @@ changelog, see the [commits] for each version via the version links.
   - Add GitHub release creation to release task (#209)
   - Add PostgreSQL 18 to CI test matrix (#194)
   - Default `support_drop_function_without_args` to `true` (#194)
+  - Document adapter subclass pattern for custom schema dump ordering (#211)
   - Remove duplicate command recorder specs (#202)
 
 ## [0.10.2]
