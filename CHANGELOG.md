@@ -13,6 +13,12 @@ changelog, see the [commits] for each version via the version links.
 - Add `Function#signature` for PostgreSQL function identity (#207)
 - Add PostgreSQL versioning policy, officially supporting PostgreSQL 14-18 (#194)
 - Refactor Statements module to use explicit keyword arguments instead of `**options` hash (#186)
+- Auto-detect function argument types from `pg_proc` when dropping or updating
+  functions, fixing support for functions with parameters (#7)
+- Add `arguments:` option to `drop_function` and `update_function` for
+  targeting specific overloads of functions that share a name
+- Custom adapters that override `drop_function` or `update_function` must
+  now accept an `arguments:` keyword argument
 - Internal refactorings / improvements
   - Add scheduled EOL check for Ruby, Rails, and PostgreSQL (#205)
   - Add GitHub release creation to release task (#209)
