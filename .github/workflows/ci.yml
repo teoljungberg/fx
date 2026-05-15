@@ -61,13 +61,13 @@ jobs:
         env:
           COVERAGE: true
           SIMPLECOV_COMMAND_NAME: unit
-        run: bundle exec rspec --exclude-pattern "spec/acceptance/**/*"
+        run: bundle exec rake spec
 
       - name: Run acceptance tests
         env:
           COVERAGE: true
           SIMPLECOV_COMMAND_NAME: acceptance
-        run: bundle exec rspec spec/acceptance
+        run: bundle exec rake spec:acceptance
 
       - name: Run linter
         run: bundle exec standardrb
