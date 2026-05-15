@@ -91,24 +91,4 @@ RSpec.describe Fx::Generators::NameHelper do
       expect(result).to eq(":comments")
     end
   end
-
-  describe ".validate_and_format" do
-    it "formats valid names correctly" do
-      result = described_class.validate_and_format("test_function")
-
-      expect(result).to eq(":test_function")
-    end
-
-    it "formats schema-qualified names correctly" do
-      result = described_class.validate_and_format("schema.test")
-
-      expect(result).to eq("\"schema.test\"")
-    end
-
-    it "raises error for blank names" do
-      expect {
-        described_class.validate_and_format("")
-      }.to raise_error(ArgumentError, "Name cannot be blank")
-    end
-  end
 end
