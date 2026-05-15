@@ -22,12 +22,6 @@ module Fx
 
         format_for_migration(name)
       end
-
-      def self.validate_and_format(name)
-        raise ArgumentError, "Name cannot be blank" if name.blank?
-
-        format_for_migration(name)
-      end
     end
   end
 end
