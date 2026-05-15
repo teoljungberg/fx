@@ -94,10 +94,6 @@ module Fx
       def definition
         version_helper.definition_for_version(version: version, type: :trigger)
       end
-
-      def updating_existing_trigger?
-        version_helper.updating_existing?
-      end
     end
   end
 end

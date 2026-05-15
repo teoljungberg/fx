@@ -20,4 +20,5 @@ gem "redcarpet"
 gem "rspec", ">= 3.3"
 gem "standardrb"
 gem "yard"
+gem "simplecov", require: false
 gem "warning"

@@ -1,5 +1,22 @@
 ENV["RAILS_ENV"] = "test"
 
+if ENV["COVERAGE"]
+  require "simplecov"
+  require "simplecov_json_formatter"
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::JSONFormatter
+  ])
+  SimpleCov.start do
+    add_filter "/spec/"
+    add_filter "/vendor/"
+    add_filter "lib/fx/version.rb"
+    command_name ENV.fetch("SIMPLECOV_COMMAND_NAME", "RSpec")
+    track_files "lib/**/*.rb"
+    minimum_coverage 100
+  end
+end
+
 require File.expand_path("../dummy/config/environment", __FILE__)
 Dir["spec/support/**/*.rb"].sort.each { |file| load file }
 
