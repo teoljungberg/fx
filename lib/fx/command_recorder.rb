@@ -78,10 +78,6 @@ module Fx
         args.fetch(0)
       end
 
-      def version
-        options.fetch(:version)
-      end
-
       def revert_to_version
         options.fetch(:revert_to_version, nil)
       end
