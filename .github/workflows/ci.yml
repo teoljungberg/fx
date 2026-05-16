@@ -59,3 +59,12 @@ jobs:
 
       - name: Run tests
         run: bundle exec rake
+
+  ci:
+    name: CI
+    needs: [tests]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - run: |
+          [[ "${{ needs.tests.result }}" == "success" ]] || exit 1
