@@ -16,20 +16,17 @@ module Fx
     private
 
     def functions(stream)
-      dumpable_functions_in_database = Fx.database.functions
-
-      dumpable_functions_in_database.each do |function|
-        stream.puts
-        stream.puts(function.to_schema)
-      end
+      dump_each(stream, Fx.database.functions)
     end
 
     def triggers(stream)
-      dumpable_triggers_in_database = Fx.database.triggers
+      dump_each(stream, Fx.database.triggers)
+    end
 
-      dumpable_triggers_in_database.each do |trigger|
+    def dump_each(stream, definitions)
+      definitions.each do |definition|
         stream.puts
-        stream.puts(trigger.to_schema)
+        stream.puts(definition.to_schema)
       end
     end
   end
