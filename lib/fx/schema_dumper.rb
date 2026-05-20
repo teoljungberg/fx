@@ -4,11 +4,9 @@ module Fx
     def tables(stream)
       if Fx.configuration.dump_functions_at_beginning_of_schema
         functions(stream)
-      end
-
-      super
-
-      unless Fx.configuration.dump_functions_at_beginning_of_schema
+        super
+      else
+        super
         functions(stream)
       end
 
