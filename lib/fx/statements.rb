@@ -10,6 +10,10 @@ module Fx
     # @param sql_definition [String] The SQL query for the function schema.
     #   If both `sql_definition` and `version` are provided,
     #   `sql_definition` takes precedence.
+    # @param arguments [String] Function argument types (e.g. "integer, text").
+    #   Not used during creation itself, but preserved by the command recorder
+    #   so that a rollback of this migration can pass the correct signature to
+    #   {#drop_function}. Only needed for overloaded functions.
     # @return [void] The database response from executing the create statement.
     #
     # @example Create from `db/functions/uppercase_users_name_v02.sql`
@@ -26,7 +30,7 @@ module Fx
     #     $$ LANGUAGE plpgsql;
     #   SQL
     #
-    def create_function(name, version: 1, sql_definition: nil, revert_to_version: nil)
+    def create_function(name, version: 1, sql_definition: nil, revert_to_version: nil, arguments: nil)
       validate_version_or_sql_definition_present!(version, sql_definition)
       sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
 
@@ -39,13 +43,17 @@ module Fx
     # @param revert_to_version [Integer] Used to reverse the `drop_function`
     #   command on `rake db:rollback`. The provided version will be passed as
     #   the `version` argument to {#create_function}.
+    # @param arguments [String] Function argument types for identifying
+    #   overloaded functions (e.g. "integer, text"). When omitted, the
+    #   Postgres adapter auto-detects the signature from the database.
+    #   Custom adapters must accept this keyword to use it.
     # @return [void] The database response from executing the drop statement.
     #
     # @example Drop a function, rolling back to version 2 on rollback
     #   drop_function(:uppercase_users_name, revert_to_version: 2)
     #
-    def drop_function(name, revert_to_version: nil)
-      Fx.database.drop_function(name)
+    def drop_function(name, revert_to_version: nil, arguments: nil)
+      Fx.database.drop_function(name, **{arguments: arguments}.compact)
     end
 
     # Update a database function.
@@ -57,6 +65,10 @@ module Fx
     # @param sql_definition [String] The SQL query for the function schema.
     #   If both `sql_definition` and `version` are provided,
     #   `sql_definition` takes precedence.
+    # @param arguments [String] Function argument types for identifying
+    #   overloaded functions (e.g. "integer, text"). When omitted, the
+    #   Postgres adapter auto-detects the signature from the database.
+    #   Custom adapters must accept this keyword to use it.
     # @return [void] The database response from executing the create statement.
     #
     # @example Update function to a given version
@@ -77,12 +89,12 @@ module Fx
     #     $$ LANGUAGE plpgsql;
     #   SQL
     #
-    def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil)
+    def update_function(name, version: nil, sql_definition: nil, revert_to_version: nil, arguments: nil)
       validate_version_or_sql_definition_present!(version, sql_definition)
 
       sql_definition = resolve_sql_definition(sql_definition, name, version, :function)
 
-      Fx.database.update_function(name, sql_definition)
+      Fx.database.update_function(name, sql_definition, **{arguments: arguments}.compact)
     end
 
     # Create a new database trigger.

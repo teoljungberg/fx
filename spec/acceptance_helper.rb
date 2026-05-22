@@ -61,6 +61,12 @@ RSpec.configure do |config|
     successfully "cmp #{def_a} #{def_b}"
   end
 
+  def write_migration(name, contents)
+    Dir.mkdir("db/migrate") unless Dir.exist?("db/migrate")
+    timestamp = Time.now.utc.strftime("%Y%m%d%H%M%S")
+    File.write("db/migrate/#{timestamp}_#{name}.rb", contents)
+  end
+
   def execute(command)
     ActiveRecord::Base.connection.execute(command).first
   end
