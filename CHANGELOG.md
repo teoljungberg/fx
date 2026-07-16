@@ -5,6 +5,14 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
+## [Unreleased]
+
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.13.0...HEAD
+
+- Internal refactorings / improvements
+  - Test the full range of supported PostgreSQL versions (15-18) in CI
+  - Add a non-blocking CI job for the upcoming PostgreSQL 19 release
+
 ## [0.13.0]
 
 [0.13.0]: https://github.com/teoljungberg/fx/compare/v0.12.0...v0.13.0
