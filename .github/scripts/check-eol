@@ -1,95 +1,185 @@
-#!/bin/sh
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
 #
 # Check if minimum supported dependency versions are at or approaching EOL.
 # Uses the endoflife.date API. Outputs GitHub Actions annotations and opens
 # an issue when action is needed.
 #
+# Written using only the Ruby standard library.
+#
 # Environment:
-#   WARN_DAYS - days before EOL to start warning (default: 90)
-#   GH_TOKEN  - GitHub token for creating issues (optional)
+#   WARN_DAYS         - days before EOL to start warning (default: 90)
+#   GH_TOKEN          - GitHub token for creating issues (optional)
+#   GITHUB_REPOSITORY - "owner/repo" slug for issue creation (optional)
 
-set -e
+require "date"
+require "json"
+require "net/http"
+require "openssl"
+require "rubygems"
+require "uri"
+require "yaml"
 
-WARN_DAYS="${WARN_DAYS:-90}"
+WARN_DAYS = Integer(ENV.fetch("WARN_DAYS", "90"))
 
-ruby_min=$(ruby -e "
-  spec = Gem::Specification.load('fx.gemspec')
-  puts spec.required_ruby_version.requirements
-    .select { |op, _| op == '>=' }
-    .map { |_, v| v.segments[0..1].join('.') }
+def minimum_version(requirement)
+  requirement.requirements
+    .select { |op, _| op == ">=" }
+    .map { |_, version| version.segments[0..1].join(".") }
     .first
-")
+end
 
-rails_min=$(ruby -e "
-  spec = Gem::Specification.load('fx.gemspec')
-  dep = spec.dependencies.find { |d| d.name == 'activerecord' }
-  puts dep.requirement.requirements
-    .select { |op, _| op == '>=' }
-    .map { |_, v| v.segments[0..1].join('.') }
-    .first
-")
+def gemspec
+  @gemspec ||= Gem::Specification.load("fx.gemspec")
+end
 
-postgres_min=$(ruby -ryaml -e "
-  ci = YAML.load_file('.github/workflows/ci.yml')
-  versions = ci.dig('jobs', 'tests', 'strategy', 'matrix', 'postgres')
-  puts versions.map(&:to_i).min
-")
+def ruby_minimum
+  minimum_version(gemspec.required_ruby_version)
+end
 
-echo "Ruby minimum: $ruby_min"
-echo "Rails minimum: $rails_min"
-echo "PostgreSQL minimum: $postgres_min"
+def rails_minimum
+  dependency = gemspec.dependencies.find { |d| d.name == "activerecord" }
+  minimum_version(dependency.requirement)
+end
 
-alerts=""
+def postgres_minimum
+  ci = YAML.load_file(".github/workflows/ci.yml")
+  versions = ci.dig("jobs", "tests", "strategy", "matrix", "postgres")
+  versions.map(&:to_i).min
+end
 
-check_eol() {
-  product="$1"
-  version="$2"
+# Fetches the EOL date for a product/version from endoflife.date.
+#
+# Returns a Date when an EOL date is set, :eol when already end-of-life
+# without a specific date, :supported when explicitly still supported, and
+# nil when the product/version is unknown or the request fails.
+def fetch_eol(product, version)
+  uri = URI("https://endoflife.date/api/#{product}/#{version}.json")
+  response = Net::HTTP.get_response(uri)
+  return nil unless response.is_a?(Net::HTTPSuccess)
 
-  eol_date=$(curl -sf "https://endoflife.date/api/${product}/${version}.json" \
-    | ruby -rjson -e '
-      data = JSON.parse($stdin.read)
-      eol = data["eol"]
-      if eol == true
-        puts "1970-01-01"
-      elsif eol == false
-        exit
-      else
-        puts eol
-      end
-    ') || return 0
+  eol = JSON.parse(response.body)["eol"]
+  case eol
+  when true then :eol
+  when false then :supported
+  else Date.parse(eol)
+  end
+rescue JSON::ParserError, Date::Error, SocketError, OpenSSL::SSL::SSLError,
+  Net::OpenTimeout, Net::ReadTimeout
+  nil
+end
 
-  if [ -z "$eol_date" ]; then
-    echo "$product $version: no EOL date set (still supported)"
+def check_eol(product, version, alerts)
+  eol = fetch_eol(product, version)
+
+  case eol
+  when nil
+    warn "#{product} #{version}: unable to determine EOL status"
+  when :supported
+    puts "#{product} #{version}: no EOL date set (still supported)"
+  when :eol
+    puts "::error::#{product} #{version} has reached EOL"
+    alerts << "- **#{product} #{version}** has reached EOL"
+  else
+    today = Date.today
+    warn_date = today + WARN_DAYS
+
+    if eol <= today
+      puts "::error::#{product} #{version} reached EOL on #{eol}"
+      alerts << "- **#{product} #{version}** reached EOL on #{eol}"
+    elsif eol < warn_date
+      puts "::warning::#{product} #{version} reaches EOL on #{eol} " \
+        "(within #{WARN_DAYS} days)"
+      alerts << "- **#{product} #{version}** reaches EOL on #{eol} " \
+        "(within #{WARN_DAYS} days)"
+    else
+      puts "#{product} #{version}: EOL on #{eol} (no action needed)"
+    end
+  end
+end
+
+def github_request(method, path, token, body: nil)
+  uri = URI("https://api.github.com#{path}")
+  request = method.new(uri)
+  request["Authorization"] = "Bearer #{token}"
+  request["Accept"] = "application/vnd.github+json"
+  request["X-GitHub-Api-Version"] = "2022-11-28"
+  request["User-Agent"] = "fx-eol-check"
+  if body
+    request["Content-Type"] = "application/json"
+    request.body = JSON.generate(body)
+  end
+
+  Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
+    http.request(request)
+  end
+end
+
+def open_existing_issue(repository, title, token)
+  response = github_request(Net::HTTP::Get, "/repos/#{repository}/issues?state=open", token)
+  return nil unless response.is_a?(Net::HTTPSuccess)
+
+  issue = JSON.parse(response.body).find do |candidate|
+    !candidate.key?("pull_request") && candidate["title"] == title
+  end
+  issue && issue["number"]
+end
+
+def create_issue(repository, title, body, token)
+  existing = open_existing_issue(repository, title, token)
+  if existing
+    puts "Issue ##{existing} already open, skipping creation"
     return
-  fi
+  end
 
-  today=$(date -u +%Y-%m-%d)
-  warn_date=$(date -u -d "$today + ${WARN_DAYS} days" +%Y-%m-%d 2>/dev/null \
-    || date -u -v+"${WARN_DAYS}"d +%Y-%m-%d)
+  response = github_request(
+    Net::HTTP::Post,
+    "/repos/#{repository}/issues",
+    token,
+    body: {title: title, body: body}
+  )
 
-  if [ "$eol_date" \< "$today" ] || [ "$eol_date" = "$today" ]; then
-    echo "::error::$product $version reached EOL on $eol_date"
-    alerts="$alerts- **$product $version** reached EOL on $eol_date\n"
-  elif [ "$eol_date" \< "$warn_date" ]; then
-    echo "::warning::$product $version reaches EOL on $eol_date (within ${WARN_DAYS} days)"
-    alerts="$alerts- **$product $version** reaches EOL on $eol_date (within ${WARN_DAYS} days)\n"
+  if response.is_a?(Net::HTTPSuccess)
+    number = JSON.parse(response.body)["number"]
+    puts "Opened issue ##{number}"
   else
-    echo "$product $version: EOL on $eol_date (no action needed)"
-  fi
-}
+    warn "Failed to create issue: #{response.code} #{response.body}"
+  end
+end
 
-check_eol "ruby" "$ruby_min"
-check_eol "rails" "$rails_min"
-check_eol "postgresql" "$postgres_min"
+ruby_min = ruby_minimum
+rails_min = rails_minimum
+postgres_min = postgres_minimum
 
-if [ -n "$alerts" ]; then
-  title="Dependency EOL alert"
-  body=$(printf "The following minimum supported versions are at or approaching end-of-life:\n\n%b\n\nConsider bumping the minimum version in \`fx.gemspec\` and updating the CI matrix." "$alerts")
+puts "Ruby minimum: #{ruby_min}"
+puts "Rails minimum: #{rails_min}"
+puts "PostgreSQL minimum: #{postgres_min}"
 
-  existing=$(gh issue list --state open --search "$title" --json number --jq '.[0].number' 2>/dev/null || true)
-  if [ -n "$existing" ]; then
-    echo "Issue #$existing already open, skipping creation"
-  else
-    gh issue create --title "$title" --body "$body"
-  fi
-fi
+alerts = []
+check_eol("ruby", ruby_min, alerts)
+check_eol("rails", rails_min, alerts)
+check_eol("postgresql", postgres_min, alerts)
+
+exit if alerts.empty?
+
+title = "Dependency EOL alert"
+body = <<~BODY
+  The following minimum supported versions are at or approaching end-of-life:
+
+  #{alerts.join("\n")}
+
+  Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
+BODY
+
+token = ENV["GH_TOKEN"]
+repository = ENV["GITHUB_REPOSITORY"]
+
+if token && repository
+  create_issue(repository, title, body, token)
+else
+  puts "GH_TOKEN or GITHUB_REPOSITORY not set, skipping issue creation"
+  puts
+  puts title
+  puts body
+end
