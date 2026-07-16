@@ -8,12 +8,6 @@ require "rubygems"
 require "uri"
 require "yaml"
 
-# Checks whether the minimum supported dependency versions are at or
-# approaching end-of-life using the endoflife.date API. Emits GitHub Actions
-# annotations and opens an issue when action is needed.
-#
-# Written using only the Ruby standard library.
-#
 # Environment:
 #   WARN_DAYS         - days before EOL to start warning (default: 90)
 #   GH_TOKEN          - GitHub token for creating issues (optional)
@@ -26,7 +20,6 @@ class EolCheck
   ISSUE_TITLE = "Dependency EOL alert".freeze
   DEFAULT_WARN_DAYS = 90
 
-  # Wraps #call as a static facade.
   def self.call
     new.call
   end
