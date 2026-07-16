@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# frozen_string_literal: true
 
 require "date"
 require "json"
@@ -81,10 +80,8 @@ class EolCheck
   end
 
   def minimum_version(requirement)
-    requirement.requirements
-      .select { |op, _| op == ">=" }
-      .map { |_, version| version.segments[0..1].join(".") }
-      .first
+    _operator, version = requirement.requirements.find { |op, _| op == ">=" }
+    version.segments[0..1].join(".")
   end
 
   def check(product, version)
