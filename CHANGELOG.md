@@ -10,7 +10,6 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.11.0...master
 
 - Internal refactorings / improvements
-  - Test the full range of supported PostgreSQL versions (14-18) in CI
   - Add a non-blocking CI job for the upcoming PostgreSQL 19 release
 
 ## [0.11.0]
