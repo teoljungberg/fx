@@ -149,7 +149,7 @@ versions within their official maintenance windows.
 
 **Ruby:** 3.3+ ([maintenance branches])
 
-**Rails:** 7.2, 8.0, 8.1 ([maintenance policy])
+**Rails:** 8.0, 8.1 ([maintenance policy])
 
 **PostgreSQL:** 14, 15, 16, 17, 18 ([versioning policy])
 
