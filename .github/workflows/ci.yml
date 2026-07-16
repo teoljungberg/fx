@@ -16,11 +16,17 @@ jobs:
       matrix:
         ruby: ["3.3", "4.0"]
         rails: ["7.2", "8.1"]
-        postgres: ["14", "18"]
+        postgres: ["14", "15", "16", "17", "18"]
         include:
           - ruby: "4.0"
             rails: "main"
             postgres: "18"
+            allow-failure: true
+          # Upcoming PostgreSQL release (not yet GA). Non-blocking readiness
+          # check; the `postgres:19` image becomes available at its GA.
+          - ruby: "4.0"
+            rails: "8.1"
+            postgres: "19"
             allow-failure: true
 
     continue-on-error: ${{ matrix.allow-failure || false }}
