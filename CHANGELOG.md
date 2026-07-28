@@ -5,6 +5,13 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
+## [Unreleased]
+
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.11.0...master
+
+- Internal refactorings / improvements
+  - Add a non-blocking CI job for the upcoming PostgreSQL 19 release
+
 ## [0.11.0]
 
 [0.11.0]: https://github.com/teoljungberg/fx/compare/v0.10.2...v0.11.0

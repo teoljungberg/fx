@@ -22,6 +22,10 @@ jobs:
             rails: "main"
             postgres: "18"
             allow-failure: true
+          - ruby: "4.0"
+            rails: "8.1"
+            postgres: "19"
+            allow-failure: true
 
     continue-on-error: ${{ matrix.allow-failure || false }}
 
