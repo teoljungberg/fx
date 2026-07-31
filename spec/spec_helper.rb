@@ -14,16 +14,22 @@ RSpec.configure do |config|
     metadata[:db] = true
   end
 
+  test_database = nil
+
   config.before(:suite) do
-    DatabaseReset.call
+    config = ActiveRecord::Base.connection_db_config.configuration_hash
+    test_database = Fx::TestDatabase.new(config, template: "fx_test_template")
+    test_database.create_template
   end
 
   config.around(:each, db: true) do |example|
-    DatabaseReset.call
+    test_database.with_instance(reuse: true) do
+      example.run
+    end
+  end
 
-    example.run
-
-    DatabaseReset.call
+  config.after(:suite) do
+    test_database&.shutdown
   end
 
   unless defined?(silence_stream)

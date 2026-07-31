@@ -191,8 +191,8 @@ module Fx
       name
     end
 
-    # Cleans a checked-out database — truncating every table so no data leaks
-    # between uses, while leaving the schema, functions, and triggers intact —
+    # Cleans a checked-out database — dropping every non-system schema and
+    # recreating `public`, so no data or schema objects leak between uses —
     # and returns it to the reuse pool.
     #
     # @param name [String] A database returned by {#checkout}.
@@ -227,10 +227,6 @@ module Fx
 
     attr_reader :config, :template, :connection_class, :maintenance_database
 
-    # Rails' bookkeeping tables, left untouched by {#clean} so a reused
-    # database keeps its schema version and metadata.
-    INTERNAL_TABLES = %w[schema_migrations ar_internal_metadata].freeze
-
     def config_for(database)
       config.merge(database: database)
     end
@@ -242,16 +238,27 @@ module Fx
       result
     end
 
-    # Truncates every table so a pooled database can be reused without data
-    # leaking between tests, while leaving schema objects — including F(x)
-    # functions and triggers — in place.
+    # Resets a pooled database to a clean state by dropping every non-system
+    # schema and recreating `public`, mirroring `DatabaseReset`.
     def clean(name)
       using(name) do |connection|
-        tables = connection.tables - INTERNAL_TABLES
-        next if tables.empty?
-
-        quoted = tables.map { |table| connection.quote_table_name(table) }.join(", ")
-        connection.execute("TRUNCATE #{quoted} RESTART IDENTITY CASCADE")
+        connection.execute("SET search_path TO DEFAULT;")
+        connection.execute <<~SQL
+          DO $$
+          DECLARE
+            schema_name TEXT;
+          BEGIN
+            FOR schema_name IN
+              SELECT nspname FROM pg_namespace
+              WHERE nspname NOT LIKE 'pg_%'
+                AND nspname != 'information_schema'
+            LOOP
+              EXECUTE format('DROP SCHEMA IF EXISTS %I CASCADE', schema_name);
+            END LOOP;
+          END $$;
+        SQL
+        connection.execute("CREATE SCHEMA public;")
+        connection.schema_search_path = "public"
       end
     end
 

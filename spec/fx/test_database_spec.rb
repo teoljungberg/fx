@@ -58,9 +58,9 @@ RSpec.describe Fx::TestDatabase do
     second = test_database.create_instance
 
     begin
-      first_count = count_users(test_database.instance_config(first)) {
-        _1.execute("INSERT INTO users (name) VALUES ('alice')")
-      }
+      first_count = count_users(test_database.instance_config(first)) do |connection|
+        connection.execute("INSERT INTO users (name) VALUES ('alice')")
+      end
       second_count = count_users(test_database.instance_config(second))
 
       expect(first_count).to eq(1)
@@ -131,19 +131,13 @@ RSpec.describe Fx::TestDatabase do
       expect(second).not_to eq(first)
     end
 
-    it "cleans data between reuses but keeps functions and triggers" do
+    it "cleans data between reuses" do
       test_database.with_instance(reuse: true) do |connection|
         connection.execute("INSERT INTO users (name) VALUES ('alice')")
       end
 
       test_database.with_instance(reuse: true) do |connection|
-        adapter = Fx::Adapters::Postgres.new(connection_class)
-
-        expect(connection.select_value("SELECT count(*) FROM users")).to eq(0)
-        expect(adapter.functions.map(&:name)).to include("set_upper_name")
-
-        connection.execute("INSERT INTO users (name) VALUES ('bob')")
-        expect(connection.select_value("SELECT upper_name FROM users")).to eq("BOB")
+        expect(connection.data_source_exists?(:users)).to be(false)
       end
     end
 

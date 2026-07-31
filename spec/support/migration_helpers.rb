@@ -16,7 +16,7 @@ module MigrationsHelper
   end
 
   def connection
-    @_connection ||= ActiveRecord::Base.connection
+    ActiveRecord::Base.connection
   end
 end
 
