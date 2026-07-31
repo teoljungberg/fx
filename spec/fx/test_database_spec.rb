@@ -29,7 +29,7 @@ RSpec.describe Fx::TestDatabase do
   end
 
   after do
-    test_database.drop_template
+    test_database.shutdown
   end
 
   it "loads tables, functions, and triggers into the template" do
@@ -115,12 +115,92 @@ RSpec.describe Fx::TestDatabase do
     }.to raise_error(Fx::TestDatabase::InvalidName)
   end
 
+  describe "reuse pool" do
+    it "reuses a pooled database across checkouts" do
+      first = test_database.checkout
+      test_database.checkin(first)
+
+      expect(test_database.checkout).to eq(first)
+    end
+
+    it "clones a new database when the pool is empty" do
+      first = test_database.checkout
+      second = test_database.checkout
+
+      expect(second).not_to eq(first)
+    end
+
+    it "cleans data between reuses but keeps functions and triggers" do
+      test_database.with_instance(reuse: true) do |connection|
+        connection.execute("INSERT INTO users (name) VALUES ('alice')")
+      end
+
+      test_database.with_instance(reuse: true) do |connection|
+        adapter = Fx::Adapters::Postgres.new(connection_class)
+
+        expect(connection.select_value("SELECT count(*) FROM users")).to eq(0)
+        expect(adapter.functions.map(&:name)).to include("set_upper_name")
+
+        connection.execute("INSERT INTO users (name) VALUES ('bob')")
+        expect(connection.select_value("SELECT upper_name FROM users")).to eq("BOB")
+      end
+    end
+
+    it "keeps a failed reuse database out of the pool for inspection" do
+      leaked =
+        begin
+          test_database.with_instance(reuse: true) do |connection|
+            connection.select_value("SELECT current_database()").tap { raise "boom" }
+          end
+        rescue RuntimeError
+          test_database.instance_variable_get(:@checked_out).last
+        end
+
+      reused = test_database.with_instance(reuse: true) do |connection|
+        connection.select_value("SELECT current_database()")
+      end
+
+      expect(reused).not_to eq(leaked)
+      expect(database_exists?(leaked)).to be(true)
+    end
+
+    it "drops pooled databases when the template is rebuilt" do
+      name = test_database.checkout
+      test_database.checkin(name)
+      expect(database_exists?(name)).to be(true)
+
+      test_database.create_template { |connection| load_schema(connection) }
+
+      expect(database_exists?(name)).to be(false)
+    end
+
+    it "drops pooled databases and the template on shutdown" do
+      name = test_database.checkout
+      test_database.checkin(name)
+
+      test_database.shutdown
+
+      expect(database_exists?(name)).to be(false)
+      expect(test_database.template_exists?).to be(false)
+    end
+  end
+
   # Connects to the given database, optionally yields the connection, and
   # returns the number of rows in `users`.
   def count_users(instance_config)
     FxTestDatabaseInstance.establish_connection(instance_config)
     yield FxTestDatabaseInstance.connection if block_given?
     FxTestDatabaseInstance.connection.select_value("SELECT count(*) FROM users")
+  ensure
+    FxTestDatabaseInstance.remove_connection
+  end
+
+  def database_exists?(name)
+    FxTestDatabaseInstance.establish_connection(config.merge(database: "postgres"))
+    connection = FxTestDatabaseInstance.connection
+    connection
+      .select_value("SELECT 1 FROM pg_database WHERE datname = #{connection.quote(name)}")
+      .present?
   ensure
     FxTestDatabaseInstance.remove_connection
   end

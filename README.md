@@ -194,6 +194,26 @@ triggers. Fixture rows are therefore inserted verbatim, exactly as in a normal
 Rails test — it is the real writes your test performs that exercise your
 functions and triggers.
 
+Cloning a database costs roughly 100ms. For a large suite that adds up, so
+`with_instance` can instead reuse databases from a pool. When the block
+succeeds, the database is truncated (schema, functions, and triggers are left
+intact) and returned to the pool for the next test, which is far faster than
+cloning afresh:
+
+```ruby
+test_database.with_instance(reuse: true) do |connection|
+  # ...
+end
+
+# Once, after the whole suite:
+test_database.shutdown
+```
+
+If the block raises while reusing, that database is left in place — out of the
+pool — so you can inspect the failed state; `shutdown` drops it along with the
+rest. The pool is per-process and not thread-safe, which suits Ruby's
+process-based parallel test runners.
+
 ## Plugins/Adapters
 
 - [MySQL](https://github.com/f-mer/fx-adapters-mysql/)

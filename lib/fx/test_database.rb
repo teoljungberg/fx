@@ -69,6 +69,8 @@ module Fx
       @connection_class = connection_class
       @maintenance_database = maintenance_database.to_s
       @mark_as_template = mark_as_template
+      @available = []
+      @checked_out = []
     end
 
     # Creates the template database and loads a schema into it.
@@ -82,6 +84,7 @@ module Fx
     #   A connection to the template database.
     # @return [self]
     def create_template
+      drain_pool
       drop_template
       admin { |connection| connection.execute("CREATE DATABASE #{quote(@template)}") }
 
@@ -139,28 +142,123 @@ module Fx
     end
 
     # Clones a fresh database from the template, connects the
-    # `connection_class` to it, yields, and drops it afterwards — even if the
-    # block raises. The original connection is restored when the block returns.
+    # `connection_class` to it, yields, and disposes of it afterwards. The
+    # original connection is restored when the block returns.
+    #
+    # With `reuse: false` (the default), the database is dropped after the
+    # block. With `reuse: true`, it is instead taken from — and, once the block
+    # succeeds, cleaned and returned to — a pool of databases kept alive for the
+    # current template, which is markedly faster than cloning afresh every time
+    # (see {#checkout}). If the block raises while reusing, the database is left
+    # in place, out of the pool, so its state can be inspected; {#shutdown}
+    # drops it later.
     #
     # @param name [String] Name for the new database. Defaults to a unique name.
+    #   Ignored when `reuse: true`.
+    # @param reuse [Boolean] Whether to check the database out of the reuse
+    #   pool instead of cloning and dropping one.
     # @yieldparam connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
-    #   A connection to the cloned database.
+    #   A connection to the database.
     # @return The value returned by the block.
-    def with_instance(name = generate_name)
+    def with_instance(name = generate_name, reuse: false)
+      return with_pooled_instance { |connection| yield connection } if reuse
+
       create_instance(name)
       using(name) do |connection|
         yield connection
       end
     ensure
+      drop_instance(name) unless reuse
+    end
+
+    # Checks a clean database out of the reuse pool, cloning a new one only when
+    # none is available.
+    #
+    # Reuse is the optimization that makes template databases competitive with
+    # transaction-based test isolation for large suites: cloning costs on the
+    # order of 100ms, while cleaning and reusing a database costs a fraction of
+    # that. The caller is responsible for returning the database with {#checkin}
+    # (to clean and pool it) or {#discard} (to drop it). {#with_instance} with
+    # `reuse: true` does this automatically.
+    #
+    # Databases in the pool are tied to the current template; {#create_template}
+    # and {#shutdown} drop them all.
+    #
+    # @return [String] The name of a database ready to use.
+    def checkout
+      name = @available.pop || create_instance
+      @checked_out << name
+      name
+    end
+
+    # Cleans a checked-out database — truncating every table so no data leaks
+    # between uses, while leaving the schema, functions, and triggers intact —
+    # and returns it to the reuse pool.
+    #
+    # @param name [String] A database returned by {#checkout}.
+    # @return [void]
+    def checkin(name)
+      @checked_out.delete(name)
+      clean(name)
+      @available << name
+      nil
+    end
+
+    # Drops a checked-out or pooled database instead of reusing it.
+    #
+    # @param name [String] A database name.
+    # @return [void]
+    def discard(name)
+      @checked_out.delete(name)
+      @available.delete(name)
       drop_instance(name)
+    end
+
+    # Drops every database in the reuse pool (available or checked out) and the
+    # template. Call this once the suite finishes.
+    #
+    # @return [void]
+    def shutdown
+      drain_pool
+      drop_template
     end
 
     private
 
     attr_reader :config, :template, :connection_class, :maintenance_database
 
+    # Rails' bookkeeping tables, left untouched by {#clean} so a reused
+    # database keeps its schema version and metadata.
+    INTERNAL_TABLES = %w[schema_migrations ar_internal_metadata].freeze
+
     def config_for(database)
       config.merge(database: database)
+    end
+
+    def with_pooled_instance
+      name = checkout
+      result = using(name) { |connection| yield connection }
+      checkin(name)
+      result
+    end
+
+    # Truncates every table so a pooled database can be reused without data
+    # leaking between tests, while leaving schema objects — including F(x)
+    # functions and triggers — in place.
+    def clean(name)
+      using(name) do |connection|
+        tables = connection.tables - INTERNAL_TABLES
+        next if tables.empty?
+
+        quoted = tables.map { |table| connection.quote_table_name(table) }.join(", ")
+        connection.execute("TRUNCATE #{quoted} RESTART IDENTITY CASCADE")
+      end
+    end
+
+    def drain_pool
+      (@available + @checked_out).uniq.each { |name| drop_instance(name) }
+      @available.clear
+      @checked_out.clear
     end
 
     # Connects +connection_class+ to +database+ for the duration of the block,

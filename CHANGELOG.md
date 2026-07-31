@@ -8,7 +8,8 @@ changelog, see the [commits] for each version via the version links.
 ## [Unreleased]
 
 - Add `Fx::TestDatabase` for fast, isolated test databases built from a
-  template database, following the pgtestdb pattern
+  template database, following the pgtestdb pattern, with an opt-in reuse pool
+  for large suites
 
 ## [0.11.0]
 
