@@ -5,12 +5,6 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
-## [Unreleased]
-
-- Add `Fx::TestDatabase` for fast, isolated test databases built from a
-  template database, following the pgtestdb pattern, with an opt-in reuse pool
-  for large suites
-
 ## [0.11.0]
 
 [0.11.0]: https://github.com/teoljungberg/fx/compare/v0.10.2...v0.11.0

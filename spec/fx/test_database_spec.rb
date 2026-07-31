@@ -1,6 +1,7 @@
 require "spec_helper"
-require "fx/test_database"
 
+# `Fx::TestDatabase` is defined in spec/support and loaded by spec_helper.
+#
 # A named connection class so the helper never disturbs the shared
 # `ActiveRecord::Base` connection the rest of the suite relies on.
 # `establish_connection` rejects anonymous classes.
