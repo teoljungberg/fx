@@ -136,6 +136,64 @@ The same approach works for more advanced ordering. For example, if your
 functions depend on each other and need to be dumped in dependency order, you
 could use Ruby's built-in `TSort` to topologically sort them.
 
+## Fast, isolated test databases
+
+Functions and triggers are most interesting to test against a *real* database:
+a `BEFORE INSERT` trigger only fires when you actually write a row, and a
+function's behavior depends on committed data. Wrapping every test in a
+transaction and rolling back gets in the way of that.
+
+`Fx::TestDatabase` builds a PostgreSQL *template* database once — loading the
+full schema, including your F(x) functions and triggers — and then clones a
+fresh, throwaway database from it for each test using
+`CREATE DATABASE ... TEMPLATE ...`, which PostgreSQL performs as a fast
+file-level copy. Every test gets its own real database, so triggers fire and
+functions run exactly as they do in production. This follows the template
+database pattern described in [pgtestdb].
+
+[pgtestdb]: https://brandur.org/fragments/pgtestdb
+
+It is not required to use F(x) and is not loaded by default:
+
+```ruby
+require "fx/test_database"
+
+test_database = Fx::TestDatabase.new(
+  ActiveRecord::Base.connection_db_config.configuration_hash,
+  template: "myapp_test_template"
+)
+```
+
+Build the template once (for example, in a `before(:suite)` hook). Load your
+schema however you already do — `db/schema.rb`, `structure.sql`, or by running
+migrations — against the connection F(x) hands to the block:
+
+```ruby
+test_database.create_template do |connection|
+  load(Rails.root.join("db/schema.rb"))
+end
+```
+
+Then, in each test, clone a database, run against it, and drop it afterwards:
+
+```ruby
+test_database.with_instance do |connection|
+  users(:alice)               # fixtures are available
+  User.create!(name: "bob")   # a real write — triggers fire
+  User.find_by(name: "bob").upper_name # => "BOB"
+end
+```
+
+While the block runs, the connection class (`ActiveRecord::Base` by default) is
+pointed at the clone, so your models and fixtures operate against it. The
+original connection is restored when the block returns.
+
+A note on fixtures: Rails loads fixtures with referential integrity disabled
+(`session_replication_role = replica`), which also suppresses ordinary
+triggers. Fixture rows are therefore inserted verbatim, exactly as in a normal
+Rails test — it is the real writes your test performs that exercise your
+functions and triggers.
+
 ## Plugins/Adapters
 
 - [MySQL](https://github.com/f-mer/fx-adapters-mysql/)
