@@ -19,6 +19,21 @@ agree to abide by our [code of conduct].
 
 [good commit message]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
+## Test fixtures
+
+Keep the test suite consistent by using the standardized fixture names that
+already exist throughout the specs. Do not introduce new ad-hoc names for
+tables, functions, or triggers unless the change specifically requires it.
+
+- **Table:** `users`, with columns `name`, `upper_name`, and `lower_name`
+- **Functions:**
+  - `value` — a simple, no-argument function
+  - `add` — a two-argument function (e.g. `add(x int, y int)`)
+  - `make_incr` — a function that depends on another function
+- **Triggers:**
+  - `set_upper_name`
+  - `set_lower_name`
+
 Others will give constructive feedback. This is a time for discussion and
 improvements, and making the necessary changes will be required before we can
 merge the contribution.
