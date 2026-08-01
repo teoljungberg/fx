@@ -17,6 +17,7 @@ changelog, see the [commits] for each version via the version links.
   - Add scheduled EOL check for Ruby, Rails, and PostgreSQL (#205)
   - Add GitHub release creation to release task (#209)
   - Add PostgreSQL 18 to CI test matrix (#194)
+  - Add `Fx::TestDatabase` for template-based test databases
   - Default `support_drop_function_without_args` to `true` (#194)
   - Document adapter subclass pattern for custom schema dump ordering (#211)
   - Harmonize function and trigger names in specs (#208)
