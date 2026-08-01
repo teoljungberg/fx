@@ -85,6 +85,7 @@ module Fx
     # @return [self]
     def create_template
       drain_pool
+      drop_orphaned_instances
       drop_template
       admin { |connection| connection.execute("CREATE DATABASE #{quote(@template)}") }
 
@@ -214,12 +215,14 @@ module Fx
       drop_instance(name)
     end
 
-    # Drops every database in the reuse pool (available or checked out) and the
-    # template. Call this once the suite finishes.
+    # Drops every database in the reuse pool (available or checked out), any
+    # orphaned instances from earlier runs, and the template. Call this once
+    # the suite finishes.
     #
     # @return [void]
     def shutdown
       drain_pool
+      drop_orphaned_instances
       drop_template
     end
 
@@ -266,6 +269,25 @@ module Fx
       (@available + @checked_out).uniq.each { |name| drop_instance(name) }
       @available.clear
       @checked_out.clear
+    end
+
+    # Drops any clone databases that match this template's instance naming
+    # pattern but are not tracked by the current pool. This cleans up after
+    # interrupted runs where +shutdown+ was not reached.
+    def drop_orphaned_instances
+      admin do |connection|
+        pattern = "#{template}_%"
+        names = connection.select_values(<<~SQL)
+          SELECT datname FROM pg_database
+          WHERE datname LIKE #{connection.quote(pattern)}
+          ORDER BY datname
+        SQL
+        names.each do |name|
+          validate_name!(name)
+          terminate_connections(connection, name)
+          connection.execute("DROP DATABASE IF EXISTS #{quote(name)} WITH (FORCE)")
+        end
+      end
     end
 
     # Connects +connection_class+ to +database+ for the duration of the block,

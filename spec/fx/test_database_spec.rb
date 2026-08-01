@@ -116,6 +116,23 @@ RSpec.describe Fx::TestDatabase do
     }.to raise_error(Fx::TestDatabase::InvalidName)
   end
 
+  it "cleans up orphaned instances from an interrupted run" do
+    leaked = test_database.checkout
+    test_database.instance_variable_get(:@available).clear
+    test_database.instance_variable_get(:@checked_out).clear
+
+    fresh_database = described_class.new(
+      config,
+      template: "fx_test_database_template",
+      connection_class: connection_class
+    )
+    fresh_database.create_template { |connection| load_schema(connection) }
+
+    expect(database_exists?(leaked)).to be(false)
+
+    fresh_database.shutdown
+  end
+
   describe "reuse pool" do
     it "reuses a pooled database across checkouts" do
       first = test_database.checkout
