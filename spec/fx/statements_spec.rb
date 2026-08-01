@@ -91,24 +91,24 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_trigger(:add)
+      connection.create_trigger(:set_upper_name)
 
       expect(database).to have_received(:create_trigger)
         .with(definition.to_sql)
       expect(Fx::Definition).to have_received(:trigger)
-        .with(name: :add, version: 1)
+        .with(name: :set_upper_name, version: 1)
     end
 
     it "allows creating a trigger with a specific version" do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.create_trigger(:add, version: 2)
+      connection.create_trigger(:set_upper_name, version: 2)
 
       expect(database).to have_received(:create_trigger)
         .with(definition.to_sql)
       expect(Fx::Definition).to have_received(:trigger)
-        .with(name: :add, version: 2)
+        .with(name: :set_upper_name, version: 2)
     end
 
     it "raises an error if both arguments are set" do
@@ -131,10 +131,10 @@ RSpec.describe Fx::Statements, :db do
     it "drops the trigger" do
       database = stubbed_database
 
-      connection.drop_trigger(:add, on: :users)
+      connection.drop_trigger(:set_upper_name, on: :users)
 
       expect(database).to have_received(:drop_trigger)
-        .with(:add, on: :users)
+        .with(:set_upper_name, on: :users)
     end
   end
 
@@ -143,15 +143,15 @@ RSpec.describe Fx::Statements, :db do
       database = stubbed_database
       definition = stubbed_definition
 
-      connection.update_trigger(:add, on: :users, version: 3)
+      connection.update_trigger(:set_upper_name, on: :users, version: 3)
 
       expect(database).to have_received(:update_trigger).with(
-        :add,
+        :set_upper_name,
         on: :users,
         sql_definition: definition.to_sql
       )
       expect(Fx::Definition).to have_received(:trigger).with(
-        name: :add,
+        name: :set_upper_name,
         version: 3
       )
     end

@@ -133,7 +133,7 @@ RSpec.describe Fx::SchemaDumper, :db do
     connection.execute("CREATE SCHEMA test_schema;")
     connection.create_table "test_schema.my_table2"
     connection.execute <<~SQL
-      CREATE OR REPLACE FUNCTION test_schema.multiply()
+      CREATE OR REPLACE FUNCTION test_schema.value()
       RETURNS TRIGGER AS $$
       BEGIN
         RETURN 'test_schema';
@@ -144,7 +144,7 @@ RSpec.describe Fx::SchemaDumper, :db do
       CREATE TRIGGER set_lower_name
       BEFORE INSERT ON test_schema.my_table2
       FOR EACH ROW
-      EXECUTE FUNCTION test_schema.multiply();
+      EXECUTE FUNCTION test_schema.value();
     SQL
     stream = StringIO.new
     output = stream.string
@@ -153,7 +153,7 @@ RSpec.describe Fx::SchemaDumper, :db do
 
     expect(output.scan("create_function :add").size).to eq(1)
     expect(output.scan("create_trigger :set_upper_name").size).to eq(1)
-    expect(output.scan("create_function :multiply").size).to eq(1)
+    expect(output.scan("create_function :value").size).to eq(1)
     expect(output.scan("create_trigger :set_lower_name").size).to eq(1)
   ensure
     connection.schema_search_path = "public"

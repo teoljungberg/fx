@@ -44,7 +44,7 @@ RSpec.describe "Function migrations", :db do
       CREATE OR REPLACE FUNCTION value()
       RETURNS text AS $$
       BEGIN
-          RETURN 'valueest';
+          RETURN 'updated';
       END;
       $$ LANGUAGE plpgsql;
     SQL
