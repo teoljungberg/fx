@@ -17,8 +17,8 @@ RSpec.configure do |config|
   test_database = nil
 
   config.before(:suite) do
-    config = ActiveRecord::Base.connection_db_config.configuration_hash
-    test_database = Fx::TestDatabase.new(config, template: "fx_test_template")
+    db_config = ActiveRecord::Base.connection_db_config.configuration_hash
+    test_database = Fx::TestDatabase.new(db_config, template: "fx_test_template")
     test_database.create_template
   end
 
