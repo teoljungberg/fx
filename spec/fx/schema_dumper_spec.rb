@@ -210,10 +210,10 @@ RSpec.describe Fx::SchemaDumper, :db do
 
     pattern = /(end|SQL)\n\n  (create_function|create_trigger)/
     # a blank line between:
-    # - the table and the set_lower_name function,
-    # - the set_lower_name function and the set_upper_name function,
-    # - the set_upper_name function and the set_lower_name trigger,
-    # - the set_lower_name trigger and the set_upper_name trigger,
+    # - the table and the set_upper_name function,
+    # - the set_upper_name function and the set_lower_name function,
+    # - the set_lower_name function and the set_upper_name trigger,
+    # - the set_upper_name trigger and the set_lower_name trigger,
     expect(output.scan(pattern).size).to eq(4)
   end
 
