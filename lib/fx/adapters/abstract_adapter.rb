@@ -12,6 +12,10 @@ module Fx
     #
     # For database-specific customizations within an application, subclass the
     # concrete adapter (e.g. {Fx::Adapters::Postgres}) instead.
+    #
+    # @abstract Subclasses must implement {#functions}, {#triggers},
+    #   {#create_function}, {#create_trigger}, {#update_function},
+    #   {#update_trigger}, {#drop_function}, and {#drop_trigger}.
     class AbstractAdapter
       # Returns an array of functions in the database.
       #
