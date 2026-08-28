@@ -155,5 +155,4 @@ end
 
 require "fx/adapters/postgres/connection"
 require "fx/adapters/postgres/functions"
-require "fx/adapters/postgres/query_executor"
 require "fx/adapters/postgres/triggers"
