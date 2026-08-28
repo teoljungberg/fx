@@ -1,7 +1,7 @@
 require "spec_helper"
 
 RSpec.describe Fx::Adapters::Postgres, :db do
-  it { is_expected.to be_a(Fx::Adapters::AbstractAdapter) }
+  it_behaves_like "an fx adapter"
 
   describe "#create_function" do
     it "successfully creates a function" do
