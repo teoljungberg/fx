@@ -19,7 +19,7 @@ module Fx
     #
     # @example
     #  Fx.configure do |config|
-    #    config.adapter = Fx::Adapters::Postgres.new
+    #    config.database = Fx::Adapters::Postgres.new
     #  end
     class Postgres < AbstractAdapter
       # Creates an instance of the F(x) Postgres adapter.
@@ -33,7 +33,7 @@ module Fx
       #
       # @example
       #  Fx.configure do |config|
-      #    config.adapter = Fx::Adapters::Postgres.new
+      #    config.database = Fx::Adapters::Postgres.new
       #  end
       def initialize(connectable = ActiveRecord::Base)
         @connectable = connectable

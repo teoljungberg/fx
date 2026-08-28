@@ -44,7 +44,7 @@ module Fx
   # @yieldparam [Fx::Configuration] config current F(x) config
   # ```
   # Fx.configure do |config|
-  #   config.database = Fx::Adapters::Postgres
+  #   config.database = Fx::Adapters::Postgres.new
   #   config.dump_functions_at_beginning_of_schema = true
   # end
   # ```
