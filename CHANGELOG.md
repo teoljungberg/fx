@@ -15,6 +15,18 @@ changelog, see the [commits] for each version via the version links.
 - Document how to extend the adapter layer via inheritance, either by
   subclassing `Fx::Adapters::Postgres` for application tweaks or by
   implementing `Fx::Adapters::AbstractAdapter` for new databases.
+- Add `Fx::Adapters::AbstractAdapter::REQUIRED_METHODS` so the adapter
+  interface is discoverable programmatically.
+- Validate configured adapters in `Fx::Configuration#database=` to fail
+  early when an object does not respond to the required methods.
+- Fix adapter configuration examples to use `config.database` and an
+  adapter instance, matching the documented plain-object API.
+- Mark `Fx::Adapters::AbstractAdapter` as `@abstract` in YARD.
+- Document `Fx::Function` and `Fx::Trigger` as the domain objects
+  adapters return from their `functions` and `triggers` methods.
+- Add shared adapter contract examples and a custom adapter integration
+  test, including a duck-typed adapter, to verify any plain Ruby object
+  implementing the interface works with migrations and schema dumps.
 
 ## [0.11.0]
 
