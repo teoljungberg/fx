@@ -54,8 +54,9 @@ module Fx
 
   # The current database adapter used by F(x).
   #
-  # This defaults to {Fx::Adapters::Postgres} but can be overridden
-  # via {Configuration}.
+  # This defaults to an instance of {Fx::Adapters::Postgres} but can be set to
+  # any object implementing {Fx::Adapters::AbstractAdapter} through
+  # {Configuration}.
   def self.database
     configuration.database
   end

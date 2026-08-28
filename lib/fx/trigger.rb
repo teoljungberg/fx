@@ -1,5 +1,8 @@
 module Fx
-  # @api private
+  # Domain object representing a database trigger.
+  #
+  # Adapters return instances of this class from their {#triggers} method so
+  # that {Fx::SchemaDumper} can serialize them into `schema.rb`.
   class Trigger
     include Comparable
 

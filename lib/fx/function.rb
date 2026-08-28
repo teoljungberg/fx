@@ -1,5 +1,8 @@
 module Fx
-  # @api private
+  # Domain object representing a database function.
+  #
+  # Adapters return instances of this class from their {#functions} method so
+  # that {Fx::SchemaDumper} can serialize them into `schema.rb`.
   class Function
     include Comparable
 

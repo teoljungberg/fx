@@ -3,8 +3,9 @@ module Fx
   class Configuration
     # The F(x) database adapter instance to use when executing SQL.
     #
-    # Defaults to an instance of {Fx::Adapters::Postgres}
-    # @return [Fx::Adapters::Postgres] Fx adapter
+    # Defaults to an instance of {Fx::Adapters::Postgres} and can be set to
+    # any object implementing {Fx::Adapters::AbstractAdapter}.
+    # @return [Fx::Adapters::AbstractAdapter] Fx adapter
     attr_accessor :database
 
     # Prioritizes the order in the schema.rb of functions before other
