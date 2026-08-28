@@ -60,6 +60,24 @@ This document tracks gaps found and changes made while ensuring F(x) follows the
 - **Issue:** `Fx::Adapters::QueryExecutor` was extracted from the Postgres namespace so other adapters can reuse it, but the README does not point it out.
 - **Status:** Accepted. The helper is not required for all adapters, and the YARD documentation in `lib/fx/adapters/query_executor.rb` is sufficient for adapter authors who need it.
 
+### 10. Adapter interface was not centralized or discoverable
+
+- **Where:** `lib/fx/adapters/abstract_adapter.rb` and `lib/fx/configuration.rb`.
+- **Issue:** The set of methods an adapter must implement was repeated in the README, in AbstractAdapter's method definitions, and could not be inspected programmatically. This made it harder to keep documentation, tests, and validation in sync.
+- **Status:** Fixed. Added `Fx::Adapters::AbstractAdapter::REQUIRED_METHODS` and used it in the shared contract examples and in `Fx::Configuration#database=` validation.
+
+### 11. `Fx::Configuration` did not validate the configured adapter
+
+- **Where:** `lib/fx/configuration.rb`.
+- **Issue:** Assigning an object that did not implement the adapter interface would only fail later when F(x) tried to call a missing method. This made adapter configuration errors hard to diagnose.
+- **Status:** Fixed. Added a `database=` setter that checks the assigned object responds to all methods in `REQUIRED_METHODS` and raises `ArgumentError` early if it does not. The check uses `respond_to?`, so plain Ruby objects that do not inherit from `AbstractAdapter` are still allowed.
+
+### 12. No proof that duck-typed adapters work end to end
+
+- **Where:** test suite.
+- **Issue:** The `README.md` says adapters are plain Ruby objects, but all tests either used the Postgres adapter or subclasses of `AbstractAdapter`. There was no end-to-end test of a plain object that only responds to the required methods.
+- **Status:** Fixed. Added a `DuckTypedAdapter` in `spec/fx/adapters/custom_adapter_integration_spec.rb` that does not inherit from `AbstractAdapter` and tested it through `Fx::Statements` and `Fx::SchemaDumper`.
+
 ## Summary
 
 The adapter layer now has a documented interface (`Fx::Adapters::AbstractAdapter`), a verified contract, an end-to-end integration test, and consistent documentation that treats adapters as plain Ruby objects configured through `Fx.configuration.database`. The remaining accepted limitations are either small performance concerns (loading the Postgres adapter by default) or documentation choices that do not block adapter authors.
