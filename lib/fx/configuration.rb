@@ -6,7 +6,10 @@ module Fx
     # Defaults to an instance of {Fx::Adapters::Postgres} and can be set to
     # any object implementing {Fx::Adapters::AbstractAdapter}.
     # @return [Fx::Adapters::AbstractAdapter] Fx adapter
-    attr_accessor :database
+    attr_reader :database
+
+    # The public adapter methods that must be available for F(x) to work.
+    REQUIRED_METHODS = Fx::Adapters::AbstractAdapter::REQUIRED_METHODS
 
     # Prioritizes the order in the schema.rb of functions before other
     # statements in order to make directly schema load work when using functions
@@ -19,6 +22,25 @@ module Fx
     def initialize
       @database = Fx::Adapters::Postgres.new
       @dump_functions_at_beginning_of_schema = false
+    end
+
+    # Sets the database adapter.
+    #
+    # The adapter must respond to all methods in {REQUIRED_METHODS}.
+    #
+    # @param adapter [#functions, #triggers, #create_function, #create_trigger,
+    #   #update_function, #update_trigger, #drop_function, #drop_trigger]
+    # @return [void]
+    def database=(adapter)
+      missing_methods = REQUIRED_METHODS.reject { |method_name|
+        adapter.respond_to?(method_name)
+      }
+
+      unless missing_methods.empty?
+        raise ArgumentError, "database adapter must respond to #{missing_methods.join(", ")}"
+      end
+
+      @database = adapter
     end
   end
 end

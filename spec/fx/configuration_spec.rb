@@ -15,11 +15,23 @@ RSpec.describe Fx::Configuration do
 
   it "allows the database adapter to be set" do
     configuration = Fx::Configuration.new
-    adapter = double("Fx Adapter")
+    adapter = Fx::TestAdapter.new
 
     configuration.database = adapter
 
     expect(configuration.database).to eq(adapter)
+  end
+
+  it "raises an error when the database adapter does not implement the interface" do
+    configuration = Fx::Configuration.new
+    adapter = double("Fx Adapter")
+
+    expect {
+      configuration.database = adapter
+    }.to raise_error(
+      ArgumentError,
+      /database adapter must respond to /
+    )
   end
 
   it "allows `dump_functions_at_beginning_of_schema` to be set" do

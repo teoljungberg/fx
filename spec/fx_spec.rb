@@ -13,7 +13,7 @@ RSpec.describe Fx do
   end
 
   it "allows configuration" do
-    adapter = double("Fx Adapter")
+    adapter = Fx::TestAdapter.new
 
     Fx.configure do |config|
       config.database = adapter
