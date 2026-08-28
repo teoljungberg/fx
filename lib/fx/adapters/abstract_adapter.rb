@@ -17,6 +17,18 @@ module Fx
     #   {#create_function}, {#create_trigger}, {#update_function},
     #   {#update_trigger}, {#drop_function}, and {#drop_trigger}.
     class AbstractAdapter
+      # The public methods that every adapter must implement.
+      REQUIRED_METHODS = %i[
+        functions
+        triggers
+        create_function
+        create_trigger
+        update_function
+        update_trigger
+        drop_function
+        drop_trigger
+      ].freeze
+
       # Returns an array of functions in the database.
       #
       # This collection is used by {Fx::SchemaDumper} to populate `schema.rb`.
