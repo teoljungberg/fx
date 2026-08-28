@@ -181,7 +181,9 @@ end
 
 The methods you must implement are the ones F(x) calls from migrations and the
 schema dumper: `functions`, `triggers`, `create_function`, `create_trigger`,
-`update_function`, `update_trigger`, `drop_function`, and `drop_trigger`.
+`update_function`, `update_trigger`, `drop_function`, and `drop_trigger`. The
+adapter does not have to inherit from `Fx::Adapters::AbstractAdapter` as long as
+it responds to these methods.
 
 ### Third-party adapters
 
