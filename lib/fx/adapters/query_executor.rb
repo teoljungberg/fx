@@ -1,8 +1,18 @@
 module Fx
   module Adapters
     # Executes database queries and maps results to domain objects.
-    # @api private
+    #
+    # This is a reusable helper for adapter implementations. It runs a query
+    # against the given connection and maps each returned row into an instance
+    # of the provided model class.
     class QueryExecutor
+      # Executes the query and maps results to domain objects.
+      #
+      # @param connection [#execute] A connection object that responds to
+      #   `#execute`.
+      # @param query [String] The SQL query to execute.
+      # @param model_class [Class] The class used to wrap each returned row.
+      # @return [Array] Array of domain objects.
       def self.call(...)
         new(...).call
       end
