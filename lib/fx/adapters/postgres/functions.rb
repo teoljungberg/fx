@@ -1,5 +1,5 @@
 require "fx/function"
-require "fx/adapters/postgres/query_executor"
+require "fx/adapters/query_executor"
 
 module Fx
   module Adapters
@@ -31,7 +31,7 @@ module Fx
         #
         # @return [Array<Fx::Function>]
         def self.all(connection)
-          Fx::Adapters::Postgres::QueryExecutor.call(
+          Fx::Adapters::QueryExecutor.call(
             connection: connection,
             query: FUNCTIONS_WITH_DEFINITIONS_QUERY,
             model_class: Fx::Function

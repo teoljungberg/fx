@@ -16,7 +16,7 @@ development.
 
 F(x) ships with support for PostgreSQL. The adapter is configurable (see
 `Fx::Configuration`) and has a minimal interface (see
-`Fx::Adapters::Postgres`) that other gems can provide.
+`Fx::Adapters::AbstractAdapter`) that other gems can provide.
 
 ## Great, how do I create a trigger and a function?
 
@@ -136,11 +136,62 @@ The same approach works for more advanced ordering. For example, if your
 functions depend on each other and need to be dumped in dependency order, you
 could use Ruby's built-in `TSort` to topologically sort them.
 
-## Plugins/Adapters
+## Extending the adapter
+
+F(x) does not use a plugin-registration system. Instead, adapters are plain
+Ruby objects that you configure through `Fx.configuration.database`. There are
+two recommended ways to extend the adapter layer.
+
+### Application-level customization
+
+For sorting, filtering, or other tweaks inside your own application, subclass
+the concrete adapter and override the methods you need. The methods listed in
+[Customizing Schema Dump Order](#customizing-schema-dump-order) are public and
+stable, and `Fx::Adapters::Postgres` remains the default adapter, so this keeps
+your code close to the shipped behavior.
+
+### New database adapters
+
+If you want to add support for a different database, implement
+`Fx::Adapters::AbstractAdapter` and set it as the database:
+
+```ruby
+# config/initializers/fx.rb
+class MyAdapter < Fx::Adapters::AbstractAdapter
+  def functions
+    # return Array<Fx::Function>
+  end
+
+  def triggers
+    # return Array<Fx::Trigger>
+  end
+
+  def create_function(sql_definition)
+    # execute the SQL definition
+  end
+
+  # ... and so on for create_trigger, update_function, update_trigger,
+  # drop_function, and drop_trigger.
+end
+
+Fx.configure do |config|
+  config.database = MyAdapter.new
+end
+```
+
+The methods you must implement are the ones F(x) calls from migrations and the
+schema dumper: `functions`, `triggers`, `create_function`, `create_trigger`,
+`update_function`, `update_trigger`, `drop_function`, and `drop_trigger`.
+
+### Third-party adapters
 
 - [MySQL](https://github.com/f-mer/fx-adapters-mysql/)
 - [Oracle](https://github.com/zygotecnologia/fx-oracle-adapter)
 - [SQLserver](https://github.com/tarellel/fx-sqlserver-adapter)
+
+If the abstract adapter interface or the `Fx::Adapters::Postgres` subclass does
+not let you extend F(x) for your use case, open an issue or pull request so we
+can make the adapter layer work for you.
 
 ## Version Support
 

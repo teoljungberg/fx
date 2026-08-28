@@ -1,6 +1,5 @@
-require "fx/adapters/postgres/connection"
-require "fx/adapters/postgres/functions"
-require "fx/adapters/postgres/triggers"
+require "fx/adapters/abstract_adapter"
+require "fx/adapters/query_executor"
 
 module Fx
   # F(x) database adapters.
@@ -22,7 +21,7 @@ module Fx
     #  Fx.configure do |config|
     #    config.adapter = Fx::Adapters::Postgres.new
     #  end
-    class Postgres
+    class Postgres < AbstractAdapter
       # Creates an instance of the F(x) Postgres adapter.
       #
       # This is the default adapter for F(x). Configuring it via
@@ -153,3 +152,8 @@ module Fx
     end
   end
 end
+
+require "fx/adapters/postgres/connection"
+require "fx/adapters/postgres/functions"
+require "fx/adapters/postgres/query_executor"
+require "fx/adapters/postgres/triggers"

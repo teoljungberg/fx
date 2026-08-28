@@ -57,6 +57,18 @@ RSpec.describe Fx::Generators::TriggerGenerator, :generator do
     end.to raise_error(ArgumentError)
   end
 
+  describe "helper predicates" do
+    it "reports whether the trigger is existing" do
+      generator = described_class.new(
+        ["test", {"table_name" => "users"}],
+        {},
+        destination_root: GeneratorSetup::RAILS_ROOT
+      )
+
+      expect(generator.send(:updating_existing_trigger?)).to be(false)
+    end
+  end
+
   it "updates an existing trigger" do
     with_trigger_definition(
       name: "test",

@@ -1,6 +1,15 @@
 require "spec_helper"
 
 RSpec.describe Fx::CommandRecorder, :db do
+  describe "Arguments" do
+    it "returns the version option" do
+      arguments = described_class.const_get(:Arguments).new(
+        [:test, {version: 2}]
+      )
+
+      expect(arguments.version).to eq(2)
+    end
+  end
   describe "#create_function" do
     it "records the created function" do
       recorder = ActiveRecord::Migration::CommandRecorder.new

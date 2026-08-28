@@ -203,6 +203,17 @@ RSpec.describe Fx::Statements, :db do
     end
   end
 
+  describe "#resolve_sql_definition" do
+    it "raises an error for an unknown type" do
+      expect do
+        connection.send(:resolve_sql_definition, nil, :test, 1, :unknown)
+      end.to raise_error(
+        ArgumentError,
+        "Unknown type: unknown. Must be :function or :trigger"
+      )
+    end
+  end
+
   def stubbed_definition
     instance_double("Fx::Definition", to_sql: nil).tap do |stubbed_definition|
       allow(Fx::Definition).to receive(:function).and_return(stubbed_definition)

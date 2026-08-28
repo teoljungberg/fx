@@ -21,3 +21,7 @@ gem "rspec", ">= 3.3"
 gem "standardrb"
 gem "yard"
 gem "warning"
+
+gem "flay"
+gem "flog"
+gem "simplecov", require: false

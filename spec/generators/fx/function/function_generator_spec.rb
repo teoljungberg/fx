@@ -25,6 +25,19 @@ RSpec.describe Fx::Generators::FunctionGenerator, :generator do
     end
   end
 
+  describe "helper predicates" do
+    it "reports whether the function is new or existing" do
+      generator = described_class.new(
+        ["test"],
+        {},
+        destination_root: GeneratorSetup::RAILS_ROOT
+      )
+
+      expect(generator.send(:creating_new_function?)).to be(true)
+      expect(generator.send(:updating_existing_function?)).to be(false)
+    end
+  end
+
   it "updates an existing function" do
     with_function_definition(
       name: "test",
