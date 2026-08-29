@@ -87,20 +87,26 @@ class EolCheck
       puts "#{product} #{version}: no EOL date set (still supported)"
     when Status::EOL
       record_alert(:error, product, version, "has reached EOL")
-    else
-      check_date(product, version, status)
+    when Date
+      level, message = date_status(status)
+      if level == :info
+        puts "#{product} #{version}: #{message}"
+      else
+        record_alert(level, product, version, message)
+      end
     end
   end
 
-  def check_date(product, version, eol)
+  def date_status(eol)
     today = Date.today
+    warn_date = today + warn_days
 
     if eol <= today
-      record_alert(:error, product, version, "reached EOL on #{eol}")
-    elsif eol < today + warn_days
-      record_alert(:warning, product, version, "reaches EOL on #{eol} (within #{warn_days} days)")
+      [:error, "reached EOL on #{eol}"]
+    elsif eol < warn_date
+      [:warning, "reaches EOL on #{eol} (within #{warn_days} days)"]
     else
-      puts "#{product} #{version}: EOL on #{eol} (no action needed)"
+      [:info, "EOL on #{eol} (no action needed)"]
     end
   end
 
