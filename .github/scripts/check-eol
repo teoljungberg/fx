@@ -3,6 +3,7 @@
 require "date"
 require "json"
 require "net/http"
+require "open3"
 require "uri"
 require "yaml"
 
@@ -143,9 +144,8 @@ class EolCheck
   end
 
   def system_with_output(*command)
-    output = nil
-    IO.popen(command, err: File::NULL) { |io| output = io.read }
-    $?.success? ? output&.strip : nil
+    stdout, _stderr, status = Open3.capture3(*command, err: File::NULL)
+    status.success? ? stdout.strip : nil
   end
 end
 
