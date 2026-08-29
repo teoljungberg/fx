@@ -86,18 +86,34 @@ class EolCheck
 
     case status
     when Status::UNKNOWN
-      warn "#{product} #{version}: unable to determine EOL status"
+      report_unknown(product, version)
     when Status::SUPPORTED
-      puts "#{product} #{version}: no EOL date set (still supported)"
+      report_supported(product, version)
     when Status::EOL
-      record_alert(:error, product, version, "has reached EOL")
+      report_eol(product, version)
     when Date
-      level, message = date_status(status)
-      if level == :info
-        puts "#{product} #{version}: #{message}"
-      else
-        record_alert(level, product, version, message)
-      end
+      report_date(product, version, status)
+    end
+  end
+
+  def report_unknown(product, version)
+    warn "#{product} #{version}: unable to determine EOL status"
+  end
+
+  def report_supported(product, version)
+    puts "#{product} #{version}: no EOL date set (still supported)"
+  end
+
+  def report_eol(product, version)
+    record_alert(:error, product, version, "has reached EOL")
+  end
+
+  def report_date(product, version, eol)
+    level, message = date_status(eol)
+    if level == :info
+      puts "#{product} #{version}: #{message}"
+    else
+      record_alert(level, product, version, message)
     end
   end
 
