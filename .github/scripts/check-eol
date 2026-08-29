@@ -153,7 +153,8 @@ class EolCheck
   end
 
   def report
-    if (existing = existing_issue_number)
+    existing = existing_issue_number
+    if existing
       puts "Issue ##{existing} already open, skipping creation"
     else
       create_issue
@@ -165,7 +166,9 @@ class EolCheck
       "--state", "open", "--search", ISSUE_TITLE,
       "--json", "number", "--jq", ".[0].number // \"\"",
       err: File::NULL)
-    status.success? ? stdout.strip : nil
+    if status.success?
+      stdout.strip
+    end
   end
 
   def create_issue
@@ -177,8 +180,9 @@ class EolCheck
       Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
     BODY
 
-    system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body) ||
+    unless system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
       raise("Failed to create GitHub issue")
+    end
   end
 end
 
