@@ -19,17 +19,10 @@ require "yaml"
 class EolCheck
   EOL_API = "https://endoflife.date/api".freeze
   ISSUE_TITLE = "Dependency EOL alert".freeze
-  DEFAULT_WARN_DAYS = 90
+  WARN_DAYS = Integer(ENV.fetch("WARN_DAYS", 90))
 
   def self.call
     new.call
-  end
-
-  def initialize(
-    warn_days: Integer(ENV.fetch("WARN_DAYS", DEFAULT_WARN_DAYS.to_s))
-  )
-    @warn_days = warn_days
-    @alerts = []
   end
 
   def call
@@ -64,7 +57,9 @@ class EolCheck
   ].freeze
   private_constant :RESCUED_ERRORS
 
-  attr_reader :warn_days, :alerts
+  def alerts
+    @_alerts ||= []
+  end
 
   def gemspec
     @_gemspec ||= Gem::Specification.load("fx.gemspec")
@@ -128,12 +123,12 @@ class EolCheck
 
   def date_status(eol)
     today = Date.today
-    warn_date = today + warn_days
+    warn_date = today + WARN_DAYS
 
     if eol <= today
       [:error, "reached EOL on #{eol}"]
     elsif eol < warn_date
-      [:warning, "reaches EOL on #{eol} (within #{warn_days} days)"]
+      [:warning, "reaches EOL on #{eol} (within #{WARN_DAYS} days)"]
     else
       [:info, "EOL on #{eol} (no action needed)"]
     end
