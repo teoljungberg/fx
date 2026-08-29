@@ -193,8 +193,9 @@ class EolCheck
       Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
     BODY
 
-    status = system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
-    if !status
+    success = system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
+
+    if !success
       raise "Failed to create GitHub issue"
     end
   end
