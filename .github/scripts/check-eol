@@ -4,6 +4,7 @@ require "date"
 require "json"
 require "net/http"
 require "open3"
+require "openssl"
 require "uri"
 require "yaml"
 
@@ -16,6 +17,12 @@ class EolCheck
   EOL_API = "https://endoflife.date/api".freeze
   ISSUE_TITLE = "Dependency EOL alert".freeze
   DEFAULT_WARN_DAYS = 90
+
+  module Status
+    UNKNOWN = :unknown
+    EOL = :eol
+    SUPPORTED = :supported
+  end
 
   def self.call
     new.call
@@ -71,18 +78,17 @@ class EolCheck
   end
 
   def check(product, version)
-    eol = fetch_eol(product, version)
+    status = fetch_eol(product, version)
 
-    case eol
-    when nil
+    case status
+    when Status::UNKNOWN
       warn "#{product} #{version}: unable to determine EOL status"
-    when :supported
+    when Status::SUPPORTED
       puts "#{product} #{version}: no EOL date set (still supported)"
-    when :eol
-      puts "::error::#{product} #{version} has reached EOL"
-      alerts << "- **#{product} #{version}** has reached EOL"
+    when Status::EOL
+      record_alert(:error, product, version, "has reached EOL")
     else
-      check_date(product, version, eol)
+      check_date(product, version, status)
     end
   end
 
@@ -90,37 +96,39 @@ class EolCheck
     today = Date.today
 
     if eol <= today
-      puts "::error::#{product} #{version} reached EOL on #{eol}"
-      alerts << "- **#{product} #{version}** reached EOL on #{eol}"
+      record_alert(:error, product, version, "reached EOL on #{eol}")
     elsif eol < today + warn_days
-      puts "::warning::#{product} #{version} reaches EOL on #{eol} " \
-        "(within #{warn_days} days)"
-      alerts << "- **#{product} #{version}** reaches EOL on #{eol} " \
-        "(within #{warn_days} days)"
+      record_alert(:warning, product, version, "reaches EOL on #{eol} (within #{warn_days} days)")
     else
       puts "#{product} #{version}: EOL on #{eol} (no action needed)"
     end
   end
 
+  def record_alert(level, product, version, message)
+    full = "#{product} #{version} #{message}"
+    puts "::#{level}::#{full}"
+    alerts << "- **#{full}**"
+  end
+
   # Fetches the EOL status for a product/version from endoflife.date.
   #
   # @return [Date] when a specific EOL date is set
-  # @return [:eol] when already end-of-life without a specific date
-  # @return [:supported] when explicitly still supported
-  # @return [nil] when the product/version is unknown or the request fails
+  # @return [Status::EOL] when already end-of-life without a specific date
+  # @return [Status::SUPPORTED] when explicitly still supported
+  # @return [Status::UNKNOWN] when the product/version is unknown or the request fails
   def fetch_eol(product, version)
     uri = URI("#{EOL_API}/#{product}/#{version}.json")
     response = Net::HTTP.get_response(uri)
-    return unless response.is_a?(Net::HTTPSuccess)
+    return Status::UNKNOWN unless response.is_a?(Net::HTTPSuccess)
 
     case (eol = JSON.parse(response.body)["eol"])
-    when true then :eol
-    when false then :supported
+    when true then Status::EOL
+    when false then Status::SUPPORTED
     else Date.parse(eol)
     end
   rescue JSON::ParserError, Date::Error, SocketError, OpenSSL::SSL::SSLError,
     Net::OpenTimeout, Net::ReadTimeout
-    nil
+    Status::UNKNOWN
   end
 
   def report
