@@ -3,20 +3,16 @@
 require "date"
 require "json"
 require "net/http"
-require "openssl"
-require "rubygems"
 require "uri"
 require "yaml"
 
 # Environment:
-#   WARN_DAYS         - days before EOL to start warning (default: 90)
-#   GH_TOKEN          - GitHub token for creating issues (optional)
-#   GITHUB_REPOSITORY - "owner/repo" slug for issue creation (optional)
+#   WARN_DAYS - days before EOL to start warning (default: 90)
+#   GH_TOKEN  - GitHub token for creating issues (optional)
 #
 # @api private
 class EolCheck
   EOL_API = "https://endoflife.date/api".freeze
-  GITHUB_API = "https://api.github.com".freeze
   ISSUE_TITLE = "Dependency EOL alert".freeze
   DEFAULT_WARN_DAYS = 90
 
@@ -25,13 +21,9 @@ class EolCheck
   end
 
   def initialize(
-    warn_days: Integer(ENV.fetch("WARN_DAYS", DEFAULT_WARN_DAYS.to_s)),
-    token: ENV["GH_TOKEN"],
-    repository: ENV["GITHUB_REPOSITORY"]
+    warn_days: Integer(ENV.fetch("WARN_DAYS", DEFAULT_WARN_DAYS.to_s))
   )
     @warn_days = warn_days
-    @token = token
-    @repository = repository
     @alerts = []
   end
 
@@ -51,7 +43,7 @@ class EolCheck
 
   private
 
-  attr_reader :warn_days, :token, :repository, :alerts
+  attr_reader :warn_days, :alerts
 
   def gemspec
     @_gemspec ||= Gem::Specification.load("fx.gemspec")
@@ -131,71 +123,29 @@ class EolCheck
   end
 
   def report
-    if token && repository
-      create_issue
-    else
-      puts "GH_TOKEN or GITHUB_REPOSITORY not set, skipping issue creation"
-      puts
-      puts ISSUE_TITLE
-      puts issue_body
-    end
-  end
-
-  def issue_body
-    <<~BODY
+    body = <<~BODY
       The following minimum supported versions are at or approaching end-of-life:
 
       #{alerts.join("\n")}
 
       Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
     BODY
-  end
 
-  def create_issue
-    existing = existing_issue_number
-    if existing
+    existing = system_with_output("gh", "issue", "list",
+      "--state", "open", "--search", ISSUE_TITLE,
+      "--json", "number", "--jq", ".[0].number")
+
+    if existing && !existing.empty?
       puts "Issue ##{existing} already open, skipping creation"
-      return
-    end
-
-    response = github_request(
-      Net::HTTP::Post,
-      "/repos/#{repository}/issues",
-      body: {title: ISSUE_TITLE, body: issue_body}
-    )
-
-    if response.is_a?(Net::HTTPSuccess)
-      puts "Opened issue ##{JSON.parse(response.body)["number"]}"
     else
-      warn "Failed to create issue: #{response.code} #{response.body}"
+      system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
     end
   end
 
-  def existing_issue_number
-    response = github_request(Net::HTTP::Get, "/repos/#{repository}/issues?state=open")
-    return unless response.is_a?(Net::HTTPSuccess)
-
-    issue = JSON.parse(response.body).find do |candidate|
-      !candidate.key?("pull_request") && candidate["title"] == ISSUE_TITLE
-    end
-    issue && issue["number"]
-  end
-
-  def github_request(method, path, body: nil)
-    uri = URI("#{GITHUB_API}#{path}")
-    request = method.new(uri)
-    request["Authorization"] = "Bearer #{token}"
-    request["Accept"] = "application/vnd.github+json"
-    request["X-GitHub-Api-Version"] = "2022-11-28"
-    request["User-Agent"] = "fx-eol-check"
-    if body
-      request["Content-Type"] = "application/json"
-      request.body = JSON.generate(body)
-    end
-
-    Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-      http.request(request)
-    end
+  def system_with_output(*command)
+    output = nil
+    IO.popen(command, err: File::NULL) { |io| output = io.read }
+    $?.success? ? output&.strip : nil
   end
 end
 
