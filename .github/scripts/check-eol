@@ -50,9 +50,7 @@ class EolCheck
     check("rails", rails_minimum)
     check("postgresql", postgres_minimum)
 
-    return if alerts.empty?
-
-    report
+    report unless alerts.empty?
   end
 
   private
@@ -122,18 +120,13 @@ class EolCheck
     alerts << "- **#{full}**"
   end
 
-  # Fetches the EOL status for a product/version from endoflife.date.
-  #
-  # @return [Date] when a specific EOL date is set
-  # @return [Status::EOL] when already end-of-life without a specific date
-  # @return [Status::SUPPORTED] when explicitly still supported
-  # @return [Status::UNKNOWN] when the product/version is unknown or the request fails
   def fetch_eol(product, version)
     uri = URI("#{EOL_API}/#{product}/#{version}.json")
     response = Net::HTTP.get_response(uri)
     return Status::UNKNOWN unless response.is_a?(Net::HTTPSuccess)
 
-    case (eol = JSON.parse(response.body)["eol"])
+    eol = JSON.parse(response.body)["eol"]
+    case eol
     when true then Status::EOL
     when false then Status::SUPPORTED
     else Date.parse(eol)
@@ -144,30 +137,32 @@ class EolCheck
   end
 
   def report
-    existing = system_with_output("gh", "issue", "list",
-      "--state", "open", "--search", ISSUE_TITLE,
-      "--json", "number", "--jq", ".[0].number")
-
-    if existing && !existing.empty?
+    if (existing = existing_issue_number)
       puts "Issue ##{existing} already open, skipping creation"
     else
-      system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", issue_body)
+      create_issue
     end
   end
 
-  def issue_body
-    <<~BODY
+  def existing_issue_number
+    stdout, _stderr, status = Open3.capture3("gh", "issue", "list",
+      "--state", "open", "--search", ISSUE_TITLE,
+      "--json", "number", "--jq", ".[0].number // \"\"",
+      err: File::NULL)
+    status.success? ? stdout.strip : nil
+  end
+
+  def create_issue
+    body = <<~BODY
       The following minimum supported versions are at or approaching end-of-life:
 
       #{alerts.join("\n")}
 
       Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
     BODY
-  end
 
-  def system_with_output(*command)
-    stdout, _stderr, status = Open3.capture3(*command, err: File::NULL)
-    status.success? ? stdout.strip : nil
+    system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body) ||
+      raise("Failed to create GitHub issue")
   end
 end
 
