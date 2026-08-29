@@ -21,13 +21,6 @@ class EolCheck
   ISSUE_TITLE = "Dependency EOL alert".freeze
   DEFAULT_WARN_DAYS = 90
 
-  module Status
-    UNKNOWN = :unknown
-    EOL = :eol
-    SUPPORTED = :supported
-  end
-  private_constant :Status
-
   def self.call
     new.call
   end
@@ -48,10 +41,28 @@ class EolCheck
     check("rails", rails_minimum)
     check("postgresql", postgres_minimum)
 
-    report unless alerts.empty?
+    report if alerts.any?
   end
 
   private
+
+  module Status
+    UNKNOWN = :unknown
+    EOL = :eol
+    SUPPORTED = :supported
+  end
+  private_constant :Status
+
+  RESCUED_ERRORS = [
+    JSON::ParserError,
+    Date::Error,
+    Errno::ECONNREFUSED,
+    OpenSSL::SSL::SSLError,
+    SocketError,
+    Net::OpenTimeout,
+    Net::ReadTimeout
+  ].freeze
+  private_constant :RESCUED_ERRORS
 
   attr_reader :warn_days, :alerts
 
@@ -75,7 +86,7 @@ class EolCheck
   end
 
   def minimum_version(requirement)
-    _operator, version = requirement.requirements.find { |op, _| op == ">=" }
+    _, version = requirement.requirements.find { |operator, _| operator == ">=" }
     version.segments[0..1].join(".")
   end
 
@@ -145,8 +156,7 @@ class EolCheck
     when false then Status::SUPPORTED
     else Date.parse(eol)
     end
-  rescue JSON::ParserError, Date::Error, Errno::ECONNREFUSED, OpenSSL::SSL::SSLError,
-    SocketError, Net::OpenTimeout, Net::ReadTimeout
+  rescue *RESCUED_ERRORS
     Status::UNKNOWN
   end
 
@@ -170,7 +180,6 @@ class EolCheck
       "--jq", ".[0].number // \"\"",
       err: File::NULL
     )
-
     if status.success?
       stdout.strip
     end
@@ -184,7 +193,6 @@ class EolCheck
 
       Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
     BODY
-
     if !system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
       raise("Failed to create GitHub issue")
     end
