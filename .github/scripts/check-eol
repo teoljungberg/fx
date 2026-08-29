@@ -41,7 +41,7 @@ class EolCheck
     check("rails", rails_minimum)
     check("postgresql", postgres_minimum)
 
-    report if alerts.any?
+    create_issue_if_needed if alerts.any?
   end
 
   private
@@ -106,7 +106,7 @@ class EolCheck
   end
 
   def report_unknown(product, version)
-    warn "#{product} #{version}: unable to determine EOL status"
+    puts "#{product} #{version}: unable to determine EOL status"
   end
 
   def report_supported(product, version)
@@ -140,9 +140,8 @@ class EolCheck
   end
 
   def record_alert(level, product, version, message)
-    full = "#{product} #{version} #{message}"
-    puts "::#{level}::#{full}"
-    alerts << "- **#{full}**"
+    puts "::#{level}::#{product} #{version} #{message}"
+    alerts << "- **#{product} #{version}** #{message}"
   end
 
   def fetch_eol(product, version)
@@ -160,7 +159,7 @@ class EolCheck
     Status::UNKNOWN
   end
 
-  def report
+  def create_issue_if_needed
     existing = existing_issue_number
     if existing
       puts "Issue ##{existing} already open, skipping creation"
@@ -194,7 +193,7 @@ class EolCheck
       Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
     BODY
     if !system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
-      raise("Failed to create GitHub issue")
+      raise "Failed to create GitHub issue"
     end
   end
 end
