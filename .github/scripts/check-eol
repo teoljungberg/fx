@@ -162,10 +162,17 @@ class EolCheck
   end
 
   def existing_issue_number
-    stdout, _stderr, status = Open3.capture3("gh", "issue", "list",
-      "--state", "open", "--search", ISSUE_TITLE,
-      "--json", "number", "--jq", ".[0].number // \"\"",
-      err: File::NULL)
+    stdout, _stderr, status = Open3.capture3(
+      "gh",
+      "issue",
+      "list",
+      "--state", "open",
+      "--search", ISSUE_TITLE,
+      "--json", "number",
+      "--jq", ".[0].number // \"\"",
+      err: File::NULL
+    )
+
     if status.success?
       stdout.strip
     end
