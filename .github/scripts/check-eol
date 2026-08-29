@@ -8,6 +8,11 @@ require "openssl"
 require "uri"
 require "yaml"
 
+# Check if minimum supported dependency versions are at or approaching EOL.
+#
+# Uses the endoflife.date API. Outputs GitHub Actions annotations and opens
+# an issue when action is needed.
+#
 # Environment:
 #   WARN_DAYS - days before EOL to start warning (default: 90)
 #   GH_TOKEN  - GitHub token for creating issues (optional)
@@ -23,6 +28,7 @@ class EolCheck
     EOL = :eol
     SUPPORTED = :supported
   end
+  private_constant :Status
 
   def self.call
     new.call
@@ -132,20 +138,12 @@ class EolCheck
     when false then Status::SUPPORTED
     else Date.parse(eol)
     end
-  rescue JSON::ParserError, Date::Error, SocketError, OpenSSL::SSL::SSLError,
-    Net::OpenTimeout, Net::ReadTimeout
+  rescue JSON::ParserError, Date::Error, Errno::ECONNREFUSED, OpenSSL::SSL::SSLError,
+    SocketError, Net::OpenTimeout, Net::ReadTimeout
     Status::UNKNOWN
   end
 
   def report
-    body = <<~BODY
-      The following minimum supported versions are at or approaching end-of-life:
-
-      #{alerts.join("\n")}
-
-      Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
-    BODY
-
     existing = system_with_output("gh", "issue", "list",
       "--state", "open", "--search", ISSUE_TITLE,
       "--json", "number", "--jq", ".[0].number")
@@ -153,8 +151,18 @@ class EolCheck
     if existing && !existing.empty?
       puts "Issue ##{existing} already open, skipping creation"
     else
-      system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", body)
+      system("gh", "issue", "create", "--title", ISSUE_TITLE, "--body", issue_body)
     end
+  end
+
+  def issue_body
+    <<~BODY
+      The following minimum supported versions are at or approaching end-of-life:
+
+      #{alerts.join("\n")}
+
+      Consider bumping the minimum version in `fx.gemspec` and updating the CI matrix.
+    BODY
   end
 
   def system_with_output(*command)
