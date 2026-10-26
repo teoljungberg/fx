@@ -5,9 +5,9 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
-## [Unreleased]
+## [0.12.0]
 
-[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.11.0..HEAD
+[0.12.0]: https://github.com/teoljungberg/fx/compare/v0.11.0...v0.12.0
 
 - Drop EOL Rails 7.2 and 8.0 (#216)
 - Drop EOL PostgreSQL 14
