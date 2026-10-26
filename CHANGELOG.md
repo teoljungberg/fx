@@ -11,6 +11,8 @@ changelog, see the [commits] for each version via the version links.
 
 - Drop EOL Rails 7.2 and 8.0 (#216)
 - Drop EOL PostgreSQL 14
+- Internal refactorings / improvements
+  - Add CI summary job for branch protection (#215)
 
 ## [0.11.0]
 
