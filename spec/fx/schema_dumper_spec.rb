@@ -232,10 +232,6 @@ RSpec.describe Fx::SchemaDumper, :db do
   end
 
   def dump(connection:, stream:)
-    if Rails.version >= "7.2"
-      ActiveRecord::SchemaDumper.dump(connection.pool, stream)
-    else
-      ActiveRecord::SchemaDumper.dump(connection, stream)
-    end
+    ActiveRecord::SchemaDumper.dump(connection.pool, stream)
   end
 end
