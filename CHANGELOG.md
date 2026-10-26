@@ -10,6 +10,7 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.11.0..HEAD
 
 - Drop EOL Rails 7.2 and 8.0 (#216)
+- Drop EOL PostgreSQL 14
 
 ## [0.11.0]
 

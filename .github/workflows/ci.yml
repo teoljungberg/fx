@@ -16,7 +16,7 @@ jobs:
       matrix:
         ruby: ["3.3", "4.0"]
         rails: ["8.1"]
-        postgres: ["14", "18"]
+        postgres: ["15", "18"]
         include:
           - ruby: "4.0"
             rails: "main"

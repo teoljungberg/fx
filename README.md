@@ -151,7 +151,7 @@ versions within their official maintenance windows.
 
 **Rails:** 8.1 ([maintenance policy])
 
-**PostgreSQL:** 14, 15, 16, 17, 18 ([versioning policy])
+**PostgreSQL:** 15, 16, 17, 18 ([versioning policy])
 
 When a version reaches end-of-life, support will be dropped in the next minor
 release of F(x). Older versions may continue to work but are not tested or
