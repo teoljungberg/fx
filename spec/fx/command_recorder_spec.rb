@@ -165,3 +165,33 @@ RSpec.describe "Fx command recorder", :db do
     end
   end
 end
+
+RSpec.describe Fx::CommandRecorder do
+  it "records keyword arguments separately" do
+    recorder = build_recorder
+
+    recorder.update_function(:test, version: 2)
+
+    expect(recorder.recorded).to eq([:update_function, [:test], {version: 2}])
+  end
+
+  it "inverts keyword arguments separately" do
+    recorder = build_recorder
+
+    inverse = recorder.invert_update_function([:test], {version: 2, revert_to_version: 1})
+
+    expect(inverse).to eq([:update_function, [:test], {version: 1}])
+  end
+
+  def build_recorder
+    Class.new do
+      include Fx::CommandRecorder
+
+      attr_reader :recorded
+
+      def record(command, args, kwargs)
+        @recorded = [command, args, kwargs]
+      end
+    end.new
+  end
+end
