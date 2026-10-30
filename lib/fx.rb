@@ -19,7 +19,12 @@ module Fx
   # Enables fx migration methods, migration reversability, and `schema.rb`
   # dumping.
   def self.load
-    ActiveRecord::Migration::CommandRecorder.include(Fx::CommandRecorder)
+    # Active Record 8.2 passes keyword arguments to `record` separately.
+    if ActiveRecord.gem_version >= Gem::Version.new("8.2.0.alpha")
+      ActiveRecord::Migration::CommandRecorder.include(Fx::CommandRecorder)
+    else
+      ActiveRecord::Migration::CommandRecorder.include(Fx::CommandRecorder::Legacy)
+    end
     ActiveRecord::ConnectionAdapters::AbstractAdapter.include(Fx::Statements)
     ActiveRecord::SchemaDumper.prepend(Fx::SchemaDumper)
 
