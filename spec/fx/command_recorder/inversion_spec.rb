@@ -8,6 +8,12 @@ RSpec.describe Fx::CommandRecorder::Inversion do
       expect(inverse).to eq([:drop_function, [:test], {}])
     end
 
+    it "drops a created function without its version" do
+      inverse = described_class.invert(:create_function, [:test], {version: 2})
+
+      expect(inverse).to eq([:drop_function, [:test], {}])
+    end
+
     it "creates a dropped function at its revert_to_version" do
       inverse = described_class.invert(:drop_function, [:test], {revert_to_version: 3})
 
@@ -20,10 +26,22 @@ RSpec.describe Fx::CommandRecorder::Inversion do
       expect(inverse).to eq([:update_function, [:test], {version: 1}])
     end
 
-    it "drops a created trigger" do
-      inverse = described_class.invert(:create_trigger, [:greetings], {})
+    it "drops a created trigger on its table" do
+      inverse = described_class.invert(:create_trigger, [:greetings], {on: :users})
 
-      expect(inverse).to eq([:drop_trigger, [:greetings], {}])
+      expect(inverse).to eq([:drop_trigger, [:greetings], {on: :users}])
+    end
+
+    it "raises when a created trigger has no table" do
+      expect do
+        described_class.invert(:create_trigger, [:greetings], {})
+      end.to raise_error(ActiveRecord::IrreversibleMigration, /`on:`/)
+    end
+
+    it "drops a created trigger on its table without its version" do
+      inverse = described_class.invert(:create_trigger, [:greetings], {on: :users, version: 2})
+
+      expect(inverse).to eq([:drop_trigger, [:greetings], {on: :users}])
     end
 
     it "creates a dropped trigger at its revert_to_version" do

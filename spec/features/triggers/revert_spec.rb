@@ -42,6 +42,16 @@ RSpec.describe "Reverting migrations", :db do
     expect { run_migration(migration, [:up, :down]) }.not_to raise_error
   end
 
+  it "can run reversible migrations for creating triggers at a version" do
+    migration = Class.new(migration_class) do
+      def change
+        create_trigger :uppercase_users_name, on: :users, version: 1
+      end
+    end
+
+    expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+  end
+
   it "can run reversible migrations for dropping triggers" do
     connection.create_trigger(:uppercase_users_name, on: :users)
 
