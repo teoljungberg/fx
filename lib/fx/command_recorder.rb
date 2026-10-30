@@ -1,120 +1,80 @@
+require "fx/command_recorder/inversion"
+
 module Fx
   # @api private
   module CommandRecorder
-    def create_function(*args, &block)
-      record(:create_function, args, &block)
+    def create_function(*args, **kwargs, &block)
+      record(:create_function, Fx::CommandRecorder.fold(args, kwargs), &block)
     end
-    ruby2_keywords :create_function
 
-    def drop_function(*args, &block)
-      record(:drop_function, args, &block)
+    def drop_function(*args, **kwargs, &block)
+      record(:drop_function, Fx::CommandRecorder.fold(args, kwargs), &block)
     end
-    ruby2_keywords :drop_function
 
-    def update_function(*args, &block)
-      record(:update_function, args, &block)
+    def update_function(*args, **kwargs, &block)
+      record(:update_function, Fx::CommandRecorder.fold(args, kwargs), &block)
     end
-    ruby2_keywords :update_function
 
     def invert_create_function(args)
-      [:drop_function, args]
+      perform_inversion(:create_function, args)
     end
 
     def invert_drop_function(args)
-      perform_inversion(:create_function, args)
+      perform_inversion(:drop_function, args)
     end
 
     def invert_update_function(args)
       perform_inversion(:update_function, args)
     end
 
-    def create_trigger(*args, &block)
-      record(:create_trigger, args, &block)
+    def create_trigger(*args, **kwargs, &block)
+      record(:create_trigger, Fx::CommandRecorder.fold(args, kwargs), &block)
     end
-    ruby2_keywords :create_trigger
 
-    def drop_trigger(*args, &block)
-      record(:drop_trigger, args, &block)
+    def drop_trigger(*args, **kwargs, &block)
+      record(:drop_trigger, Fx::CommandRecorder.fold(args, kwargs), &block)
     end
-    ruby2_keywords :drop_trigger
 
-    def update_trigger(*args, &block)
-      record(:update_trigger, args, &block)
+    def update_trigger(*args, **kwargs, &block)
+      record(:update_trigger, Fx::CommandRecorder.fold(args, kwargs), &block)
     end
-    ruby2_keywords :update_trigger
 
     def invert_create_trigger(args)
-      [:drop_trigger, args]
+      perform_inversion(:create_trigger, args)
     end
 
     def invert_drop_trigger(args)
-      perform_inversion(:create_trigger, args)
+      perform_inversion(:drop_trigger, args)
     end
 
     def invert_update_trigger(args)
       perform_inversion(:update_trigger, args)
     end
 
+    # Folds keyword arguments into a trailing hash flagged as keywords, so
+    # `CommandRecorder#replay` passes them on as keywords.
+    def self.fold(args, kwargs)
+      if kwargs.empty?
+        args
+      else
+        [*args, Hash.ruby2_keywords_hash(kwargs)]
+      end
+    end
+
+    def self.split(args)
+      if args.last.is_a?(Hash)
+        [args[0...-1], args.last]
+      else
+        [args, {}]
+      end
+    end
+
     private
 
-    MESSAGE_IRREVERSIBLE = "`%s` is reversible only if given a `revert_to_version`".freeze
+    def perform_inversion(command, args)
+      inverse, inverse_args, inverse_kwargs = Fx::CommandRecorder::Inversion.invert(command, *Fx::CommandRecorder.split(args))
 
-    def perform_inversion(method, args)
-      arguments = Arguments.new(args)
-
-      if arguments.revert_to_version.nil?
-        raise ActiveRecord::IrreversibleMigration, format(MESSAGE_IRREVERSIBLE, method)
-      end
-
-      [method, arguments.invert_version.to_a]
+      [inverse, Fx::CommandRecorder.fold(inverse_args, inverse_kwargs)]
     end
-
-    class Arguments
-      def initialize(args)
-        @args = args.freeze
-      end
-
-      def function
-        args.fetch(0)
-      end
-
-      def version
-        options.fetch(:version)
-      end
-
-      def revert_to_version
-        options.fetch(:revert_to_version, nil)
-      end
-
-      def invert_version
-        self.class.new([function, options_for_revert])
-      end
-
-      def to_a
-        args.to_a
-      end
-
-      private
-
-      attr_reader :args
-
-      def options
-        @options ||= args.fetch(1, {}).dup
-      end
-
-      def options_for_revert
-        opts = options.clone.tap do |revert_options|
-          revert_options[:version] = revert_to_version
-          revert_options.delete(:revert_to_version)
-        end
-
-        keyword_hash(opts)
-      end
-
-      def keyword_hash(hash)
-        Hash.ruby2_keywords_hash(hash)
-      end
-    end
-    private_constant :Arguments
   end
 end
