@@ -94,14 +94,22 @@ RSpec.describe "Fx command recorder", :db do
       expect(migration).to have_received(:create_trigger).with(:greetings)
     end
 
-    it "reverts to drop_trigger" do
+    it "reverts to drop_trigger on its table" do
       recorder = ActiveRecord::Migration::CommandRecorder.new
       migration = double("migration", drop_trigger: nil)
 
-      recorder.revert { recorder.create_trigger :greetings }
+      recorder.revert { recorder.create_trigger(:greetings, on: :users) }
       recorder.replay(migration)
 
-      expect(migration).to have_received(:drop_trigger).with(:greetings)
+      expect(migration).to have_received(:drop_trigger).with(:greetings, on: :users)
+    end
+
+    it "raises when reverting without on set" do
+      recorder = ActiveRecord::Migration::CommandRecorder.new
+
+      expect do
+        recorder.revert { recorder.create_trigger :greetings }
+      end.to raise_error(ActiveRecord::IrreversibleMigration)
     end
   end
 
