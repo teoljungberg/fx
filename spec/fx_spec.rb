@@ -7,9 +7,22 @@ RSpec.describe Fx do
 
   it "loads fx into ActiveRecord" do
     expect(Fx.load).to eq(true)
-    expect(ActiveRecord::Migration::CommandRecorder).to include(Fx::CommandRecorder).or include(Fx::CommandRecorder::Legacy)
+    expect(ActiveRecord::Migration::CommandRecorder.ancestors.first)
+      .to eq(Fx::CommandRecorder).or eq(Fx::CommandRecorder::Legacy)
     expect(ActiveRecord::ConnectionAdapters::AbstractAdapter).to include(Fx::Statements)
     expect(ActiveRecord::SchemaDumper).to include(Fx::SchemaDumper)
+  end
+
+  it "records and inverts fx commands through a plain CommandRecorder" do
+    Fx.load
+
+    recorder = ActiveRecord::Migration::CommandRecorder.new
+
+    recorder.create_function :horses, version: 2
+    expect(recorder.commands.first.first).to eq(:create_function)
+
+    recorder.revert { recorder.create_function :horses, version: 2 }
+    expect(recorder.commands.last.first).to eq(:drop_function)
   end
 
   it "loads the command recorder on Active Record 8.2" do
