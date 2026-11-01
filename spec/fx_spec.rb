@@ -13,15 +13,23 @@ RSpec.describe Fx do
     expect(ActiveRecord::SchemaDumper).to include(Fx::SchemaDumper)
   end
 
-  it "records and inverts fx commands through a plain CommandRecorder" do
+  it "records fx commands through a plain CommandRecorder" do
     Fx.load
 
     recorder = ActiveRecord::Migration::CommandRecorder.new
 
     recorder.create_function :horses, version: 2
+
     expect(recorder.commands.first.first).to eq(:create_function)
+  end
+
+  it "inverts fx commands through a plain CommandRecorder" do
+    Fx.load
+
+    recorder = ActiveRecord::Migration::CommandRecorder.new
 
     recorder.revert { recorder.create_function :horses, version: 2 }
+
     expect(recorder.commands.last.first).to eq(:drop_function)
   end
 

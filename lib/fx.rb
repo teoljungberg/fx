@@ -20,8 +20,8 @@ module Fx
   # dumping.
   def self.load
     # Active Record 8.2 passes keyword arguments to `record` separately.
-    # Prepend, not include: the recorder modules redefine behavior fx does
-    # not own, so fx stays removable from the class Rails ships.
+    # Prepend, not include: if Rails ever defines these commands itself,
+    # fx's versions keep winning instead of silently losing to the class.
     if ActiveRecord.gem_version >= Gem::Version.new("8.2.0.alpha")
       ActiveRecord::Migration::CommandRecorder.prepend(Fx::CommandRecorder)
     else
