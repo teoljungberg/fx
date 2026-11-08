@@ -12,28 +12,17 @@ set -e
 
 WARN_DAYS="${WARN_DAYS:-90}"
 
-ruby_min=$(ruby -e "
-  spec = Gem::Specification.load('fx.gemspec')
-  puts spec.required_ruby_version.requirements
-    .select { |op, _| op == '>=' }
-    .map { |_, v| v.segments[0..1].join('.') }
-    .first
-")
+ruby_min=$(grep -E '^[ ]*spec\.required_ruby_version' fx.gemspec |
+  sed -E 's/.*>= *([0-9]+\.[0-9]+).*/\1/')
 
-rails_min=$(ruby -e "
-  spec = Gem::Specification.load('fx.gemspec')
-  dep = spec.dependencies.find { |d| d.name == 'activerecord' }
-  puts dep.requirement.requirements
-    .select { |op, _| op == '>=' }
-    .map { |_, v| v.segments[0..1].join('.') }
-    .first
-")
+rails_min=$(grep 'add_dependency "activerecord"' fx.gemspec |
+  sed -E 's/.*>= *([0-9]+\.[0-9]+).*/\1/')
 
-postgres_min=$(ruby -ryaml -e "
-  ci = YAML.load_file('.github/workflows/ci.yml')
-  versions = ci.dig('jobs', 'tests', 'strategy', 'matrix', 'postgres')
-  puts versions.map(&:to_i).min
-")
+postgres_min=$(grep -E '^[ ]*postgres:' .github/workflows/ci.yml |
+  grep 'postgres:.*\[' |
+  sed -E 's/.*\[["]?([0-9]+).*/\1/' |
+  sort -n |
+  head -n 1)
 
 echo "Ruby minimum: $ruby_min"
 echo "Rails minimum: $rails_min"
@@ -45,18 +34,8 @@ check_eol() {
   product="$1"
   version="$2"
 
-  eol_date=$(curl -sf "https://endoflife.date/api/${product}/${version}.json" \
-    | ruby -rjson -e '
-      data = JSON.parse($stdin.read)
-      eol = data["eol"]
-      if eol == true
-        puts "1970-01-01"
-      elsif eol == false
-        exit
-      else
-        puts eol
-      end
-    ') || return 0
+  eol_date=$(curl -sf "https://endoflife.date/api/${product}/${version}.json" |
+    jq -r '.eol | if . == true then "1970-01-01" elif . == false then empty else . end') || return 0
 
   if [ -z "$eol_date" ]; then
     echo "$product $version: no EOL date set (still supported)"
@@ -64,8 +43,8 @@ check_eol() {
   fi
 
   today=$(date -u +%Y-%m-%d)
-  warn_date=$(date -u -d "$today + ${WARN_DAYS} days" +%Y-%m-%d 2>/dev/null \
-    || date -u -v+"${WARN_DAYS}"d +%Y-%m-%d)
+  warn_date=$(date -u -d "$today + ${WARN_DAYS} days" +%Y-%m-%d 2>/dev/null ||
+    date -u -v+"${WARN_DAYS}"d +%Y-%m-%d)
 
   if [ "$eol_date" \< "$today" ] || [ "$eol_date" = "$today" ]; then
     echo "::error::$product $version reached EOL on $eol_date"
