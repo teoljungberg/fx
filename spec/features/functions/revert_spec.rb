@@ -25,6 +25,16 @@ RSpec.describe "Reverting migrations", :db do
     expect { run_migration(migration, [:up, :down]) }.not_to raise_error
   end
 
+  it "can run reversible migrations for creating functions at a version" do
+    migration = Class.new(migration_class) do
+      def change
+        create_function :test, version: 1
+      end
+    end
+
+    expect { run_migration(migration, [:up, :down]) }.not_to raise_error
+  end
+
   it "can run reversible migrations for dropping functions" do
     connection.create_function(:test)
 

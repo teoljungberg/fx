@@ -5,6 +5,14 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
+## [Unreleased]
+
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.12.0..HEAD
+
+- Support reversible migrations on Rails 8.2 (#220)
+- Drop a versioned `create_function` and `create_trigger` without its version when reverting
+- Raise `ActiveRecord::IrreversibleMigration` when reverting `create_trigger` without `on:`
+
 ## [0.12.0]
 
 [0.12.0]: https://github.com/teoljungberg/fx/compare/v0.11.0...v0.12.0
