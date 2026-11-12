@@ -49,6 +49,17 @@ RSpec.describe Fx::CommandRecorder::Legacy do
     expect(Hash.ruby2_keywords_hash?(inverse_args.last)).to eq(true)
   end
 
+  it "inverts a trailing hash not flagged as keywords" do
+    recorder = build_recorder
+    args = [:test, {revert_to_version: 1}]
+
+    command, inverse_args = recorder.invert_drop_function(args)
+
+    expect(command).to eq(:create_function)
+    expect(inverse_args).to eq([:test, {version: 1}])
+    expect(Hash.ruby2_keywords_hash?(inverse_args.last)).to eq(true)
+  end
+
   def build_recorder
     Class.new do
       include Fx::CommandRecorder::Legacy
