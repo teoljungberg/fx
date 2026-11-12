@@ -1,11 +1,11 @@
 module Fx
   module CommandRecorder
     # Inverts recorded fx migration commands, so `change` migrations can be
-    # reverted. Holds no state and knows nothing about how Active Record
-    # records commands.
+    # reverted. Holds no state across invocations and knows nothing about
+    # how Active Record records commands.
     #
     # @api private
-    module Inversion
+    class Inversion
       MESSAGE_IRREVERSIBLE = "`%s` is reversible only if given a `revert_to_version`".freeze
       private_constant :MESSAGE_IRREVERSIBLE
 
@@ -21,43 +21,58 @@ module Fx
       #   a `create_trigger` needs an `on:` that was not given
       # @raise [ArgumentError] when the command is not an fx command
       def self.invert(command, args, kwargs)
+        new(command, args, kwargs).invert
+      end
+
+      def initialize(command, args, kwargs)
+        @command = command
+        @args = args
+        @kwargs = kwargs
+      end
+
+      # @return [Array(Symbol, Array, Hash)] the command that undoes the
+      #   recorded command
+      def invert
         case command
-        when :create_function then drop_function(args)
-        when :drop_function then revert_to_version(:create_function, args, kwargs)
-        when :update_function then revert_to_version(:update_function, args, kwargs)
-        when :create_trigger then drop_trigger(args, kwargs)
-        when :drop_trigger then revert_to_version(:create_trigger, args, kwargs)
-        when :update_trigger then revert_to_version(:update_trigger, args, kwargs)
+        when :create_function then drop_function
+        when :drop_function then revert_to_version(:create_function)
+        when :update_function then revert_to_version(:update_function)
+        when :create_trigger then drop_trigger
+        when :drop_trigger then revert_to_version(:create_trigger)
+        when :update_trigger then revert_to_version(:update_trigger)
         else raise ArgumentError, "`#{command}` is not an fx command"
         end
       end
 
-      def self.revert_to_version(command, args, kwargs)
+      private
+
+      attr_reader :command, :args, :kwargs
+
+      def revert_to_version(inverse_command)
         revert_to_version = kwargs[:revert_to_version]
 
         if revert_to_version.nil?
-          raise ActiveRecord::IrreversibleMigration, format(MESSAGE_IRREVERSIBLE, command)
+          raise ActiveRecord::IrreversibleMigration, format(MESSAGE_IRREVERSIBLE, inverse_command)
         end
 
         inverse_kwargs = kwargs.except(:revert_to_version).merge(version: revert_to_version)
 
-        [command, args, inverse_kwargs]
+        [inverse_command, args, inverse_kwargs]
       end
-      private_class_method :revert_to_version
 
-      def self.drop_function(args)
+      def drop_function
         [:drop_function, args, {}]
       end
-      private_class_method :drop_function
 
-      def self.drop_trigger(args, kwargs)
+      def drop_trigger
         if kwargs[:on].nil?
           raise ActiveRecord::IrreversibleMigration, MESSAGE_IRREVERSIBLE_WITHOUT_TABLE
         end
 
-        [:drop_trigger, args, kwargs.slice(:on)]
+        inverse_kwargs = kwargs.slice(:on)
+
+        [:drop_trigger, args, inverse_kwargs]
       end
-      private_class_method :drop_trigger
     end
   end
 end
