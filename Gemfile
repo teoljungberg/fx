@@ -21,4 +21,5 @@ gem "rspec", ">= 3.3"
 gem "standardrb"
 gem "yard"
 gem "simplecov", require: false
+gem "simplecov_json_formatter", require: false
 gem "warning"

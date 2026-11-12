@@ -1,6 +1,7 @@
 ENV["RAILS_ENV"] = "test"
 
 if ENV["COVERAGE"]
+  require "active_record"
   require "simplecov"
   require "simplecov_json_formatter"
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
@@ -8,12 +9,20 @@ if ENV["COVERAGE"]
     SimpleCov::Formatter::JSONFormatter
   ])
   SimpleCov.start do
-    add_filter "/spec/"
-    add_filter "/vendor/"
-    add_filter "lib/fx/version.rb"
+    skip "/spec/"
+    skip "/vendor/"
+    skip "lib/fx/version.rb"
     command_name ENV.fetch("SIMPLECOV_COMMAND_NAME", "RSpec")
-    track_files "lib/**/*.rb"
+    cover "lib/**/*.rb"
     minimum_coverage 100
+  end
+
+  # Active Record 8.2+ runs Fx::CommandRecorder; earlier versions run
+  # Fx::CommandRecorder::Legacy. Only the active half can be covered.
+  if ActiveRecord.gem_version >= Gem::Version.new("8.2.0.alpha")
+    SimpleCov.skip "lib/fx/command_recorder/legacy.rb"
+  else
+    SimpleCov.skip "lib/fx/command_recorder.rb"
   end
 end
 
