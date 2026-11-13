@@ -1,5 +1,35 @@
 ENV["RAILS_ENV"] = "test"
 
+if ENV["COVERAGE"]
+  require "active_record"
+  require "simplecov"
+  require "simplecov_json_formatter"
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
+    SimpleCov::Formatter::HTMLFormatter,
+    SimpleCov::Formatter::JSONFormatter
+  ])
+  SimpleCov.start do
+    skip "/spec/"
+    skip "/vendor/"
+    skip "lib/fx/version.rb"
+    command_name ENV.fetch("SIMPLECOV_COMMAND_NAME", "RSpec")
+    # Long debugging sessions leave resultsets older than the 600s default;
+    # the warning about them then crashes the suite because
+    # spec/support/warning_helper.rb raises on every warning.
+    merge_timeout 3600
+    cover "lib/**/*.rb"
+    minimum_coverage 100
+  end
+
+  # Active Record 8.2+ runs Fx::CommandRecorder; earlier versions run
+  # Fx::CommandRecorder::Legacy. Only the active half can be covered.
+  if ActiveRecord.gem_version >= Gem::Version.new("8.2.0.alpha")
+    SimpleCov.skip "lib/fx/command_recorder/legacy.rb"
+  else
+    SimpleCov.skip "lib/fx/command_recorder.rb"
+  end
+end
+
 require File.expand_path("../dummy/config/environment", __FILE__)
 Dir["spec/support/**/*.rb"].sort.each { |file| load file }
 

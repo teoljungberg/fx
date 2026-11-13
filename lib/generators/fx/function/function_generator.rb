@@ -100,14 +100,6 @@ module Fx
       def previous_definition
         version_helper.definition_for_version(version: previous_version, type: :function)
       end
-
-      def updating_existing_function?
-        version_helper.updating_existing?
-      end
-
-      def creating_new_function?
-        version_helper.creating_new?
-      end
     end
   end
 end

@@ -57,8 +57,20 @@ jobs:
       - name: Setup environment
         run: bin/setup
 
-      - name: Run tests
-        run: bundle exec rake
+      - name: Run unit tests
+        env:
+          COVERAGE: true
+          SIMPLECOV_COMMAND_NAME: unit
+        run: bundle exec rake spec
+
+      - name: Run acceptance tests
+        env:
+          COVERAGE: true
+          SIMPLECOV_COMMAND_NAME: acceptance
+        run: bundle exec rake spec:acceptance
+
+      - name: Run linter
+        run: bundle exec standardrb
 
   ci:
     name: CI
