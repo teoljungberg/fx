@@ -13,6 +13,10 @@ if ENV["COVERAGE"]
     skip "/vendor/"
     skip "lib/fx/version.rb"
     command_name ENV.fetch("SIMPLECOV_COMMAND_NAME", "RSpec")
+    # Long debugging sessions leave resultsets older than the 600s default;
+    # the warning about them then crashes the suite because
+    # spec/support/warning_helper.rb raises on every warning.
+    merge_timeout 3600
     cover "lib/**/*.rb"
     minimum_coverage 100
   end
