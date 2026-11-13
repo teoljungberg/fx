@@ -5,6 +5,18 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
+## [Unreleased]
+
+- Internal refactorings / improvements
+  - Add SimpleCov with a 100% minimum coverage requirement
+  - Run unit and acceptance specs as separate CI steps
+  - Remove the unused methods:
+    - `updating_existing_function?` and `creating_new_function?` from `FunctionGenerator`
+    - `updating_existing_trigger?` from `TriggerGenerator`
+    - `NameHelper.validate_and_format`
+  - Skip the inactive `Fx::CommandRecorder` / `Fx::CommandRecorder::Legacy`
+    file from coverage based on the Active Record version
+
 ## [0.13.0]
 
 [0.13.0]: https://github.com/teoljungberg/fx/compare/v0.12.0...v0.13.0
