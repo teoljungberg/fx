@@ -91,10 +91,13 @@ module Fx
       #
       # @param name [String, Symbol] The name of the function.
       # @param sql_definition [String] The SQL schema for the function.
+      # @param arguments [String] Optional function argument types for
+      #   identifying overloaded functions (e.g. "integer, text"). This
+      #   option is specific to the Postgres adapter.
       #
       # @return [void]
-      def update_function(name, sql_definition)
-        drop_function(name)
+      def update_function(name, sql_definition, arguments: nil)
+        drop_function(name, arguments: arguments)
         create_function(sql_definition)
       end
 
@@ -121,11 +124,28 @@ module Fx
       # This is typically called in a migration via
       # {Fx::Statements::Function#drop_function}.
       #
-      # @param name [String, Symbol] The name of the function to drop
+      # @param name [String, Symbol] The name of the function to drop.
+      # @param arguments [String] Optional function argument types for
+      #   identifying overloaded functions (e.g. "integer, text"). When not
+      #   provided, the argument types are looked up automatically from
+      #   pg_proc. If multiple overloads exist, an {Fx::AmbiguousFunctionError}
+      #   is raised. This option is specific to the Postgres adapter; custom
+      #   adapters that do not accept it will raise an ArgumentError.
       #
       # @return [void]
-      def drop_function(name)
-        execute("DROP FUNCTION #{name};")
+      def drop_function(name, arguments: nil)
+        function =
+          if arguments
+            Fx::Function.new(
+              "name" => name.to_s,
+              "definition" => "",
+              "arguments" => arguments
+            )
+          else
+            find_function(name)
+          end
+
+        execute("DROP FUNCTION #{function.signature};")
       end
 
       # Drops the trigger from the database
@@ -146,6 +166,24 @@ module Fx
       attr_reader :connectable
 
       delegate :execute, to: :connection
+
+      def find_function(name)
+        name_str = name.to_s
+        matches = functions.select { |function| function.name == name_str }
+
+        case matches.size
+        when 0
+          Fx::Function.new("name" => name_str, "definition" => "")
+        when 1
+          matches.first
+        else
+          signatures = matches.map(&:signature)
+          raise Fx::AmbiguousFunctionError, <<~MSG.chomp
+            Multiple definitions for function "#{name_str}": #{signatures.join(", ")}.
+            Specify which to drop: drop_function :#{name_str}, arguments: "<argument types>"
+          MSG
+        end
+      end
 
       def connection
         Fx::Adapters::Postgres::Connection.new(connectable.connection)

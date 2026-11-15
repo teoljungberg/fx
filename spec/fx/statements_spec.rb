@@ -48,6 +48,15 @@ RSpec.describe Fx::Statements, :db do
 
       expect(database).to have_received(:drop_function).with(:test)
     end
+
+    it "passes arguments through to the adapter" do
+      database = stubbed_database
+
+      connection.drop_function(:test, arguments: "integer, text")
+
+      expect(database).to have_received(:drop_function)
+        .with(:test, arguments: "integer, text")
+    end
   end
 
   describe "#update_function" do
@@ -70,6 +79,16 @@ RSpec.describe Fx::Statements, :db do
 
       expect(database).to have_received(:update_function)
         .with(:test, "a definition")
+    end
+
+    it "passes arguments through to the adapter" do
+      database = stubbed_database
+      definition = stubbed_definition
+
+      connection.update_function(:test, version: 3, arguments: "integer")
+
+      expect(database).to have_received(:update_function)
+        .with(:test, definition.to_sql, arguments: "integer")
     end
 
     it "raises an error if not supplied a version" do
