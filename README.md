@@ -107,13 +107,28 @@ end
 That's how you tell Rails to use the default as a literal SQL for the default
 column value instead of a plain string.
 
-## Customizing Schema Dump Order
+## Extending F(x)
+
+F(x) is built around a small adapter interface. The adapter assigned to
+`config.database` is the extension point: subclass
+`Fx::Adapters::Postgres` to customize behavior, or write an adapter of your
+own. An adapter responds to `functions` and `triggers`, returning the
+`Fx::Function` and `Fx::Trigger` instances to dump into `schema.rb`, and to
+the methods the migration statements call: `create_function(sql_definition)`,
+`drop_function(name)`, `update_function(name, sql_definition)`,
+`create_trigger(sql_definition)`, `drop_trigger(name, on:)`, and
+`update_trigger(name, on:, sql_definition:)`.
+
+`Fx::Function` and `Fx::Trigger` are constructed from a hash with `"name"`
+and `"definition"` keys; functions optionally take `"arguments"`, the
+identity arguments used to disambiguate overloaded functions. These methods
+and classes are the public API of F(x) and remain stable across releases.
+
+### Customizing the schema dump
 
 By default, functions and triggers are dumped to `schema.rb` in the order
 returned by the database. If you need a specific ordering (e.g., alphabetical
-for deterministic diffs), subclass the adapter and override `#functions` or
-`#triggers`. These methods are part of the adapter's public API and will remain
-stable across releases:
+for deterministic diffs), override `#functions` or `#triggers`:
 
 ```ruby
 # config/initializers/fx.rb
@@ -135,6 +150,51 @@ end
 The same approach works for more advanced ordering. For example, if your
 functions depend on each other and need to be dumped in dependency order, you
 could use Ruby's built-in `TSort` to topologically sort them.
+
+Filtering works the same way. If F(x) dumps something you do not want, such
+as a trigger owned by an extension, reject it:
+
+```ruby
+class PostgisAdapter < Fx::Adapters::Postgres
+  def triggers
+    super.reject { |trigger| trigger.name == "layer_integrity_checks" }
+  end
+end
+```
+
+And if F(x) skips something you want dumped, add it yourself:
+
+```ruby
+class MyAdapter < Fx::Adapters::Postgres
+  def triggers
+    super + [Fx::Trigger.new(
+      "name" => "audit_log",
+      "definition" => "CREATE TRIGGER audit_log ..."
+    )]
+  end
+end
+```
+
+### Adding migration statements
+
+To manage other database objects, define the method on your adapter subclass
+and expose it to migrations the way F(x) exposes its own statements:
+
+```ruby
+class OperatorAdapter < Fx::Adapters::Postgres
+  def create_operator(sql_definition)
+    connection.execute(sql_definition)
+  end
+end
+
+module OperatorStatements
+  def create_operator(sql_definition)
+    Fx.database.create_operator(sql_definition)
+  end
+end
+
+ActiveRecord::ConnectionAdapters::AbstractAdapter.include(OperatorStatements)
+```
 
 ## Plugins/Adapters
 
