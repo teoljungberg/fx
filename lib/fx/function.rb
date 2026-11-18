@@ -1,9 +1,20 @@
 module Fx
-  # @api private
+  # A database function to dump into `schema.rb`.
+  #
+  # Part of the public adapter interface: adapters return instances of
+  # this class from `functions`. The constructor takes a row (anything
+  # responding to `#fetch`, such as a `Hash`) with `"name"` and
+  # `"definition"` keys, and an optional `"arguments"` key holding the
+  # function's identity arguments, used to disambiguate overloaded
+  # functions.
   class Function
     include Comparable
 
-    attr_reader :name, :definition
+    # @return [String] the name of the function
+    attr_reader :name
+
+    # @return [String] the SQL definition of the function
+    attr_reader :definition
 
     def initialize(row)
       @name = row.fetch("name")

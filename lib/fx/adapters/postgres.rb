@@ -9,41 +9,35 @@ module Fx
   # additional adapters. The {Fx::Adapters::Postgres} adapter provides the
   # interface.
   module Adapters
-    # Creates an instance of the F(x) Postgres adapter.
+    # The default F(x) adapter, and F(x)'s extension point.
     #
-    # This is the default adapter for F(x). Configuring it via
-    # {Fx.configure} is not required, but the example below shows how one
-    # would explicitly set it.
-    #
-    # @param [#connection] connectable An object that returns the connection
-    #   for F(x) to use. Defaults to `ActiveRecord::Base`.
+    # The public methods of this class are the stable interface adapters
+    # and adapter subclasses rely on: {#functions} and {#triggers}, used
+    # by the schema dumper, and {#create_function}, {#drop_function},
+    # {#update_function}, {#create_trigger}, {#drop_trigger}, and
+    # {#update_trigger}, called by the migration statements. `functions`
+    # and `triggers` return {Fx::Function} and {Fx::Trigger} instances.
+    # Subclass this adapter to customize what F(x) dumps, or write an
+    # adapter of your own responding to the same methods, and assign it
+    # via {Fx::Configuration#database}.
     #
     # @example
     #  Fx.configure do |config|
-    #    config.adapter = Fx::Adapters::Postgres.new
+    #    config.database = Fx::Adapters::Postgres.new
     #  end
     class Postgres
       # Creates an instance of the F(x) Postgres adapter.
       #
-      # This is the default adapter for F(x). Configuring it via
-      # {Fx.configure} is not required, but the example below shows how one
-      # would explicitly set it.
-      #
       # @param [#connection] connectable An object that returns the connection
       #   for F(x) to use. Defaults to `ActiveRecord::Base`.
-      #
-      # @example
-      #  Fx.configure do |config|
-      #    config.adapter = Fx::Adapters::Postgres.new
-      #  end
       def initialize(connectable = ActiveRecord::Base)
         @connectable = connectable
       end
 
       # Returns an array of functions in the database.
       #
-      # This collection of functions is used by the [Fx::SchemaDumper] to
-      # populate the `schema.rb` file.
+      # Part of the public adapter interface: the {Fx::SchemaDumper}
+      # populates `schema.rb` from this collection.
       #
       # @return [Array<Fx::Function>]
       def functions
@@ -52,8 +46,8 @@ module Fx
 
       # Returns an array of triggers in the database.
       #
-      # This collection of triggers is used by the [Fx::SchemaDumper] to
-      # populate the `schema.rb` file.
+      # Part of the public adapter interface: the {Fx::SchemaDumper}
+      # populates `schema.rb` from this collection.
       #
       # @return [Array<Fx::Trigger>]
       def triggers

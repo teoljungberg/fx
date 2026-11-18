@@ -1,9 +1,19 @@
 module Fx
-  # @api private
+  # A database trigger to dump into `schema.rb`.
+  #
+  # Part of the public adapter interface: adapters return instances of
+  # this class from `triggers`. The constructor takes a row (anything
+  # responding to `#fetch`, such as a `Hash`) with `"name"` and
+  # `"definition"` keys.
   class Trigger
     include Comparable
 
-    attr_reader :name, :definition
+    # @return [String] the name of the trigger
+    attr_reader :name
+
+    # @return [String] the SQL definition of the trigger
+    attr_reader :definition
+
     delegate :<=>, to: :name
 
     def initialize(row)
