@@ -57,6 +57,9 @@ jobs:
       - name: Setup environment
         run: bin/setup
 
+      - name: Resolve the Postgres service container
+        run: echo "FX_PG_CONTAINER=$(docker ps --format '{{.Names}}' --filter name=postgres | head -n1)" >> "$GITHUB_ENV"
+
       - name: Run tests
         run: bundle exec rake
 

@@ -9,6 +9,14 @@ module Fx
       class Triggers
         # The SQL query used by F(x) to retrieve the triggers considered
         # dumpable into `db/schema.rb`.
+        #
+        # Every trigger on an extension-owned table is deferred to the
+        # extension script: enabling the extension recreates the table and
+        # its triggers, so dumping them breaks `db:schema:load` with
+        # PG::DuplicateObject (issue #97). This matches pg_dump, which
+        # does not emit triggers attached to extension member tables.
+        # Triggers on ordinary tables that call extension-owned functions
+        # still dump, since the extension will not recreate those.
         TRIGGERS_WITH_DEFINITIONS_QUERY = <<~SQL.freeze
           SELECT
               pt.tgname AS name,
@@ -20,7 +28,12 @@ module Fx
               ON (pp.oid = pt.tgfoid)
           JOIN pg_namespace pn
               ON pn.oid = pc.relnamespace
+          LEFT JOIN pg_depend pdt
+              ON pdt.classid = 'pg_class'::regclass
+              AND pdt.objid = pc.oid
+              AND pdt.deptype = 'e'
           WHERE pn.nspname = ANY (current_schemas(false))
+              AND pdt.objid IS NULL
               AND pt.tgname NOT ILIKE '%constraint%'
               AND pt.tgname NOT ILIKE 'pg%'
           ORDER BY pc.oid;

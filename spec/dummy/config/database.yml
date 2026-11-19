@@ -1,6 +1,7 @@
 development: &default
   adapter: postgresql
   host: 127.0.0.1
+  port: <%= ENV.fetch('POSTGRES_PORT', 5432) %>
   user: <%= ENV['POSTGRES_USER'] %>
   database: dummy_development
   encoding: unicode

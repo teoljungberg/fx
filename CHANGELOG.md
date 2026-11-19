@@ -5,6 +5,11 @@ changelog, see the [commits] for each version via the version links.
 
 [commits]: https://github.com/teoljungberg/fx/commits/master
 
+## [Unreleased]
+
+[Unreleased]: https://github.com/teoljungberg/fx/compare/v0.13.0...HEAD
+
+- Skip extension-owned triggers when dumping the schema (#97)
 ## [0.13.0]
 
 [0.13.0]: https://github.com/teoljungberg/fx/compare/v0.12.0...v0.13.0
