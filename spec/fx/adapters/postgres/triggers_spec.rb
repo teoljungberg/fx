@@ -125,7 +125,8 @@ RSpec.describe Fx::Adapters::Postgres::Triggers, :db do
     # skips when neither is available, like the superuser skip above.
     def with_real_extension(connection)
       engine = container_engine
-      container = ENV.fetch("FX_PG_CONTAINER", "fx-postgres")
+      container = ENV["FX_PG_CONTAINER"]
+      container = "fx-postgres" if container.nil? || container.empty?
       unless engine && system(engine, "exec", container, "true",
         out: File::NULL, err: File::NULL)
         if ENV["CI"]

@@ -58,7 +58,14 @@ jobs:
         run: bin/setup
 
       - name: Resolve the Postgres service container
-        run: echo "FX_PG_CONTAINER=$(docker ps --format '{{.Names}}' --filter name=postgres | head -n1)" >> "$GITHUB_ENV"
+        env:
+          FX_PG_CONTAINER: ${{ job.services.postgres.id }}
+        run: |
+          if [ -z "$FX_PG_CONTAINER" ]; then
+              echo "Postgres service container not found" >&2
+              exit 1
+          fi
+          echo "FX_PG_CONTAINER=$FX_PG_CONTAINER" >> "$GITHUB_ENV"
 
       - name: Run tests
         run: bundle exec rake
