@@ -10,9 +10,11 @@ changelog, see the [commits] for each version via the version links.
 [Unreleased]: https://github.com/teoljungberg/fx/compare/v0.13.0...HEAD
 
 - Skip triggers on extension-owned tables when dumping the schema, matching
-  pg_dump (#97). A trigger the application adds to an extension-owned table
-  is no longer dumped; recreate it in a migration that runs after
-  `enable_extension`.
+  pg_dump (#97). Proof of concept; I am leaving this unreleased for a while
+  and would like testers. Triggers the application adds to an
+  extension-owned table are no longer dumped. They survive only in
+  environments that run migrations; a database built with
+  `db:schema:load` will not have them.
 
 ## [0.13.0]
 
